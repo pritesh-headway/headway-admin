@@ -44,8 +44,8 @@
                     <h4 class="header-title float-left">{{ __('Testimonials') }}</h4>
                     <p class="float-right mb-2">
                         @if (auth()->user()->can('banner.edit'))
-                        <a class="btn btn-primary text-white" href="{{ route('admin.banner.create') }}">
-                            {{ __('Create New Banner') }}
+                        <a class="btn btn-primary text-white" href="{{ route('admin.testimonial.create') }}">
+                            {{ __('Create New Testimonial') }}
                         </a>
                         @endif
                     </p>

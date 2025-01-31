@@ -49,6 +49,8 @@ class PlanController extends Controller
         $admin->session = $request->session;
         $admin->description = $request->description;
         $admin->plan_type = $request->plan_type;
+        $admin->duration = $request->duration;
+        $admin->tax = $request->tax;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -98,6 +100,8 @@ class PlanController extends Controller
         $admin->session = $request->session;
         $admin->description = $request->description;
         $admin->plan_type = $request->plan_type;
+        $admin->duration = $request->duration;
+        $admin->tax = $request->tax;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();

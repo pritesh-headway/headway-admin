@@ -14,8 +14,11 @@ use App\Http\Controllers\Backend\CmsController;
 use App\Http\Controllers\Backend\ClientController;
 use App\Http\Controllers\Backend\OurteamController;
 use App\Http\Controllers\Backend\EventController;
+use App\Http\Controllers\Backend\AddOnServiceController;
 use App\Http\Controllers\Backend\PlanController;
+use App\Http\Controllers\Backend\ServiceController;
 use App\Http\Controllers\Backend\TestimonialController;
+use App\Http\Controllers\Backend\VideoGalleryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +55,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::resource('event', EventController::class);
     Route::resource('plan', PlanController::class);
     Route::resource('testimonial', TestimonialController::class);
+    Route::resource('service', ServiceController::class);
+    Route::resource('addonservice', AddOnServiceController::class);
+    // Route::resource('hr', HrController::class);
+    Route::resource('videogallery', VideoGalleryController::class);
 
     // Login Routes.
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

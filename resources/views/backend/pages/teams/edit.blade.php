@@ -73,7 +73,7 @@ Team Edit - Admin Panel
                                 <label for="password">Client Image</label>
                                 <input type="file" name="image" id="image" class="form-control" />
                                 <br />
-                                <img src="{{ asset('storage/'.$admin->image) }}" alt="Blog Image" width="100px"
+                                <img src="{{ asset('teams/'.$admin->image) }}" alt="Team Image" width="100px"
                                     height="80px" />
                             </div>
 

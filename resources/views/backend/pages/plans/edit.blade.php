@@ -45,7 +45,8 @@ Plan Edit - Admin Panel
                     <h4 class="header-title">Edit Plan - {{ $admin->plan_name }}</h4>
                     @include('backend.layouts.partials.messages')
 
-                    <form action="{{ route('admin.plan.update', $admin->id) }}" method="POST">
+                    <form action="{{ route('admin.plan.update', $admin->id) }}" method="POST"
+                        enctype="multipart/form-data">
                         @method('PUT')
                         @csrf
                         <div class="form-row">
@@ -72,7 +73,18 @@ Plan Edit - Admin Panel
                                 <input type="text" class="form-control" id="session" name="session"
                                     placeholder="Enter Session" value="{{ $admin->session }}" required autofocus>
                             </div>
-
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">Duration (In Hrs)</label>
+                                <input type="text" class="form-control" id="duration" name="duration"
+                                    placeholder="Enter Duration" value="{{ $admin->duration }}" required autofocus>
+                            </div>
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="name">Tax (In %)</label>
+                                <input type="text" class="form-control" id="tax" name="tax" placeholder="Enter Tax"
+                                    value="{{ $admin->tax }}" required autofocus>
+                            </div>
                         </div>
 
                         <div class="form-row">
@@ -105,13 +117,13 @@ Plan Edit - Admin Panel
 
                                 </select>
                             </div>
-                            {{-- <div class="form-group col-md-6 col-sm-6">
-                                <label for="password">Event Image</label>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Plan Image</label>
                                 <input type="file" name="image" id="image" class="form-control" />
                                 <br />
-                                <img src="{{ asset('storage/'.$admin->image) }}" alt="Event Image" width="100px"
+                                <img src="{{ asset('plans/'.$admin->image) }}" alt="Plan Image" width="100px"
                                     height="80px" />
-                            </div> --}}
+                            </div>
 
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>

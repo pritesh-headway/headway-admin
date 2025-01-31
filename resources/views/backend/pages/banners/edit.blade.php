@@ -45,7 +45,8 @@ Banner Edit - Admin Panel
                     <h4 class="header-title">Edit Admin - {{ $admin->title }}</h4>
                     @include('backend.layouts.partials.messages')
 
-                    <form action="{{ route('admin.banner.update', $admin->id) }}" method="POST">
+                    <form action="{{ route('admin.banner.update', $admin->id) }}" method="POST"
+                        enctype="multipart/form-data">
                         @method('PUT')
                         @csrf
                         <div class="form-row">

@@ -42,13 +42,12 @@ class TestimonialController extends Controller
 
         $admin = new Testimonial();
         $admin->title = $request->title;
-        $admin->heading = $request->heading;
-        $admin->is_popup = isset($request->is_popup) && $request->is_popup == 'on' ? 1 : 0;
+        $admin->desc = $request->desc;
         $admin->desc = $request->desc;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('banners'), $imageName); // Save to 'public/uploads'
+            $image->move(public_path('testimonials'), $imageName); // Save to 'public/uploads'
             $admin->image = $imageName;
         }
         $admin->save();
@@ -87,13 +86,12 @@ class TestimonialController extends Controller
         $this->checkAuthorization(auth()->user(), ['testimonial.edit']);
         $admin = Testimonial::findOrFail($id);
         $admin->title = $request->title;
-        $admin->heading = $request->heading;
-        $admin->is_popup = isset($request->is_popup) && $request->is_popup == 'on' ? 1 : 0;
+        $admin->desc = $request->desc;
         $admin->desc = $request->desc;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('banners'), $imageName); // Save to 'public/uploads'
+            $image->move(public_path('testimonials'), $imageName); // Save to 'public/uploads'
             $admin->image = $imageName;
         }
         $admin->save();

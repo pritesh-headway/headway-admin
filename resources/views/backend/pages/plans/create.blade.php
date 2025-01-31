@@ -58,7 +58,7 @@ Plan Create - Admin Panel
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Price</label>
                                 <input type="text" class="form-control" id="price" name="price"
-                                    placeholder="Enter Price" value="" required autofocus>
+                                    placeholder="Enter Price" value="{{ old('price') }}" required autofocus>
                             </div>
 
                         </div>
@@ -66,14 +66,26 @@ Plan Create - Admin Panel
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="password">Validity</label>
                                 <input type="text" class="form-control" id="validity" name="validity"
-                                    placeholder="Enter validity" value="" required autofocus>
+                                    placeholder="Enter validity" value="{{ old('validity') }}" required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Session</label>
                                 <input type="text" class="form-control" id="session" name="session"
-                                    placeholder="Enter Session" value="" required autofocus>
+                                    placeholder="Enter Session" value="{{ old('session') }}" required autofocus>
                             </div>
+                        </div>
 
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">Duration (In Hrs)</label>
+                                <input type="text" class="form-control" id="duration" name="duration"
+                                    placeholder="Enter Duration" value="{{ old('duration') }}" required autofocus>
+                            </div>
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="name">Tax (In %)</label>
+                                <input type="text" class="form-control" id="tax" name="tax" placeholder="Enter Tax"
+                                    value="{{ old('tax') }}" required autofocus>
+                            </div>
                         </div>
 
                         <div class="form-row">
@@ -101,10 +113,10 @@ Plan Create - Admin Panel
 
                                 </select>
                             </div>
-                            {{-- <div class="form-group col-md-6 col-sm-6">
-                                <label for="password">Image</label>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Plan Image</label>
                                 <input type="file" name="image" id="image" class="form-control" required />
-                            </div> --}}
+                            </div>
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>
                                 <select class="form-control " id="status" name="status" required>

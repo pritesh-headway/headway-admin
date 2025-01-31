@@ -46,7 +46,7 @@ class CmsController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('banners'), $imageName); // Save to 'public/uploads'
+            $image->move(public_path('cms'), $imageName); // Save to 'public/uploads'
             $admin->image = $imageName;
         }
         $admin->save();

@@ -219,25 +219,33 @@ $usr = Auth::guard('admin')->user();
                     @endif
 
                     @if ($usr->can('plan.create') || $usr->can('plan.view') || $usr->can('plan.edit') ||
-                    $usr->can('plan.delete'))
+                    $usr->can('plan.delete') || $usr->can('addonservice.create') || $usr->can('addonservice.view') ||
+                    $usr->can('addonservice.edit') ||
+                    $usr->can('addonservice.delete'))
                     <li>
-                        <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-paper-plane"></i><span>Service
-                                Plans</span>
+                        <a href="javascript:void(0)" aria-expanded="true"><i
+                                class="fa fa-paper-plane"></i><span>Plans</span>
                         </a>
                         <ul
-                            class="collapse {{ Route::is('admin.plan.create') || Route::is('admin.plan.index') || Route::is('admin.plan.edit') || Route::is('admin.plan.show') ? 'in' : '' }}">
+                            class="collapse {{ Route::is('admin.plan.create') || Route::is('admin.plan.index') || Route::is('admin.plan.edit') || Route::is('admin.plan.show') || Route::is('admin.addonservice.create') || Route::is('admin.addonservice.index') || Route::is('admin.addonservice.edit') || Route::is('admin.addonservice.show') ? 'in' : '' }}">
 
                             @if ($usr->can('plan.view'))
                             <li
                                 class="{{ Route::is('admin.plan.index')  || Route::is('admin.plan.edit') ? 'active' : '' }}">
-                                <a href="{{ route('admin.plan.index') }}">All Service
-                                    Plans</a>
+                                <a href="{{ route('admin.plan.index') }}">All Plans</a>
+                            </li>
+                            @endif
+
+                            @if ($usr->can('addonservice.view'))
+                            <li
+                                class="{{ Route::is('admin.addonservice.index')  || Route::is('admin.addonservice.edit') ? 'active' : '' }}">
+                                <a href="{{ route('admin.addonservice.index') }}">All Add On Service</a>
                             </li>
                             @endif
 
                             @if ($usr->can('plan.create'))
                             <li class="{{ Route::is('admin.plan.create')  ? 'active' : '' }}"><a
-                                    href="{{ route('admin.plan.create') }}">Create Plans</a></li>
+                                    href="{{ route('admin.plan.create') }}">Create Plan</a></li>
                             @endif
                         </ul>
                     </li>
@@ -248,7 +256,7 @@ $usr = Auth::guard('admin')->user();
                     $usr->can('testimonial.delete'))
                     <li>
                         <a href="javascript:void(0)" aria-expanded="true"><i
-                                class="fa fa-paper-plane"></i><span>Testimonials</span>
+                                class="fa fa-thumbs-up"></i><span>Testimonials</span>
                         </a>
                         <ul
                             class="collapse {{ Route::is('admin.testimonial.create') || Route::is('admin.testimonial.index') || Route::is('admin.testimonial.edit') || Route::is('admin.testimonial.show') ? 'in' : '' }}">
@@ -263,6 +271,57 @@ $usr = Auth::guard('admin')->user();
                             @if ($usr->can('testimonial.create'))
                             <li class="{{ Route::is('admin.testimonial.create')  ? 'active' : '' }}"><a
                                     href="{{ route('admin.testimonial.create') }}">Create Testimonial</a></li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if ($usr->can('service.create') || $usr->can('service.view') ||
+                    $usr->can('service.edit') ||
+                    $usr->can('service.delete'))
+                    <li>
+                        <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-briefcase"></i><span>Our
+                                Services</span>
+                        </a>
+                        <ul
+                            class="collapse {{ Route::is('admin.service.create') || Route::is('admin.service.index') || Route::is('admin.service.edit') || Route::is('admin.service.show') ? 'in' : '' }}">
+
+                            @if ($usr->can('service.view'))
+                            <li
+                                class="{{ Route::is('admin.service.index')  || Route::is('admin.service.edit') ? 'active' : '' }}">
+                                <a href="{{ route('admin.service.index') }}">All Services</a>
+                            </li>
+                            @endif
+
+                            @if ($usr->can('service.create'))
+                            <li class="{{ Route::is('admin.service.create')  ? 'active' : '' }}"><a
+                                    href="{{ route('admin.service.create') }}">Create Service</a></li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if ($usr->can('videogallery.create') || $usr->can('videogallery.view') ||
+                    $usr->can('videogallery.edit') ||
+                    $usr->can('videogallery.delete'))
+                    <li>
+                        <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-play-circle"></i><span>Video
+                                Gallery</span>
+                        </a>
+                        <ul
+                            class="collapse {{ Route::is('admin.videogallery.create') || Route::is('admin.videogallery.index') || Route::is('admin.videogallery.edit') || Route::is('admin.videogallery.show') ? 'in' : '' }}">
+
+                            @if ($usr->can('videogallery.view'))
+                            <li
+                                class="{{ Route::is('admin.videogallery.index')  || Route::is('admin.videogallery.edit') ? 'active' : '' }}">
+                                <a href="{{ route('admin.videogallery.index') }}">All Video Gallery</a>
+                            </li>
+                            @endif
+
+                            @if ($usr->can('videogallery.create'))
+                            <li class="{{ Route::is('admin.videogallery.create')  ? 'active' : '' }}"><a
+                                    href="{{ route('admin.videogallery.create') }}">Create
+                                    Video</a></li>
                             @endif
                         </ul>
                     </li>

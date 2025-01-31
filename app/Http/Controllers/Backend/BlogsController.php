@@ -73,10 +73,11 @@ class BlogsController extends Controller
     public function edit(int $id): Renderable
     {
         $this->checkAuthorization(auth()->user(), ['blogs.edit']);
-
+        $blog_categories = DB::table('blog_categories')->get();
         $admin = Blog::findOrFail($id);
         return view('backend.pages.blogs.edit', [
             'admin' => $admin,
+            'blog_categories' => $blog_categories,
             'roles' => Role::all(),
         ]);
     }

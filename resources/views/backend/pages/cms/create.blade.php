@@ -51,15 +51,15 @@ CMS Create - Admin Panel
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Title</label>
-                                <input type="text" class="form-control" id="title" name="title"
-                                    placeholder="Enter Title" required autofocus value="{{ old('name') }}">
+                                <input type="text" class="form-control" id="page_name" name="page_name"
+                                    placeholder="Enter Title" required autofocus value="{{ old('page_name') }}">
                             </div>
 
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label for="password">Description</label>
+                            <div class="form-group col-md-12 col-sm-12">
+                                <label for="password">Description</label><br />
                                 <textarea class="form-control" id="description" name="description"></textarea>
                             </div>
                         </div>
@@ -95,5 +95,12 @@ CMS Create - Admin Panel
     $(document).ready(function() {
         $('.select2').select2();
     })
+</script>
+<script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
+<script>
+    CKEDITOR.replace('description');
+    setTimeout(() => {
+        $('.cke_notification_warning').hide();
+    }, 1000);
 </script>
 @endsection

@@ -24,7 +24,7 @@ Testimonial Edit - Admin Panel
                 <h4 class="page-title pull-left">Testimonial Edit</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ route('admin.admins.index') }}">All Testimonials</a></li>
+                    <li><a href="{{ route('admin.testimonial.index') }}">All Testimonials</a></li>
                     <li><span>Edit Testimonial - {{ $admin->title }}</span></li>
                 </ul>
             </div>
@@ -45,7 +45,8 @@ Testimonial Edit - Admin Panel
                     <h4 class="header-title">Edit Testimonial - {{ $admin->title }}</h4>
                     @include('backend.layouts.partials.messages')
 
-                    <form action="{{ route('admin.testimonial.update', $admin->id) }}" method="POST">
+                    <form action="{{ route('admin.testimonial.update', $admin->id) }}" method="POST"
+                        enctype="multipart/form-data">
                         @method('PUT')
                         @csrf
                         <div class="form-row">

@@ -57,9 +57,11 @@ CMS Edit - Admin Panel
                         </div>
 
                         <div class="form-row">
-                            <label for="password">Description</label>
-                            <textarea class="form-control" id="description"
-                                name="description">{{ $admin->description }}</textarea>
+                            <div class="form-group col-md-12 col-sm-12">
+                                <label for="password">Description</label>
+                                <textarea class="form-control" id="description"
+                                    name="description">{{ $admin->description }}</textarea>
+                            </div>
                         </div>
 
                         <div class="form-row">
@@ -67,10 +69,10 @@ CMS Edit - Admin Panel
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>
                                 <select class="form-control " id="status" name="status" required>
-                                    <option value="1" {{ old('status')=='1' ? 'selected' : '' }} {{ .$admin->status=='1'
+                                    <option value="1" {{ old('status')=='1' ? 'selected' : '' }} {{ $admin->status=='1'
                                         ? 'selected' : '' }}>Active
                                     </option>
-                                    <option value="0" {{ old('status')=='0' ? 'selected' : '' }} {{ .$admin->status=='0'
+                                    <option value="0" {{ old('status')=='0' ? 'selected' : '' }} {{ $admin->status=='0'
                                         ? 'selected' : '' }}>Inactive
                                     </option>
                                 </select>
@@ -95,5 +97,12 @@ CMS Edit - Admin Panel
     $(document).ready(function() {
         $('.select2').select2();
     })
+</script>
+<script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
+<script>
+    CKEDITOR.replace('description');
+    setTimeout(() => {
+        $('.cke_notification_warning').hide();
+    }, 1000);
 </script>
 @endsection

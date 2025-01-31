@@ -19,19 +19,19 @@ use App\Models\Banner;
 use App\Models\Blog;
 use App\Models\Client;
 use App\Models\CmdVIsit;
-use App\Models\CmsVIsit;
+use App\Models\Cms;
 use App\Models\Contact;
-use App\Models\DeveloperBussiness;
-use App\Models\HrIntelligent;
 use App\Models\Membership;
 use App\Models\NotificationSetting;
 use App\Models\OurCourses;
 use App\Models\Plan;
 use App\Models\Services;
-use App\Models\Startup;
 use App\Models\UserDevices;
 use App\Models\Video;
+use DOMDocument;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
+
 
 class ApiController extends Controller
 {
@@ -42,6 +42,7 @@ class ApiController extends Controller
     public $client_path;
     public $blog_path;
     public $plan_path;
+    public $service_path;
     public $visit_path;
     public $icon_path;
     public $hr_path;
@@ -55,10 +56,11 @@ class ApiController extends Controller
         $this->banner_path = '/public/banner/';
         $this->client_path = '/public/clients/';
         $this->blog_path = '/public/blogs/';
-        $this->plan_path = '/public/plans/';
+        $this->plan_path = '/plans/';
         $this->visit_path = '/public/visit/';
         $this->icon_path = '/public/icon/';
         $this->hr_path = '/public/hr/';
+        $this->service_path = '/services/';
         $this->fcmNotificationService = $fcmNotificationService;
         $this->curlApiService = $curlApiService;
     }
@@ -438,7 +440,36 @@ class ApiController extends Controller
                     ->toArray();
             })->toArray();
 
-            return response()->json(['status' => true, 'message' => 'Get Plans data successfully', 'data' => $plans], 200);
+            $result = [];
+            $finalData = [];
+            $id = 1;
+
+            foreach ($plans as $li) {
+                $result = [
+                    'id' => $li['id'],
+                    'plan_name' => $li['plan_name'],
+                    'plan_image' => $li['plan_image'],
+                    'sort_desc' => $li['sort_desc'],
+                    'price' => $li['price'],
+                    'validity' => $li['validity'],
+                    'session' => $li['session'],
+                    'duration' => $li['duration'],
+                    'tax' => $li['tax'],
+                    'points' => [],
+                ];
+                $lis = explode(',', $li['description']); // Split service_desc into an array
+                foreach ($lis as $value) {
+                    $result['points'][] = [
+                        'id' => $id,
+                        'name' => trim($value), // Trim whitespace
+                    ];
+                    $id++;
+                }
+                $finalData = $result; // Add the processed result to finalData
+            }
+
+
+            return response()->json(['status' => true, 'message' => 'Get Plans data successfully', 'data' => $finalData], 200);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
         }
@@ -488,6 +519,34 @@ class ApiController extends Controller
             ];
 
             return response()->json(['status' => true, 'message' => 'Get Add On data successfully', 'data' => $blogsData], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
+
+    /**
+     * get Add On's Detail.
+     */
+    public function getAddOnDetailsById(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $addon_id = $request->addon_id;
+            $loginType = $request->user_type;
+            $token = $request->header('token');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
+
+            $userData = json_decode($checkToken->getContent(), true);
+            if ($userData['status'] == false) {
+                return $checkToken->getContent();
+            }
+            $blogsPaginator = Addon::where('status', 1)->where('id', $addon_id)->first();
+
+
+
+            return response()->json(['status' => true, 'message' => 'Get Add On data successfully', 'data' => $blogsPaginator], 200);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
         }
@@ -611,7 +670,7 @@ class ApiController extends Controller
             $servicesPaginator = Services::where('status', 1)->paginate($this->per_page_show, ['*'], 'page', $page_number);
 
             $services = $servicesPaginator->getCollection()->map(function ($services) use ($base_url) {
-                $services = collect($services)
+                $services = collect($services)->except(['service_desc', 'created_at', 'updated_at', 'parent_id'])
                     ->put('service_image', $services['image'] ? $base_url . $this->visit_path . $services['image'] : '')
                     ->toArray();
                 return $services;
@@ -634,7 +693,7 @@ class ApiController extends Controller
                 'data' => $services,
             ];
 
-            return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully', 'data' => $coursesData], 200);
+            return response()->json(['status' => true, 'message' => 'Get service list data successfully', 'data' => $coursesData], 200);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
         }
@@ -657,33 +716,12 @@ class ApiController extends Controller
             if ($userData['status'] == false) {
                 return $checkToken->getContent();
             }
-            $startupPaginator = Startup::where('status', 1)->paginate($this->per_page_show, ['*'], 'page', $page_number);
-
-            $strtup = $startupPaginator->getCollection()->map(function ($strtup) use ($base_url) {
-                $strtup = collect($strtup)
-                    // ->put('service_image', $strtup['image'] ? $base_url . $this->visit_path . $strtup['image'] : '')
-                    ->toArray();
-                return $strtup;
+            $startupPaginator = Services::select('id', 'name', 'service_desc')->where('status', 1)->where('parent_id', config('custome.STARTUP_ID'))->get()->map(function ($item) {
+                $item->service_desc = strip_tags($item->service_desc); // Remove HTML tags
+                return $item;
             });
 
-            // Replace the original collection with the transformed one
-            $startupPaginator->setCollection(collect($strtup));
-
-            // Get pagination metadata
-            $pagination = [
-                'total' => $startupPaginator->total(),
-                'count' => $startupPaginator->count(),
-                'per_page' => $startupPaginator->perPage(),
-                'current_page' => $startupPaginator->currentPage(),
-                'total_pages' => $startupPaginator->lastPage(),
-            ];
-
-            $coursesData = [
-                'pagination' => $pagination,
-                'data' => $strtup,
-            ];
-
-            return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully', 'data' => $coursesData], 200);
+            return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully', 'data' => $startupPaginator], 200);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
         }
@@ -706,33 +744,34 @@ class ApiController extends Controller
             if ($userData['status'] == false) {
                 return $checkToken->getContent();
             }
-            $startupPaginator = Startup::where('status', 1)->paginate($this->per_page_show, ['*'], 'page', $page_number);
+            $startupPaginator = Services::select('id', 'name', 'service_desc')->where('status', 1)->where('parent_id', config('custome.BUSSINESS_ID'))->get();
 
-            $strtup = $startupPaginator->getCollection()->map(function ($strtup) use ($base_url) {
-                $strtup = collect($strtup)
-                    // ->put('service_image', $strtup['image'] ? $base_url . $this->visit_path . $strtup['image'] : '')
-                    ->toArray();
-                return $strtup;
-            });
+            $result = [];
+            $finalData = [];
+            $id = 1;
 
-            // Replace the original collection with the transformed one
-            $startupPaginator->setCollection(collect($strtup));
+            foreach ($startupPaginator as $li) {
+                $result = [
+                    'name' => $li['name'],
+                    'id' => $li['id'],
+                    'points' => [],
+                ];
 
-            // Get pagination metadata
-            $pagination = [
-                'total' => $startupPaginator->total(),
-                'count' => $startupPaginator->count(),
-                'per_page' => $startupPaginator->perPage(),
-                'current_page' => $startupPaginator->currentPage(),
-                'total_pages' => $startupPaginator->lastPage(),
-            ];
+                $lis = explode(',', $li['service_desc']); // Split service_desc into an array
+                foreach ($lis as $value) {
+                    $result['points'][] = [
+                        'id' => $id,
+                        'name' => trim($value), // Trim whitespace
+                    ];
+                    $id++;
+                }
 
-            $coursesData = [
-                'pagination' => $pagination,
-                'data' => $strtup,
-            ];
+                $finalData[] = $result; // Add the processed result to finalData
+            }
 
-            return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully', 'data' => $coursesData], 200);
+            // dd($finalData);
+
+            return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully', 'data' => $finalData], 200);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
         }
@@ -755,33 +794,14 @@ class ApiController extends Controller
             if ($userData['status'] == false) {
                 return $checkToken->getContent();
             }
-            $startupPaginator = DeveloperBussiness::where('status', 1)->paginate($this->per_page_show, ['*'], 'page', $page_number);
-
-            $strtup = $startupPaginator->getCollection()->map(function ($strtup) use ($base_url) {
-                $strtup = collect($strtup)
-                    ->put('icon_image', $strtup['icon'] ? $base_url . $this->icon_path . $strtup['icon'] : '')
-                    ->toArray();
-                return $strtup;
+            $title = Services::select('id', 'name')->where('status', 1)->where('id', 22)->where('parent_id', config('custome.DEVELOPMENT_BUSSINESS_ID'))->get();
+            $startupPaginator = Services::select('id', 'name', 'service_desc', 'image')->where('status', 1)->where('parent_id', config('custome.DEVELOPMENT_BUSSINESS_ID'))->get()->map(function ($service) {
+                $service->image = url($this->service_path . $service->image);
+                $service->service_desc = strip_tags($service->service_desc);
+                return $service;
             });
-
-            // Replace the original collection with the transformed one
-            $startupPaginator->setCollection(collect($strtup));
-
-            // Get pagination metadata
-            $pagination = [
-                'total' => $startupPaginator->total(),
-                'count' => $startupPaginator->count(),
-                'per_page' => $startupPaginator->perPage(),
-                'current_page' => $startupPaginator->currentPage(),
-                'total_pages' => $startupPaginator->lastPage(),
-            ];
-
-            $coursesData = [
-                'pagination' => $pagination,
-                'data' => $strtup,
-            ];
-
-            return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully', 'data' => $coursesData], 200);
+            $final = ['title' => $title, 'detail' => $startupPaginator];
+            return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully', 'data' => $final], 200);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
         }
@@ -804,33 +824,132 @@ class ApiController extends Controller
             if ($userData['status'] == false) {
                 return $checkToken->getContent();
             }
-            $hrPaginator = HrIntelligent::where('status', 1)->paginate($this->per_page_show, ['*'], 'page', $page_number);
-
-            $hrp = $hrPaginator->getCollection()->map(function ($hrp) use ($base_url) {
-                $hrp = collect($hrp)
-                    ->put('icon_image', $hrp['image'] ? $base_url . $this->hr_path . $hrp['image'] : '')
-                    ->toArray();
-                return $hrp;
+            $startupPaginator = Services::select('id', 'name', 'service_desc', 'image')->where('status', 1)->where('parent_id', config('custome.HR_ID'))->get()->map(function ($service) {
+                $service->image = url($this->service_path . $service->image);
+                $service->service_desc = strip_tags($service->service_desc);
+                return $service;
             });
 
-            // Replace the original collection with the transformed one
-            $hrPaginator->setCollection(collect($hrp));
+            return response()->json(['status' => true, 'message' => 'Get Hr data successfully', 'data' => $startupPaginator], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
 
-            // Get pagination metadata
-            $pagination = [
-                'total' => $hrPaginator->total(),
-                'count' => $hrPaginator->count(),
-                'per_page' => $hrPaginator->perPage(),
-                'current_page' => $hrPaginator->currentPage(),
-                'total_pages' => $hrPaginator->lastPage(),
-            ];
+    /**
+     * get Jewellery Vidyapith list.
+     */
+    public function getJewelleryVidyapithList(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $loginType = $request->user_type;
+            $token = $request->header('token');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
 
-            $coursesData = [
-                'pagination' => $pagination,
-                'data' => $hrp,
-            ];
+            $userData = json_decode($checkToken->getContent(), true);
+            if ($userData['status'] == false) {
+                return $checkToken->getContent();
+            }
+            $banner = Services::select('id', 'image')->where('status', 1)->where('id', 20)->where('parent_id', config('custome.VIDYAPITH_ID'))->orderBy('id', 'asc')->first();
 
-            return response()->json(['status' => true, 'message' => 'Get Hr data successfully', 'data' => $coursesData], 200);
+            $info = Services::select('id', 'service_desc')->where('status', 1)->where('id', 15)->where('parent_id', config('custome.VIDYAPITH_ID'))->orderBy('id', 'asc')->first();
+
+            if ($banner) {
+                $banner->image = url($this->service_path . $banner->image); // Update the path as per your storage structure
+            }
+
+            $points = Services::select('sort_desc')->where('status', 1)->where('id', 21)->where('parent_id', config('custome.VIDYAPITH_ID'))->orderBy('id', 'asc')->get();
+            $html = $points[0]['sort_desc'];
+
+            $lis = explode(',', $html);
+            $result = [];
+            $id = 1;
+
+            foreach ($lis as $li) {
+                $result[] = [
+                    'id' => $id,
+                    'name' => trim($li),
+                ];
+                $id++;
+            }
+
+            $startupPaginator = Services::select('id', 'name', 'service_desc')->whereNotIn('id', [15])->where('status', 1)->where('parent_id', config('custome.VIDYAPITH_ID'))->orderBy('id', 'asc')->get();
+            $detail = ['info' => strip_tags($info->service_desc), 'banner' => $banner->image, 'points' => $result, 'detail' => $startupPaginator];
+            return response()->json(['status' => true, 'message' => 'Get Hr data successfully', 'data' => $detail], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
+
+    /**
+     * get Headway IT list.
+     */
+    public function getHeadwayITList(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $loginType = $request->user_type;
+            $token = $request->header('token');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
+
+            $userData = json_decode($checkToken->getContent(), true);
+            if ($userData['status'] == false) {
+                return $checkToken->getContent();
+            }
+            $design = Services::select('id', 'name', 'service_desc', 'image')->where('status', 1)->where('name', 'LIKE', '%Design%')->where('parent_id', config('custome.IT_ID'))->get()->map(function ($services) {
+                $services->image = url($this->service_path . $services->image);
+                $services->service_desc = strip_tags($services->service_desc);
+                return $services;
+            });
+
+            $development = Services::select('id', 'name', 'service_desc', 'image')->where('status', 1)->where('name', 'LIKE', '%Development%')->where('parent_id', config('custome.IT_ID'))->get()->map(function ($service) {
+                $service->image = url($this->service_path . $service->image);
+                $service->service_desc = strip_tags($service->service_desc);
+                return $service;
+            });
+
+            $marketing = Services::select('id', 'name', 'service_desc', 'image')->where('status', 1)->where('name', 'LIKE', '%marketing%')->where('parent_id', config('custome.IT_ID'))->get()->map(function ($service) {
+                $service->image = url($this->service_path . $service->image);
+                $service->service_desc = strip_tags($service->service_desc);
+                return $service;
+            });
+
+            $finalData = ['design' => $design, 'development' => $development, 'marketing' => $marketing];
+            return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully', 'data' => $finalData], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
+
+    /**
+     * get Headway Initiative list.
+     */
+    public function getHeadwayInitiativeList(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $loginType = $request->user_type;
+            $token = $request->header('token');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
+
+            $userData = json_decode($checkToken->getContent(), true);
+            if ($userData['status'] == false) {
+                return $checkToken->getContent();
+            }
+            $startupPaginator = Services::select('id', 'name', 'service_desc', 'image')->where('status', 1)->where('parent_id', config('custome.HEADWAY_INITIATIVE_ID'))->get()->map(function ($service) {
+                $service->image = url($this->service_path . $service->image);
+                $service->service_desc = strip_tags($service->service_desc);
+                return $service;
+            });
+
+            return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully', 'data' => $startupPaginator], 200);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
         }
@@ -1171,6 +1290,52 @@ class ApiController extends Controller
             $result = Membership::create($data);
 
             return response()->json(['status' => true, 'message' => 'Data saved successfully.', 'data' => $result], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
+
+    /**
+     * get Privacy data.
+     */
+    public function getPrivacyPolicy(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $loginType = $request->user_type;
+            $token = $request->header('token');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
+
+            $blogsPaginator = Cms::where('status', 1)->where('id', 2)->get();
+
+
+
+            return response()->json(['status' => true, 'message' => 'Get Privacy Policy data successfully', 'data' => $blogsPaginator], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
+
+    /**
+     * get Terms & Condition data.
+     */
+    public function getTermsCondition(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $loginType = $request->user_type;
+            $token = $request->header('token');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
+
+            $blogsPaginator = Cms::where('status', 1)->where('id', 3)->get();
+
+
+
+            return response()->json(['status' => true, 'message' => 'Get Privacy Policy data successfully', 'data' => $blogsPaginator], 200);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
         }

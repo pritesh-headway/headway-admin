@@ -10,6 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 class Services extends Model
 {
     use Notifiable, HasRoles;
-    public $table = 'services';
+    public $table = 'our_services';
     protected $primaryKey = 'id';
 }
