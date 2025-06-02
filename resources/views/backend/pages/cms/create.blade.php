@@ -49,10 +49,23 @@ CMS Create - Admin Panel
                     <form action="{{ route('admin.cms.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
+                            <div class="form-group col-md-6 col-sm-6">
                                 <label for="name">Title</label>
                                 <input type="text" class="form-control" id="page_name" name="page_name"
                                     placeholder="Enter Title" required autofocus value="{{ old('page_name') }}">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <label for="name">Plan Name</label>
+                                    <select class="form-control " id="plan_id" name="plan_id">
+                                        <option value="">Select Plans</option>
+                                        @foreach ($plan as $pl)
+                                        <option value="{{ $pl->id }}" {{ old('plan_id')==$pl->id ? 'selected' : '' }}>{{
+                                            $pl->plan_name }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
 
                         </div>
@@ -64,7 +77,7 @@ CMS Create - Admin Panel
                             </div>
                         </div>
 
-                        <div class="form-row">
+                        {{-- <div class="form-row">
 
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>
@@ -75,7 +88,7 @@ CMS Create - Admin Panel
                                     </option>
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
                         <a href="{{ route('admin.cms.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
@@ -102,5 +115,30 @@ CMS Create - Admin Panel
     setTimeout(() => {
         $('.cke_notification_warning').hide();
     }, 1000);
+</script>
+<script>
+    CKEDITOR.replace('description');
+
+    $('#plan_id').on('change', function () {
+        let pageId = $(this).val();
+        let url = "{!! route('admin.admin.cms.get-cms-content', ':id') !!}".replace(':id',pageId);
+        if (pageId) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (response) {
+                    if (response.success) {
+                    CKEDITOR.instances.description.setData(response.data.content);
+                    } else {
+                    alert('Content not found');
+                    CKEDITOR.instances.description.setData('');
+                    }
+                },
+                error: function () {
+                    alert('Error fetching data.');
+                }
+            });
+        }
+    });
 </script>
 @endsection

@@ -122,4 +122,11 @@ Blog Create - Admin Panel
         $('.select2').select2();
     })
 </script>
+<script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
+<script>
+    CKEDITOR.replace('description');
+    setTimeout(() => {
+        $('.cke_notification_warning').hide();
+    }, 1000);
+</script>
 @endsection

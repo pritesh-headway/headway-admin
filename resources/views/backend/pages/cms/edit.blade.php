@@ -24,7 +24,7 @@ CMS Edit - Admin Panel
                 <h4 class="page-title pull-left">CMS Edit</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ route('admin.admins.index') }}">All CMS</a></li>
+                    <li><a href="{{ route('admin.cms.index') }}">All CMS</a></li>
                     <li><span>Edit CMS - {{ $admin->name }}</span></li>
                 </ul>
             </div>
@@ -57,6 +57,20 @@ CMS Edit - Admin Panel
                         </div>
 
                         <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="name">Plan Name</label>
+                                <select class="form-control " id="plan_id" name="plan_id">
+                                    <option value="">Select Plans</option>
+                                    @foreach ($plan as $pl)
+                                    <option value="{{ $pl->id }}" {{ $admin->plan_id==$pl->id ? 'selected' : '' }}>{{
+                                        $pl->plan_name }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
                             <div class="form-group col-md-12 col-sm-12">
                                 <label for="password">Description</label>
                                 <textarea class="form-control" id="description"
@@ -64,7 +78,7 @@ CMS Edit - Admin Panel
                             </div>
                         </div>
 
-                        <div class="form-row">
+                        {{-- <div class="form-row">
 
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>
@@ -77,7 +91,7 @@ CMS Edit - Admin Panel
                                     </option>
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
                         <a href="{{ route('admin.cms.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
@@ -104,5 +118,29 @@ CMS Edit - Admin Panel
     setTimeout(() => {
         $('.cke_notification_warning').hide();
     }, 1000);
+</script>
+<script>
+    $('#plan_id').on('change', function () {
+        let pageId = $(this).val();
+        let text = $("#page_name").val();
+        let url = "{!! route('admin.admin.cms.get-cms-content', [':id', ':lang']) !!}".replace(':id', pageId).replace(':lang', text);
+        if (pageId) {
+            $.ajax({
+                url: url, //'get-cms-content/' + pageId,
+                type: 'GET',
+                success: function (response) {
+                    if (response.success) {
+                        CKEDITOR.instances.description.setData(response.data.content);
+                    } else {
+                        alert('Content not found');
+                        CKEDITOR.instances.description.setData('');
+                    }
+                },
+                error: function () {
+                    alert('Error fetching data.');
+                }
+            });
+        }
+    });
 </script>
 @endsection

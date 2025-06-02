@@ -77,6 +77,7 @@ class ProfileController extends Controller
         $user->city = $request->input('city');
         $user->state = $request->input('state');
         $user->pincode = $request->input('pincode');
+        $user->is_first_time = 0;
 
         if ($request->hasFile('profile_pic')) {
             $image = $request->file('profile_pic');
@@ -122,13 +123,12 @@ class ProfileController extends Controller
             }
 
             // Get the currently authenticated user
-            $user = User::where('id', $user_id)->get();
-
+            $user = User::with('MemberBatch')->where('id', $user_id)->get();
             $data = $user->map(function ($user) use ($base_url, $token) {
-                return collect($user)->except(['password', 'email_verified_at', 'otp', 'otp_expires_at', 'remember_token'])
+                return collect($user)->except(['password', 'email_verified_at', 'otp', 'otp_expires_at', 'remember_token', 'member_batch'])
                     ->put('user_id', $user['id'])
-                    ->put('headway_id', $user['id'])
-                    ->put('batch_number', '#00100' . $user['id'])
+                    ->put('headway_id', ($user->MemberBatch) ? (string)$user->MemberBatch['headway_id'] : '--')
+                    ->put('batch_number', ($user->MemberBatch) ? $user->MemberBatch['batch'] : '--')
                     ->put('avatar', ($user['avatar']) ? $base_url . $this->profile_path . $user['avatar'] : '')
                     ->toArray();
             })->first();

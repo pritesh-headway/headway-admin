@@ -12,4 +12,9 @@ class Addon extends Model
     use Notifiable, HasRoles;
     public $table = 'add_on_services';
     protected $primaryKey = 'id';
+
+    public function AddOnPurchased()
+    {
+        return $this->belongsTo(AddOnPurchase::class, 'id', 'addon_id');
+    }
 }

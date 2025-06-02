@@ -20,7 +20,7 @@ class EventController extends Controller
         $this->checkAuthorization(auth()->user(), ['event.create']);
 
         return view('backend.pages.events.index', [
-            'admins' => Event::all(),
+            'admins' => Event::where('is_deleted', '0')->get(),
         ]);
     }
 
@@ -46,6 +46,7 @@ class EventController extends Controller
         $admin->location = $request->location;
         $admin->description = $request->description;
         $admin->hours = $request->hours;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -92,6 +93,7 @@ class EventController extends Controller
         $admin->location = $request->location;
         $admin->description = $request->description;
         $admin->hours = $request->hours;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -101,7 +103,7 @@ class EventController extends Controller
         $admin->save();
 
         session()->flash('success', 'Event has been updated.');
-        return back();
+        return redirect()->route('admin.event.index'); //back();
     }
 
     /**
@@ -112,7 +114,8 @@ class EventController extends Controller
         $this->checkAuthorization(auth()->user(), ['event.delete']);
 
         $admin = Event::findOrFail($id);
-        $admin->delete();
+        $admin->is_deleted = '1';
+        $admin->save();
         session()->flash('success', 'Event has been deleted.');
         return back();
     }

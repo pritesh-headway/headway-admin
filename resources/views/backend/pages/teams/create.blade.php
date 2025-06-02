@@ -64,10 +64,10 @@ Team Create - Admin Panel
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-6">
+                            {{-- <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Description</label>
                                 <textarea required class="form-control" id="description" name="description"></textarea>
-                            </div>
+                            </div> --}}
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Position</label>
                                 <input type="text" name="position" id="position" class="form-control" required />

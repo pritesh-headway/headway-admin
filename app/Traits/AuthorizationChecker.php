@@ -17,6 +17,7 @@ trait AuthorizationChecker
      */
     public function checkAuthorization($user, $permissions): void
     {
+        // dd($user);
         if (is_null($user) || !$user->can($permissions)) {
             abort(403, 'Sorry !! You are unauthorized to perform this action.');
         }

@@ -21,7 +21,7 @@ class AddOnServiceController extends Controller
         $this->checkAuthorization(auth()->user(), ['addonservice.create']);
 
         return view('backend.pages.addonservice.index', [
-            'admins' => Addon::all(),
+            'admins' => Addon::where('is_deleted', '0')->get(),
         ]);
     }
 
@@ -50,6 +50,7 @@ class AddOnServiceController extends Controller
         $admin->on_store_visit = $request->on_store_visit;
         $admin->duration = $request->duration;
         $admin->tax = $request->tax;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -98,6 +99,7 @@ class AddOnServiceController extends Controller
         $admin->description = $request->description;
         $admin->on_store_visit = $request->on_store_visit;
         $admin->duration = $request->duration;
+        $admin->status = $request->status;
         $admin->tax = $request->tax;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -108,7 +110,7 @@ class AddOnServiceController extends Controller
         $admin->save();
 
         session()->flash('success', 'Add On Service has been updated.');
-        return back();
+        return redirect()->route('admin.addonservice.index'); //back();
     }
 
     /**
@@ -119,7 +121,8 @@ class AddOnServiceController extends Controller
         $this->checkAuthorization(auth()->user(), ['addonservice.delete']);
 
         $admin = Addon::findOrFail($id);
-        $admin->delete();
+        $admin->is_deleted = '1';
+        $admin->save();
         session()->flash('success', 'Add On Service has been deleted.');
         return back();
     }

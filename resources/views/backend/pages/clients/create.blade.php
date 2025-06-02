@@ -26,7 +26,7 @@ Blog Create - Admin Panel
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                     <li><a href="{{ route('admin.client.index') }}">All Clients</a></li>
-                    <li><span>Create Blog</span></li>
+                    <li><span>Create Client</span></li>
                 </ul>
             </div>
         </div>

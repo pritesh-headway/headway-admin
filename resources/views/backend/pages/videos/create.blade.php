@@ -49,10 +49,21 @@ Video Create - Admin Panel
                     <form action="{{ route('admin.videogallery.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
+                            <div class="form-group col-md-6 col-sm-6">
                                 <label for="name">Title</label>
                                 <input type="text" class="form-control" id="name" name="name" placeholder="Enter Title"
                                     required autofocus value="{{ old('name') }}">
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="name">Plan Name</label>
+                                <select class="form-control " id="plan_id" name="plan_id">
+                                    <option value="">Select Plans</option>
+                                    @foreach ($plan as $pl)
+                                    <option value="{{ $pl->id }}" {{ old('plan_id')==$pl->id ? 'selected' : '' }}>{{
+                                        $pl->plan_name }}
+                                    </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
 
@@ -77,7 +88,7 @@ Video Create - Admin Panel
 
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Video Embed Link</label>
-                                <input type="text" name="url" id="url" class="form-control" />
+                                <input type="text" name="url" id="url" class="form-control" required />
                             </div>
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>
@@ -89,7 +100,7 @@ Video Create - Admin Panel
                                 </select>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
+                        <button type="submit" id="sbtBts" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
                         <a href="{{ route('admin.videogallery.index') }}"
                             class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
                     </form>
@@ -108,5 +119,30 @@ Video Create - Admin Panel
     $(document).ready(function() {
         $('.select2').select2();
     })
+
+    // $('#url').bind("change keyup input", function() {
+    //     var url = $(this).val();
+
+    //     if (ytVidId(url) !== false) {
+    //         $("#sbtBts").prop('disabled', false);
+    //         $('#url').css('border-color', 'green');
+    //     } else {
+    //         $("#sbtBts").prop('disabled', true);
+    //         $('#url').css('border-color', 'red');
+    //     }
+    // });
+
+    $('#url').bind("change keyup input", function() {
+        var entered_url = $('#url').val();
+        if (ValidateURL(entered_url)) {
+            //Valid URL
+            $('#url').css('border-color', 'green');
+            $("#sbtBts").prop('disabled', false);
+        } else {
+            $("#sbtBts").prop('disabled', true);
+            $('#url').css('border-color', 'red');
+            return false;
+        }
+    });
 </script>
 @endsection

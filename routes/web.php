@@ -15,8 +15,16 @@ use App\Http\Controllers\Backend\ClientController;
 use App\Http\Controllers\Backend\OurteamController;
 use App\Http\Controllers\Backend\EventController;
 use App\Http\Controllers\Backend\AddOnServiceController;
+use App\Http\Controllers\Backend\BatchController;
+use App\Http\Controllers\Backend\CoursesController;
+use App\Http\Controllers\Backend\CustomersController;
+use App\Http\Controllers\Backend\MembersController;
+use App\Http\Controllers\Backend\MembershipController;
+use App\Http\Controllers\Backend\ModulesController;
+use App\Http\Controllers\Backend\OrderAddOnController;
 use App\Http\Controllers\Backend\PlanController;
 use App\Http\Controllers\Backend\ServiceController;
+use App\Http\Controllers\Backend\ServicesController;
 use App\Http\Controllers\Backend\TestimonialController;
 use App\Http\Controllers\Backend\VideoGalleryController;
 
@@ -56,9 +64,21 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::resource('plan', PlanController::class);
     Route::resource('testimonial', TestimonialController::class);
     Route::resource('service', ServiceController::class);
+    Route::resource('batch', BatchController::class);
     Route::resource('addonservice', AddOnServiceController::class);
-    // Route::resource('hr', HrController::class);
     Route::resource('videogallery', VideoGalleryController::class);
+    Route::resource('courses', CoursesController::class);
+    Route::resource('customers', CustomersController::class);
+    Route::resource('membership', MembershipController::class);
+    Route::resource('orderaddon', OrderAddOnController::class);
+    Route::resource('modules', ModulesController::class);
+    Route::resource('members', MembersController::class);
+    Route::resource('services', ServicesController::class);
+    Route::post('members/addUpdateModuleData', [MembersController::class, 'addUpdateModuleData'])->name('members.addUpdateModuleData');
+    Route::post('members/addUpdateModuleDataText', [MembersController::class, 'addUpdateModuleDataText'])->name('members.addUpdateModuleDataText');
+    Route::post('membership/update/{id}', [MembershipController::class, 'update'])->name('admin.membership.update');
+    // Route::get('cms/get-cms-content/{id}', [CmsController::class, 'getContent'])->name('admin.cms.get-cms-content');
+    Route::get('/cms/get-cms-content/{id}/{lang}', [CmsController::class, 'getContent'])->name('admin.cms.get-cms-content');
 
     // Login Routes.
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

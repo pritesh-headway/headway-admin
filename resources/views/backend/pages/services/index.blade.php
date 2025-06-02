@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-{{ __('Plans - Admin Panel') }}
+{{ __('Our Service - Admin Panel') }}
 @endsection
 
 @section('styles')
@@ -21,7 +21,7 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">{{ __('Services') }}</h4>
+                <h4 class="page-title pull-left">{{ __('Our Services') }}</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }}</a></li>
                     <li><span>{{ __('All Services') }}</span></li>
@@ -52,10 +52,12 @@
                     <div class="clearfix"></div>
                     <div class="data-tables">
                         @include('backend.layouts.partials.messages')
-                        <table id="dataTable" class="text-center">
+                        <table id="dataTable">
+                            <!-- class="text-center" -->
                             <thead class="bg-light text-capitalize">
                                 <tr>
                                     <th width="5%">{{ __('Sl') }}</th>
+                                    <th width="10%">{{ __('Parrent Service Name') }}</th>
                                     <th width="10%">{{ __('Service Name') }}</th>
                                     <th width="10%">{{ __('Sort Description') }}</th>
                                     <th width="15%">{{ __('Action') }}</th>
@@ -65,6 +67,7 @@
                                 @foreach ($admins as $admin)
                                 <tr>
                                     <td>{{ $loop->index+1 }}</td>
+                                    <td>{{ $admin->parent_name }}</td>
                                     <td>{{ $admin->name }}</td>
                                     <td>{{ $admin->sort_desc }}</td>
                                     {{-- <td><img src="{{ asset('/plans/') }}/{{ $admin->image }}" width="100px"

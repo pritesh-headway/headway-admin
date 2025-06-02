@@ -20,7 +20,7 @@ class BlogsController extends Controller
         $this->checkAuthorization(auth()->user(), ['blogs.create']);
 
         return view('backend.pages.blogs.index', [
-            'admins' => Blog::all(),
+            'admins' => Blog::where('is_deleted', '0')->get(),
         ]);
     }
 
@@ -47,6 +47,7 @@ class BlogsController extends Controller
         $admin->author = $request->author;
         $admin->blog_date = date('Y-m-d', strtotime($request->blog_date));
         $admin->description = $request->description;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -95,6 +96,7 @@ class BlogsController extends Controller
         $admin->author = $request->author;
         $admin->blog_date = date('Y-m-d', strtotime($request->blog_date));
         $admin->description = $request->description;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -104,7 +106,7 @@ class BlogsController extends Controller
         $admin->save();
 
         session()->flash('success', 'Blog has been updated.');
-        return back();
+        return redirect()->route('admin.blogs.index'); //back();
     }
 
     /**
@@ -115,7 +117,8 @@ class BlogsController extends Controller
         $this->checkAuthorization(auth()->user(), ['blogs.delete']);
 
         $admin = Blog::findOrFail($id);
-        $admin->delete();
+        $admin->is_deleted = '1';
+        $admin->save();
         session()->flash('success', 'Blog has been deleted.');
         return back();
     }

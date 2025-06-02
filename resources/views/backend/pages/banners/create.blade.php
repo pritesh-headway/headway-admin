@@ -64,7 +64,7 @@ Banner Create - Admin Panel
                         <div class="form-row">
                             <div class="form-group col-md-12 col-sm-12">
                                 <label for="password">Description</label>
-                                <textarea class="form-control" id="desc" name="desc"></textarea>
+                                <textarea required class="form-control" id="desc" name="desc"></textarea>
                             </div>
                         </div>
 
@@ -73,7 +73,7 @@ Banner Create - Admin Panel
 
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Banner Image</label>
-                                <input type="file" name="image" id="image" class="form-control" />
+                                <input type="file" name="image" id="image" class="form-control" required />
                             </div>
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>

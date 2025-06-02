@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Plan;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Renderable;
@@ -17,9 +18,10 @@ class VideoGalleryController extends Controller
     public function index()
     {
         $this->checkAuthorization(auth()->user(), ['videogallery.create']);
-
+        $plan = Plan::where('is_deleted', '0')->where('status', '1')->pluck('plan_name', 'id')->toArray();
         return view('backend.pages.videos.index', [
-            'admins' => Video::all(),
+            'admins' => Video::where('is_deleted', '0')->get(),
+            'plan' => $plan,
         ]);
     }
 
@@ -29,8 +31,8 @@ class VideoGalleryController extends Controller
     public function create()
     {
         $this->checkAuthorization(auth()->user(), ['videogallery.create']);
-
-        return view('backend.pages.videos.create', []);
+        $plan = Plan::where('is_deleted', '0')->where('status', '1')->get();
+        return view('backend.pages.videos.create', ['plan' => $plan]);
     }
 
     /**
@@ -45,6 +47,8 @@ class VideoGalleryController extends Controller
         $admin->info = $request->info;
         $admin->url = $request->url;
         $admin->type = $request->type;
+        $admin->status = $request->status;
+        $admin->plan_id = $request->plan_id;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -71,11 +75,12 @@ class VideoGalleryController extends Controller
     public function edit(int $id): Renderable
     {
         $this->checkAuthorization(auth()->user(), ['videogallery.edit']);
-
+        $plan = Plan::where('is_deleted', '0')->where('status', '1')->get();
         $admin = Video::findOrFail($id);
         return view('backend.pages.videos.edit', [
             'admin' => $admin,
             'roles' => Role::all(),
+            'plan' => $plan,
         ]);
     }
 
@@ -90,6 +95,8 @@ class VideoGalleryController extends Controller
         $admin->info = $request->info;
         $admin->url = $request->url;
         $admin->type = $request->type;
+        $admin->status = $request->status;
+        $admin->plan_id = $request->plan_id;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -99,7 +106,7 @@ class VideoGalleryController extends Controller
         $admin->save();
 
         session()->flash('success', 'Video has been updated.');
-        return back();
+        return redirect()->route('admin.videogallery.index'); //back();
     }
 
     /**
@@ -110,7 +117,8 @@ class VideoGalleryController extends Controller
         $this->checkAuthorization(auth()->user(), ['videogallery.delete']);
 
         $admin = Video::findOrFail($id);
-        $admin->delete();
+        $admin->is_deleted = '1';
+        $admin->save();
         session()->flash('success', 'Video has been deleted.');
         return back();
     }

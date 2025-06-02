@@ -1,4 +1,3 @@
-
 @extends('backend.layouts.master')
 
 @section('title')
@@ -55,7 +54,8 @@ Role Create - Admin Panel
                         @include('backend.layouts.partials.messages')
                         <div class="form-group">
                             <label for="name">Role Name</label>
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter a Role Name" required autofocus value="{{ old('name') }}">
+                            <input type="text" class="form-control" id="name" name="name"
+                                placeholder="Enter a Role Name" required autofocus value="{{ old('name') }}">
                         </div>
 
                         <div class="form-group">
@@ -66,32 +66,53 @@ Role Create - Admin Panel
                                 <label class="form-check-label" for="checkPermissionAll">All</label>
                             </div>
                             <hr>
-                            @php $i = 1; @endphp
+                            @php $i = 1;
+                            @endphp
                             @foreach ($permission_groups as $group)
-                                <div class="row">
-                                    <div class="col-3">
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="{{ $i }}Management" value="{{ $group->name }}" onclick="checkPermissionByGroup('role-{{ $i }}-management-checkbox', this)">
-                                            <label class="form-check-label" for="checkPermission">{{ $group->name }}</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-9 role-{{ $i }}-management-checkbox">
-                                        @php
-                                            $permissions = App\User::getpermissionsByGroupName($group->name);
-                                            $j = 1;
-                                        @endphp
-                                        @foreach ($permissions as $permission)
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input" name="permissions[]" id="checkPermission{{ $permission->id }}" value="{{ $permission->name }}">
-                                                <label class="form-check-label" for="checkPermission{{ $permission->id }}">{{ $permission->name }}</label>
-                                            </div>
-                                            @php  $j++; @endphp
-                                        @endforeach
-                                        <br>
+                            @if ($group->name === 'dashboard')
+                            @php
+                            $isGroupChecked = 'checked';
+                            @endphp
+                            @else
+                            @php
+                            $isGroupChecked = '';
+                            @endphp
+                            @endif
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="{{ $i }}Management"
+                                            value="{{ $group->name }}" {{ $isGroupChecked }}
+                                            onclick="checkPermissionByGroup('role-{{ $i }}-management-checkbox', this)">
+                                        <label class="form-check-label" for="checkPermission">{{ $group->name }}</label>
                                     </div>
                                 </div>
-                                @php  $i++; @endphp
+
+                                <div class="col-9 role-{{ $i }}-management-checkbox">
+                                    @php
+                                    $permissions = App\User::getpermissionsByGroupName($group->name);
+                                    $j = 1;
+                                    $isChecked = '';
+                                    @endphp
+                                    @foreach ($permissions as $permission)
+                                    @if ($permission->name == 'dashboard.view' || $permission->name == 'dashboard.edit')
+                                    @php
+                                    $isChecked = 'checked';
+                                    @endphp
+                                    @endif
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" name="permissions[]"
+                                            id="checkPermission{{ $permission->id }}" {{ $isChecked }}
+                                            value="{{ $permission->name }}">
+                                        <label class="form-check-label" for="checkPermission{{ $permission->id }}">{{
+                                            $permission->name }}</label>
+                                    </div>
+                                    @php $j++; @endphp
+                                    @endforeach
+                                    <br>
+                                </div>
+                            </div>
+                            @php $i++; @endphp
                             @endforeach
                         </div>
 
@@ -102,11 +123,11 @@ Role Create - Admin Panel
             </div>
         </div>
         <!-- data table end -->
-        
+
     </div>
 </div>
 @endsection
 
 @section('scripts')
-     @include('backend.pages.roles.partials.scripts')
+@include('backend.pages.roles.partials.scripts')
 @endsection

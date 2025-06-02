@@ -20,7 +20,7 @@ class ClientController extends Controller
         $this->checkAuthorization(auth()->user(), ['client.create']);
 
         return view('backend.pages.clients.index', [
-            'admins' => Client::all(),
+            'admins' => Client::where('is_deleted', '0')->get(),
         ]);
     }
 
@@ -45,6 +45,7 @@ class ClientController extends Controller
         $admin->name = $request->name;
         $admin->city = $request->city;
         $admin->description = $request->description;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -73,7 +74,7 @@ class ClientController extends Controller
         $this->checkAuthorization(auth()->user(), ['client.edit']);
 
         $admin = Client::findOrFail($id);
-        return view('backend.pages.blogs.edit', [
+        return view('backend.pages.clients.edit', [
             'admin' => $admin,
             'roles' => Role::all(),
         ]);
@@ -90,6 +91,7 @@ class ClientController extends Controller
         $admin->name = $request->name;
         $admin->city = $request->city;
         $admin->description = $request->description;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -99,7 +101,7 @@ class ClientController extends Controller
         $admin->save();
 
         session()->flash('success', 'Client has been updated.');
-        return back();
+        return redirect()->route('admin.client.index'); //back();
     }
 
     /**
@@ -110,7 +112,8 @@ class ClientController extends Controller
         $this->checkAuthorization(auth()->user(), ['client.delete']);
 
         $admin = Client::findOrFail($id);
-        $admin->delete();
+        $admin->is_deleted = '1';
+        $admin->save();
         session()->flash('success', 'Client has been deleted.');
         return back();
     }

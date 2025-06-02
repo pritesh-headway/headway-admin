@@ -76,8 +76,12 @@
                                         @endif
 
                                         @if (auth()->user()->can('plan.delete'))
-                                        <a class="btn btn-danger text-white" href="javascript:void(0);"
+                                        {{-- <a class="btn btn-danger text-white" href="javascript:void(0);"
                                             onclick="plan.preventDefault(); if(confirm('Are you sure you want to delete?')) { document.getElementById('delete-form-{{ $admin->id }}').submit(); }">
+                                            {{ __('Delete') }}
+                                        </a> --}}
+                                        <a class="btn btn-danger text-white" href="javascript:void(0);"
+                                            onclick="showDeleteModal({{ $admin->id }})">
                                             {{ __('Delete') }}
                                         </a>
 

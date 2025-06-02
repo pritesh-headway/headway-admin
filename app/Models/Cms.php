@@ -12,4 +12,5 @@ class Cms extends Model
     use Notifiable, HasRoles;
     public $table = 'cms';
     protected $primaryKey = 'id';
+    protected $fillable = ['plan_id'];
 }

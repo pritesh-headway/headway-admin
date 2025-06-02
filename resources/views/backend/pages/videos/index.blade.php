@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-{{ __('Banners - Admin Panel') }}
+{{ __('Videos - Admin Panel') }}
 @endsection
 
 @section('styles')
@@ -58,6 +58,7 @@
                                     <th width="5%">{{ __('Sl') }}</th>
                                     <th width="10%">{{ __('Title') }}</th>
                                     <th width="10%">{{ __('Type') }}</th>
+                                    <th width="10%">{{ __('Plan Name') }}</th>
                                     <th width="15%">{{ __('Action') }}</th>
                                 </tr>
                             </thead>
@@ -67,26 +68,32 @@
                                     <td>{{ $loop->index+1 }}</td>
                                     <td>{{ $admin->name }}</td>
                                     <td>{{ $admin->type }}</td>
-                                    <td>
-                                        @if (auth()->user()->can('videogallery.edit'))
-                                        <a class="btn btn-success text-white"
-                                            href="{{ route('admin.videogallery.edit', $admin->id) }}">Edit</a>
-                                        @endif
+                                    <<td>{{ isset($plan[$admin->plan_id]) ? $plan[$admin->plan_id] : '-' }}</td>
+                                        <td>
+                                            @if (auth()->user()->can('videogallery.edit'))
+                                            <a class="btn btn-success text-white"
+                                                href="{{ route('admin.videogallery.edit', $admin->id) }}">Edit</a>
+                                            @endif
 
-                                        @if (auth()->user()->can('videogallery.delete'))
-                                        <a class="btn btn-danger text-white" href="javascript:void(0);"
-                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to delete?')) { document.getElementById('delete-form-{{ $admin->id }}').submit(); }">
-                                            {{ __('Delete') }}
-                                        </a>
+                                            @if (auth()->user()->can('videogallery.delete'))
+                                            {{-- <a class="btn btn-danger text-white" href="javascript:void(0);"
+                                                onclick="event.preventDefault(); if(confirm('Are you sure you want to delete?')) { document.getElementById('delete-form-{{ $admin->id }}').submit(); }">
+                                                {{ __('Delete') }}
+                                            </a> --}}
 
-                                        <form id="delete-form-{{ $admin->id }}"
-                                            action="{{ route('admin.videogallery.destroy', $admin->id) }}" method="POST"
-                                            style="display: none;">
-                                            @method('DELETE')
-                                            @csrf
-                                        </form>
-                                        @endif
-                                    </td>
+                                            <a class="btn btn-danger text-white" href="javascript:void(0);"
+                                                onclick="showDeleteModal({{ $admin->id }})">
+                                                {{ __('Delete') }}
+                                            </a>
+
+                                            <form id="delete-form-{{ $admin->id }}"
+                                                action="{{ route('admin.videogallery.destroy', $admin->id) }}"
+                                                method="POST" style="display: none;">
+                                                @method('DELETE')
+                                                @csrf
+                                            </form>
+                                            @endif
+                                        </td>
                                 </tr>
                                 @endforeach
                             </tbody>

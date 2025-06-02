@@ -19,7 +19,7 @@ class TestimonialController extends Controller
         $this->checkAuthorization(auth()->user(), ['testimonial.create']);
 
         return view('backend.pages.testimonials.index', [
-            'admins' => Testimonial::all(),
+            'admins' => Testimonial::where('is_deleted', '0')->get(),
         ]);
     }
 
@@ -42,8 +42,8 @@ class TestimonialController extends Controller
 
         $admin = new Testimonial();
         $admin->title = $request->title;
-        $admin->desc = $request->desc;
-        $admin->desc = $request->desc;
+        $admin->description = $request->desc;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -86,8 +86,8 @@ class TestimonialController extends Controller
         $this->checkAuthorization(auth()->user(), ['testimonial.edit']);
         $admin = Testimonial::findOrFail($id);
         $admin->title = $request->title;
-        $admin->desc = $request->desc;
-        $admin->desc = $request->desc;
+        $admin->description = $request->desc;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -97,7 +97,7 @@ class TestimonialController extends Controller
         $admin->save();
 
         session()->flash('success', 'Testimonial has been updated.');
-        return back();
+        return redirect()->route('admin.testimonial.index'); //back();
     }
 
     /**
@@ -108,7 +108,8 @@ class TestimonialController extends Controller
         $this->checkAuthorization(auth()->user(), ['testimonial.delete']);
 
         $admin = Testimonial::findOrFail($id);
-        $admin->delete();
+        $admin->is_deleted = '1';
+        $admin->save();
         session()->flash('success', 'Testimonial has been deleted.');
         return back();
     }

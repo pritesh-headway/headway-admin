@@ -24,7 +24,7 @@ Blog Edit - Admin Panel
                 <h4 class="page-title pull-left">Blog Edit</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ route('admin.admins.index') }}">All Blogs</a></li>
+                    <li><a href="{{ route('admin.blogs.index') }}">All Blogs</a></li>
                     <li><span>Edit Blog - {{ $admin->title }}</span></li>
                 </ul>
             </div>
@@ -57,7 +57,7 @@ Blog Edit - Admin Panel
                                     </option>
                                     @foreach ($blog_categories as $cat)
                                     <option value="{{ $cat->id }}" {{ old('category_id')==$cat->id ? 'selected' : ''
-                                        }} {{ $admin->category_id== $cat->id
+                                        }} {{ $admin->category_id == $cat->id
                                         ? 'selected' : '' }}>{{ $cat->name
                                         }}
                                     </option>
@@ -85,9 +85,11 @@ Blog Edit - Admin Panel
                         </div>
 
                         <div class="form-row">
-                            <label for="password">Description</label>
-                            <textarea class="form-control" id="description"
-                                name="description">{{ $admin->description }}</textarea>
+                            <div class="form-group col-md-12 col-sm-12">
+                                <label for="password">Description</label>
+                                <textarea class="form-control" id="description"
+                                    name="description">{{ $admin->description }}</textarea>
+                            </div>
                         </div>
 
                         <div class="form-row">
@@ -129,5 +131,13 @@ Blog Edit - Admin Panel
     $(document).ready(function() {
         $('.select2').select2();
     })
+</script>
+<script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
+<script>
+    CKEDITOR.replace('description');
+    setTimeout(() => {
+        $('.cke_notification_warning').hide();
+    }, 1000);
+
 </script>
 @endsection

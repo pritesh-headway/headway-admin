@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-Plan Edit - Admin Panel
+Our Services Edit - Admin Panel
 @endsection
 
 @section('styles')
@@ -21,7 +21,7 @@ Plan Edit - Admin Panel
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">Service Edit</h4>
+                <h4 class="page-title pull-left">Our Service Edit</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                     <li><a href="{{ route('admin.service.index') }}">All Services</a></li>

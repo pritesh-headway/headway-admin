@@ -45,7 +45,8 @@ Team Edit - Admin Panel
                     <h4 class="header-title">Edit Team - {{ $admin->name }}</h4>
                     @include('backend.layouts.partials.messages')
 
-                    <form action="{{ route('admin.ourteam.update', $admin->id) }}" method="POST">
+                    <form action="{{ route('admin.ourteam.update', $admin->id) }}" method="POST"
+                        enctype="multipart/form-data">
                         @method('PUT')
                         @csrf
                         <div class="form-row">
@@ -63,9 +64,16 @@ Team Edit - Admin Panel
                         </div>
 
                         <div class="form-row">
-                            <label for="password">Description</label>
-                            <textarea class="form-control" id="description"
-                                name="description">{{ $admin->description }}</textarea>
+                            {{-- <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Description</label>
+                                <textarea class="form-control" id="description"
+                                    name="description">{{ $admin->description }}</textarea>
+                            </div> --}}
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Position</label>
+                                <input type="text" name="position" id="position" value="{{ $admin->position }}"
+                                    class="form-control" required />
+                            </div>
                         </div>
 
                         <div class="form-row">

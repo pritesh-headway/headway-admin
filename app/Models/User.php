@@ -16,4 +16,9 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
     public $table = 'users';
     protected $primaryKey = 'id';
+
+    public function MemberBatch()
+    {
+        return $this->belongsTo(MemberBatch::class, 'id', 'member_id');
+    }
 }

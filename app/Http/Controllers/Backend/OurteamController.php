@@ -21,7 +21,7 @@ class OurteamController extends Controller
         $this->checkAuthorization(auth()->user(), ['Ourteam.create']);
 
         return view('backend.pages.teams.index', [
-            'admins' => Team::all(),
+            'admins' => Team::where('is_deleted', '0')->get(),
         ]);
     }
 
@@ -45,6 +45,8 @@ class OurteamController extends Controller
         $admin = new Team();
         $admin->name = $request->name;
         $admin->position = $request->position;
+        $admin->city = $request->city;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -89,6 +91,8 @@ class OurteamController extends Controller
         $admin = Team::findOrFail($id);
         $admin->name = $request->name;
         $admin->position = $request->position;
+        $admin->city = $request->city;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -98,7 +102,7 @@ class OurteamController extends Controller
         $admin->save();
 
         session()->flash('success', 'Team has been updated.');
-        return back();
+        return redirect()->route('admin.ourteam.index'); //back();
     }
 
     /**
@@ -109,7 +113,8 @@ class OurteamController extends Controller
         $this->checkAuthorization(auth()->user(), ['Ourteam.delete']);
 
         $admin = Team::findOrFail($id);
-        $admin->delete();
+        $admin->is_deleted = '1';
+        $admin->save();
         session()->flash('success', 'Team has been deleted.');
         return back();
     }

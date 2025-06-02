@@ -24,7 +24,7 @@ Banner Edit - Admin Panel
                 <h4 class="page-title pull-left">Banner Edit</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ route('admin.admins.index') }}">All Banners</a></li>
+                    <li><a href="{{ route('admin.banner.index') }}">All Banners</a></li>
                     <li><span>Edit Banner - {{ $admin->title }}</span></li>
                 </ul>
             </div>
@@ -64,7 +64,7 @@ Banner Edit - Admin Panel
 
                         <div class="form-row">
                             <label for="password">Description</label>
-                            <textarea class="form-control" id="desc" name="desc">{{ $admin->desc }}</textarea>
+                            <textarea required class="form-control" id="desc" name="desc">{{ $admin->desc }}</textarea>
                         </div>
 
                         <div class="form-row">

@@ -57,7 +57,7 @@ Plan Create - Admin Panel
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Price</label>
-                                <input type="text" class="form-control" id="price" name="price"
+                                <input type="number" class="form-control" id="price" name="price"
                                     placeholder="Enter Price" value="{{ old('price') }}" required autofocus>
                             </div>
 
@@ -77,13 +77,42 @@ Plan Create - Admin Panel
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Duration (In Hrs)</label>
-                                <input type="text" class="form-control" id="duration" name="duration"
-                                    placeholder="Enter Duration" value="{{ old('duration') }}" required autofocus>
+                                <label for="password">Month Duration</label>
+                                <input type="number" class="form-control" id="month_duration" name="month_duration"
+                                    placeholder="Enter Month Duration" value="{{ old('month_duration') }}" required
+                                    autofocus>
+                            </div>
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="name">Personal Meeting</label>
+                                <input type="text" class="form-control" id="personal_meeting" name="personal_meeting"
+                                    placeholder="Enter Personal Meeting" value="{{ old('personal_meeting') }}" required
+                                    autofocus>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">Deliveries</label>
+                                <input type="text" class="form-control" id="deliveries" name="deliveries"
+                                    placeholder="Enter Deliveries" value="{{ old('deliveries') }}" required autofocus>
+                            </div>
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="name">Duration Year</label>
+                                <input type="text" class="form-control" id="duration_year" name="duration_year"
+                                    placeholder="Enter Duration Year" value="{{ old('duration_year') }}" required
+                                    autofocus>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">Meeting Duration (In Hrs)</label>
+                                <input type="number" class="form-control" id="duration" name="duration"
+                                    placeholder="Enter Meeting Duration" value="{{ old('duration') }}" required
+                                    autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Tax (In %)</label>
-                                <input type="text" class="form-control" id="tax" name="tax" placeholder="Enter Tax"
+                                <input type="number" class="form-control" id="tax" name="tax" placeholder="Enter Tax"
                                     value="{{ old('tax') }}" required autofocus>
                             </div>
                         </div>
@@ -117,6 +146,56 @@ Plan Create - Admin Panel
                                 <label for="password">Plan Image</label>
                                 <input type="file" name="image" id="image" class="form-control" required />
                             </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">CMD Visit</label>
+                                <input type="number" class="form-control" id="cmd_visit" name="cmd_visit"
+                                    placeholder="Enter cmd visit" value="{{ old('cmd_visit') }}" required autofocus>
+                            </div>
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="name">Store Visit</label>
+                                <input type="number" class="form-control" id="store_visit" name="store_visit"
+                                    placeholder="Enter store visit" value="{{ old('store_visit') }}" required autofocus>
+                            </div>
+                        </div>
+                        {{-- <div class="form-row">
+                            <div class="form-group col-md-12 col-sm-12">
+                                <label for="cmd_visit">Modules</label>
+                                @foreach ($modules as $module)
+                                <div>
+                                    <input type="checkbox" id="modules_{{ $module->id }}" name="modules[]"
+                                        value="{{ $module->id }}">
+                                    <label for="modules_{{ $module->id }}"> {{ $module->name }}</label>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div> --}}
+                        <div class="form-row">
+                            <div class="form-group col-md-12 col-sm-12">
+                                <label for="cmd_visit">Services</label>
+                                <div class="row">
+                                    @php
+                                    $chunks = $modules->chunk(ceil($modules->count() / 3)); // Split into 3 sections
+                                    @endphp
+
+                                    @foreach ($chunks as $chunk)
+                                    <div class="col-md-4">
+                                        <!-- Adjust width as needed -->
+                                        @foreach ($chunk as $module)
+                                        <div>
+                                            <input type="checkbox" id="modules_{{ $module->id }}" name="modules[]"
+                                                value="{{ $module->id }}">
+                                            <label for="modules_{{ $module->id }}"> {{ $module->title }}</label>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                    @endforeach
+                                </div>
+                                <div id="module-error" style="color: red; display: none; font-weight: bold;"></div>
+                            </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>
                                 <select class="form-control " id="status" name="status" required>
@@ -146,5 +225,19 @@ Plan Create - Admin Panel
     $(document).ready(function() {
         $('.select2').select2();
     })
+</script>
+<script>
+    $(document).ready(function () {
+    $('form').on('submit', function (e) {
+        const checkedModules = $('input[name="modules[]"]:checked').length;
+
+        if (checkedModules < 4) {
+            e.preventDefault(); // Prevent form submission
+           $('#module-error').text("Please select at least 4 services.").show();
+        } else {
+            $('#module-error').hide(); // Clear error if validation passes
+        }
+    });
+});
 </script>
 @endsection

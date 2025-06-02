@@ -12,4 +12,9 @@ class Plan extends Model
     use Notifiable, HasRoles;
     public $table = 'plans';
     protected $primaryKey = 'id';
+
+    public function PlanPurchase()
+    {
+        return $this->belongsTo(PlanPurchase::class, 'id', 'plan_id');
+    }
 }

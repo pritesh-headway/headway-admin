@@ -43,7 +43,7 @@
                 <div class="card-body">
                     <h4 class="header-title float-left">{{ __('CMS') }}</h4>
                     <p class="float-right mb-2">
-                        @if (auth()->user()->can('cms.edit'))
+                        @if (auth()->user()->can('cms.create'))
                         <a class="btn btn-primary text-white" href="{{ route('admin.cms.create') }}">
                             {{ __('Create New CMS') }}
                         </a>
@@ -57,6 +57,7 @@
                                 <tr>
                                     <th width="5%">{{ __('Sl') }}</th>
                                     <th width="10%">{{ __('Page Name') }}</th>
+                                    <th width="10%">{{ __('Plan Name') }}</th>
                                     <th width="15%">{{ __('Action') }}</th>
                                 </tr>
                             </thead>
@@ -65,13 +66,14 @@
                                 <tr>
                                     <td>{{ $loop->index+1 }}</td>
                                     <td>{{ $admin->page_name }}</td>
+                                    <td>{{ isset($plan[$admin->plan_id]) ? $plan[$admin->plan_id] : '-' }}</td>
                                     <td>
                                         @if (auth()->user()->can('cms.edit'))
                                         <a class="btn btn-success text-white"
                                             href="{{ route('admin.cms.edit', $admin->id) }}">Edit</a>
                                         @endif
 
-                                        @if (auth()->user()->can('cms.delete'))
+                                        {{-- @if (auth()->user()->can('cms.delete'))
                                         <a class="btn btn-danger text-white" href="javascript:void(0);"
                                             onclick="event.preventDefault(); if(confirm('Are you sure you want to delete?')) { document.getElementById('delete-form-{{ $admin->id }}').submit(); }">
                                             {{ __('Delete') }}
@@ -83,7 +85,7 @@
                                             @method('DELETE')
                                             @csrf
                                         </form>
-                                        @endif
+                                        @endif --}}
                                     </td>
                                 </tr>
                                 @endforeach

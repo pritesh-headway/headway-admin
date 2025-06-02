@@ -108,7 +108,7 @@
     top: 0;
     z-index: 99;
     height: 100vh;
-    width: 260px;
+    width: 280px;
     overflow: hidden;
     background: #303641;
     box-shadow: 2px 0 32px rgba(0, 0, 0, 0.05);
@@ -2847,3 +2847,4 @@ table.dataTable thead td {
     font-size: 16px;
     margin-top: 5px;
 }
+.cke_notifications_area { display: none; }

@@ -57,7 +57,7 @@
                                 <tr>
                                     <th width="5%">{{ __('Sl') }}</th>
                                     <th width="10%">{{ __('Title') }}</th>
-                                    <th width="10%">{{ __('Heading') }}</th>
+                                    <th width="10%">{{ __('Author') }}</th>
                                     <th width="40%">{{ __('Image') }}</th>
                                     <th width="15%">{{ __('Action') }}</th>
                                 </tr>
@@ -67,7 +67,7 @@
                                 <tr>
                                     <td>{{ $loop->index+1 }}</td>
                                     <td>{{ $admin->title }}</td>
-                                    <td>{{ $admin->heading }}</td>
+                                    <td>{{ $admin->author }}</td>
                                     <td><img src="{{ asset('/blogs/') }}/{{ $admin->image }}" width="100px"
                                             height="80px"></td>
                                     <td>
@@ -77,8 +77,12 @@
                                         @endif
 
                                         @if (auth()->user()->can('blogs.delete'))
-                                        <a class="btn btn-danger text-white" href="javascript:void(0);"
+                                        {{-- <a class="btn btn-danger text-white" href="javascript:void(0);"
                                             onclick="event.preventDefault(); if(confirm('Are you sure you want to delete?')) { document.getElementById('delete-form-{{ $admin->id }}').submit(); }">
+                                            {{ __('Delete') }}
+                                        </a> --}}
+                                        <a class="btn btn-danger text-white" href="javascript:void(0);"
+                                            onclick="showDeleteModal({{ $admin->id }})">
                                             {{ __('Delete') }}
                                         </a>
 
@@ -113,9 +117,9 @@
 
 <script>
     if ($('#dataTable').length) {
-            $('#dataTable').DataTable({
-                responsive: true
-            });
-        }
+        $('#dataTable').DataTable({
+            responsive: true
+        });
+    }
 </script>
 @endsection

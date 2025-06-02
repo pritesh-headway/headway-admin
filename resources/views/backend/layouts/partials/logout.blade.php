@@ -10,7 +10,7 @@ $usr = Auth::guard('admin')->user();
     <div class="dropdown-menu">
         @if ($usr->can('role.create') || $usr->can('role.view') || $usr->can('role.edit') ||
         $usr->can('role.delete'))
-        <li>
+        <li class="">
             @if ($usr->can('role.view'))
             <a class="dropdown-item" href="{{ route('admin.roles.index') }}" aria-expanded="true">
                 Roles & Permissions

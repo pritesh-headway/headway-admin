@@ -19,9 +19,8 @@ class ServiceController extends Controller
     public function index()
     {
         $this->checkAuthorization(auth()->user(), ['service.create']);
-
         return view('backend.pages.services.index', [
-            'admins' => Services::all(),
+            'admins' => (new Services)->getServicesList(), //Services::where('status', '1')->get(),
         ]);
     }
 
@@ -31,7 +30,7 @@ class ServiceController extends Controller
     public function create()
     {
         $this->checkAuthorization(auth()->user(), ['service.create']);
-        $Services = Services::where('status', '1')->where('parent_id', 0)->get();
+        $Services = Services::where('is_deleted', '0')->where('status', '1')->where('parent_id', 0)->get();
         return view('backend.pages.services.create', ['Services' => $Services]);
     }
 
@@ -47,6 +46,7 @@ class ServiceController extends Controller
         $admin->sort_desc = $request->sort_desc;
         $admin->service_desc = $request->service_desc;
         $admin->parent_id = $request->parent_id;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -75,7 +75,7 @@ class ServiceController extends Controller
         $this->checkAuthorization(auth()->user(), ['service.edit']);
 
         $admin = Services::findOrFail($id);
-        $Services = Services::where('status', '1')->where('parent_id', 0)->get();
+        $Services = Services::where('is_deleted', '0')->where('status', '1')->where('parent_id', 0)->get();
         return view('backend.pages.services.edit', [
             'admin' => $admin,
             'Services' => $Services,
@@ -95,6 +95,7 @@ class ServiceController extends Controller
         $admin->sort_desc = $request->sort_desc;
         $admin->service_desc = $request->service_desc;
         $admin->parent_id = $request->parent_id;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -104,7 +105,7 @@ class ServiceController extends Controller
         $admin->save();
 
         session()->flash('success', 'Service has been updated.');
-        return back();
+        return redirect()->route('admin.service.index'); //back();
     }
 
     /**
@@ -115,7 +116,8 @@ class ServiceController extends Controller
         $this->checkAuthorization(auth()->user(), ['service.delete']);
 
         $admin = Services::findOrFail($id);
-        $admin->delete();
+        $admin->is_deleted = '1';
+        $admin->save();
         session()->flash('success', 'Services has been deleted.');
         return back();
     }

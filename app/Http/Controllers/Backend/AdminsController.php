@@ -81,7 +81,7 @@ class AdminsController extends Controller
         }
 
         session()->flash('success', 'Admin has been updated.');
-        return back();
+        return redirect()->route('admin.admins.index'); //back();
     }
 
     public function destroy(int $id): RedirectResponse

@@ -19,7 +19,7 @@ class BannerController extends Controller
         $this->checkAuthorization(auth()->user(), ['banner.create']);
 
         return view('backend.pages.banners.index', [
-            'admins' => Banner::all(),
+            'admins' => Banner::where('is_deleted', '0')->get(),
         ]);
     }
 
@@ -45,6 +45,7 @@ class BannerController extends Controller
         $admin->heading = $request->heading;
         $admin->is_popup = isset($request->is_popup) && $request->is_popup == 'on' ? 1 : 0;
         $admin->desc = $request->desc;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -90,6 +91,7 @@ class BannerController extends Controller
         $admin->heading = $request->heading;
         $admin->is_popup = isset($request->is_popup) && $request->is_popup == 'on' ? 1 : 0;
         $admin->desc = $request->desc;
+        $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -99,7 +101,7 @@ class BannerController extends Controller
         $admin->save();
 
         session()->flash('success', 'Banner has been updated.');
-        return back();
+        return redirect()->route('admin.banner.index'); //back();
     }
 
     /**
@@ -110,7 +112,8 @@ class BannerController extends Controller
         $this->checkAuthorization(auth()->user(), ['banner.delete']);
 
         $admin = Banner::findOrFail($id);
-        $admin->delete();
+        $admin->is_deleted = '1';
+        $admin->save();
         session()->flash('success', 'Banner has been deleted.');
         return back();
     }

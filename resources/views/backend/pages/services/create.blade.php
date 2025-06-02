@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-Our Service - Admin Panel
+Our Services - Admin Panel
 @endsection
 
 @section('styles')
@@ -81,7 +81,7 @@ Our Service - Admin Panel
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Image</label>
-                                <input type="file" name="image" id="image" class="form-control" />
+                                <input type="file" required name="image" id="image" class="form-control" />
                             </div>
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>
@@ -94,7 +94,7 @@ Our Service - Admin Panel
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
-                        <a href="{{ route('admin.plan.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
+                        <a href="{{ route('admin.service.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
                     </form>
                 </div>
             </div>
