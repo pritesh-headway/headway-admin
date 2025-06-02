@@ -62,7 +62,7 @@ class OrderAddOnController extends Controller
         $admin->save();
 
         session()->flash('success', __('Membership has been created.'));
-        return redirect()->route('admin.addonorder.index');
+        return redirect()->route('admin.orderaddon.index');
     }
 
     /**
@@ -106,7 +106,7 @@ class OrderAddOnController extends Controller
         $admin->save();
 
         session()->flash('success', 'Membership Status has been updated.');
-        return redirect()->route('admin.addonorder.index'); //back();
+        return redirect()->route('admin.orderaddon.index'); //back();
     }
 
     /**
