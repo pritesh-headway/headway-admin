@@ -1582,7 +1582,7 @@ class ApiController extends Controller
                 $file->move(public_path('addon_receipts'), $filename);
                 $data['payment_receipt'] = $filename;
             }
-            $result = PlanPurchase::create($data);
+            $result = AddOnPurchase::create($data);
 
             return response()->json(['status' => true, 'message' => 'Plan purchase successfully.', 'data' => $result], 200);
         } catch (\Throwable $th) {
