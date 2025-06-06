@@ -11,9 +11,20 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use App\Services\CurlApiService;
+use App\Services\FcmNotificationService;
 
 class OrderAddOnController extends Controller
 {
+
+    protected $fcmNotificationService;
+    protected $curlApiService;
+    public function __construct(CurlApiService $curlApiService, FcmNotificationService $fcmNotificationService)
+    {
+        $this->fcmNotificationService = $fcmNotificationService;
+        $this->curlApiService = $curlApiService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -102,8 +113,18 @@ class OrderAddOnController extends Controller
 
         $admin = AddOnPurchase::findOrFail($id);
         $admin->purchase_status = $request->purchase_status;
-        $admin->status = $request->status;
+        // $admin->status = $request->status;
         $admin->save();
+
+        $newData  = json_encode(array());
+        if ($request->is_verify == 1) {
+            $message = "Add On Service has been approved by the admin. All details have been successfully verified.";
+        } else {
+            $message = "Add On Service has been rejected by the admin. Please review the submitted details and try again.";
+        }
+        $body = array('receiver_id' => $admin->user_id, 'title' => $message, 'message' => $message, 'data' => $newData, 'content_available' => true);
+        $sendNotification = $this->fcmNotificationService->sendFcmNotification($body);
+
 
         session()->flash('success', 'Membership Status has been updated.');
         return redirect()->route('admin.orderaddon.index'); //back();

@@ -133,6 +133,10 @@ Customer Edit - Admin Panel
                                         is_verify=='0'
                                         ? 'selected' : '' }}>No
                                     </option>
+                                    <option value="2" {{ old('is_verify')=='2' ? 'selected' : '' }} {{ $admin->
+                                        is_verify=='2'
+                                        ? 'selected' : '' }}>Reject
+                                    </option>
                                 </select>
                             </div>
                         </div>

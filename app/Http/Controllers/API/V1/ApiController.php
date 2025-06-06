@@ -48,6 +48,7 @@ class ApiController extends Controller
     public $hr_path;
     protected $fcmNotificationService;
     protected $curlApiService;
+
     public function __construct(CurlApiService $curlApiService, FcmNotificationService $fcmNotificationService)
     {
         $this->per_page_show = 50;
@@ -1455,16 +1456,16 @@ class ApiController extends Controller
             if (!$NotificationSetting) {
                 $NotificationSetting = [
                     "user_id" => $user_id,
-                    "email_notification_email" => 0,
-                    "seminar_notification_email" => 0,
-                    "promotional_notification_email" => 0,
-                    "subscription_notification_email" => 0,
-                    "news_updates_notification_email" => 0,
-                    "email_notification_push" => 0,
-                    "seminar_notification_push" => 0,
-                    "promotional_notification_push" => 0,
-                    "subscription_notification_push" => 0,
-                    "news_updates_notification_push" => 0
+                    "email_notification_email" => 1,
+                    "seminar_notification_email" => 1,
+                    "promotional_notification_email" => 1,
+                    "subscription_notification_email" => 1,
+                    "news_updates_notification_email" => 1,
+                    "email_notification_push" => 1,
+                    "seminar_notification_push" => 1,
+                    "promotional_notification_push" => 1,
+                    "subscription_notification_push" => 1,
+                    "news_updates_notification_push" => 1
                 ];
             }
 
