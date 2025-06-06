@@ -84,7 +84,7 @@ Order Add On Service Edit - Admin Panel
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-6">
+                            {{-- <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>
                                 <select class="form-control " id="status" name="status">
                                     <option value="1" {{ old('status')=='1' ? 'selected' : '' }} {{ $admin->status=='1'
@@ -94,7 +94,7 @@ Order Add On Service Edit - Admin Panel
                                         ? 'selected' : '' }}>Inactive
                                     </option>
                                 </select>
-                            </div>
+                            </div> --}}
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Add On Service Status</label>
                                 <select class="form-control " id="purchase_status" name="purchase_status">

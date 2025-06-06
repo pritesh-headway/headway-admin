@@ -10,9 +10,19 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Role;
+use App\Services\CurlApiService;
+use App\Services\FcmNotificationService;
 
 class AddOnServiceController extends Controller
 {
+    protected $fcmNotificationService;
+    protected $curlApiService;
+    public function __construct(CurlApiService $curlApiService, FcmNotificationService $fcmNotificationService)
+    {
+        $this->fcmNotificationService = $fcmNotificationService;
+        $this->curlApiService = $curlApiService;
+    }
+
     /**
      * Display a listing of the resource.
      */

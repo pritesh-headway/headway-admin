@@ -10,9 +10,21 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Role;
+use App\Services\CurlApiService;
+use App\Services\FcmNotificationService;
 
 class CustomersController extends Controller
 {
+
+    protected $fcmNotificationService;
+    protected $curlApiService;
+
+    public function __construct(CurlApiService $curlApiService, FcmNotificationService $fcmNotificationService)
+    {
+        $this->fcmNotificationService = $fcmNotificationService;
+        $this->curlApiService = $curlApiService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -90,6 +102,21 @@ class CustomersController extends Controller
         $admin = User::findOrFail($id);
         $admin->is_verify = $request->is_verify;
         $admin->save();
+
+        $newData  = json_encode(array());
+        if ($request->is_verify == 1) {
+            $message = "" . $admin->name . " has been successfully verified by the admin. All credentials and details have been reviewed and approved.";
+        } else {
+            $message = "" . $admin->name . " rejected by the admin. All credentials and details have been reviewed and **not approved**.";
+        }
+        $body = array('receiver_id' => $admin->id, 'title' => $message, 'message' => $message, 'data' => $newData, 'content_available' => true);
+        $sendNotification = $this->fcmNotificationService->sendFcmNotification($body);
+        // $notifData = json_decode($sendNotification->getContent(), true);
+        // if (isset($notifData['status']) && $notifData['status'] == true) {
+        //     return $sendNotification->getContent();
+        // } else {
+        //     return $sendNotification->getContent();
+        // }
 
         session()->flash('success', 'Customer verify status has been updated.');
         return redirect()->route('admin.customers.index'); //back();

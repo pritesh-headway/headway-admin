@@ -16,9 +16,19 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Illuminate\Http\JsonResponse;
+use App\Services\CurlApiService;
+use App\Services\FcmNotificationService;
 
 class MembershipController extends Controller
 {
+    protected $fcmNotificationService;
+    protected $curlApiService;
+    public function __construct(CurlApiService $curlApiService, FcmNotificationService $fcmNotificationService)
+    {
+        $this->fcmNotificationService = $fcmNotificationService;
+        $this->curlApiService = $curlApiService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -120,6 +130,21 @@ class MembershipController extends Controller
             ->first();
         $planorder->purchase_status = $request->membership_statuss;
         $planorder->save();
+
+        $newData  = json_encode(array());
+        if ($request->is_verify == 1) {
+            $message = "Plan membership has been approved by the admin. All details have been successfully verified.";
+        } else {
+            $message = "Plan membership has been rejected by the admin. Please review the submitted details and try again.";
+        }
+        $body = array('receiver_id' => $admin->user_id, 'title' => $message, 'message' => $message, 'data' => $newData, 'content_available' => true);
+        $sendNotification = $this->fcmNotificationService->sendFcmNotification($body);
+        // $notifData = json_decode($sendNotification->getContent(), true);
+        // if (isset($notifData['status']) && $notifData['status'] == true) {
+        //     return $sendNotification->getContent();
+        // } else {
+        //     return $sendNotification->getContent();
+        // }
 
         return response()->json(['message' => 'Membership status updated successfully!']);
         // session()->flash('success', 'Membership Status has been updated.');
