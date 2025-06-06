@@ -81,6 +81,23 @@
             }
         });
     </script>
+    <style>
+        table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child:before,
+        table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>th:first-child:before {
+            top: unset;
+        }
+
+        .btn {
+            padding: 0.5em;
+            margin: 0.2em;
+        }
+
+        .badge {
+            font-size: 1em;
+            margin: 0.3em;
+            letter-spacing: 2px
+        }
+    </style>
 </body>
 
 </html>

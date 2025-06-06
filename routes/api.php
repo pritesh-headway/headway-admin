@@ -69,3 +69,21 @@ Route::post('v1/addOnPurchase', [ApiController::class, 'addOnPurchase']);
 Route::post('v1/getAccountInfo', [ApiController::class, 'getAccountInfo']);
 Route::post('v1/getMyPlan', [ApiController::class, 'getMyPlan']);
 Route::post('/v1/logout', [ApiController::class, 'logout']);
+
+
+// v2 version API routes
+Route::post('v1/get_dashboard_data', [ApiController::class, 'getDashboardDataV2']);
+Route::post('v1/about_us', [ApiController::class, 'getAboutUsV2']);
+Route::post('v1/about_startup', [ApiController::class, 'getAboutStartupV2']);
+Route::post('v1/mmb_gallaries', [ApiController::class, 'getMmbGallaries']);
+Route::post('v1/service_plan_list', [ApiController::class, 'getServicePlanList']);
+Route::post('v1/ssu_gallaries', [ApiController::class, 'getSsuGallaries']);
+Route::post('v1/blogs_list', [ApiController::class, 'getBlogsListV2']);
+Route::post('v1/blog_details', [ApiController::class, 'getBlogDetails']);
+Route::post('v1/meet_our_team', [ApiController::class, 'getMeetOurTeam']);
+Route::post('v1/user_add_on_service', [ApiController::class, 'getUserAddOnService']);
+Route::post('v1/get_user_profile', [ApiController::class, 'getUserProfile']);
+Route::post('v1/get_notification_data', [ApiController::class, 'getNotificationData']);
+Route::post('v1/newsletter_subscription', [ApiController::class, 'newsletterSubscription']);
+Route::post('v1/update_notification_data', [ApiController::class, 'updateNotificationData']);
+Route::post('v1/user_profile_update', [ApiController::class, 'updateUserProfile']);

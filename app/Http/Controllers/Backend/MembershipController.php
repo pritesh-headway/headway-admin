@@ -118,7 +118,7 @@ class MembershipController extends Controller
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->first();
-        $planorder->purchase_status = $request->membership_statuss;
+        $planorder->purchase_status = $request->membership_status;
         $planorder->save();
 
         return response()->json(['message' => 'Membership status updated successfully!']);

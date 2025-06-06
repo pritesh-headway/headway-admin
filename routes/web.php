@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +64,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::resource('event', EventController::class);
     Route::resource('plan', PlanController::class);
     Route::resource('testimonial', TestimonialController::class);
+    Route::resource('contact', ContactController::class);
     Route::resource('service', ServiceController::class);
     Route::resource('batch', BatchController::class);
     Route::resource('addonservice', AddOnServiceController::class);

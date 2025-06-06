@@ -150,6 +150,28 @@
                     @endif
 
                     @if (
+                        $usr->can('members.create') ||
+                            $usr->can('members.view') ||
+                            $usr->can('members.edit') ||
+                            $usr->can('members.delete'))
+                        <li>
+                            <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-user"></i><span>Customers
+                                    Plan</span>
+                            </a>
+                            <ul
+                                class="collapse {{ Route::is('admin.members.create') || Route::is('admin.members.index') || Route::is('admin.members.edit') || Route::is('admin.members.show') ? 'in' : '' }}">
+
+                                @if ($usr->can('members.view'))
+                                    <li
+                                        class="{{ Route::is('admin.members.index') || Route::is('admin.members.edit') ? 'active' : '' }}">
+                                        <a href="{{ route('admin.members.index') }}">All Members</a>
+                                    </li>
+                                @endif
+                            </ul>
+                        </li>
+                    @endif
+
+                    @if (
                         $usr->can('cms.create') ||
                             $usr->can('cms.view') ||
                             $usr->can('cms.edit') ||
@@ -258,27 +280,7 @@
                         </li>
                     @endif
 
-                    @if (
-                        $usr->can('members.create') ||
-                            $usr->can('members.view') ||
-                            $usr->can('members.edit') ||
-                            $usr->can('members.delete'))
-                        <li>
-                            <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-user"></i><span>Customers
-                                    Plan</span>
-                            </a>
-                            <ul
-                                class="collapse {{ Route::is('admin.members.create') || Route::is('admin.members.index') || Route::is('admin.members.edit') || Route::is('admin.members.show') ? 'in' : '' }}">
 
-                                @if ($usr->can('members.view'))
-                                    <li
-                                        class="{{ Route::is('admin.members.index') || Route::is('admin.members.edit') ? 'active' : '' }}">
-                                        <a href="{{ route('admin.members.index') }}">All Members</a>
-                                    </li>
-                                @endif
-                            </ul>
-                        </li>
-                    @endif
 
                     @if ($usr->can('event.create') || $usr->can('event.view') || $usr->can('event.edit') || $usr->can('event.delete'))
                         <li>
@@ -490,6 +492,12 @@
                             </ul>
                         </li>
                     @endif
+                    <li
+                        class="{{ Route::is('admin.videogallery.index') || Route::is('admin.videogallery.edit') ? 'active' : '' }}">
+                        <a href="{{ route('admin.contact.index') }}"> <i class="fa fa-book"></i><span></span>Contact
+                            Requests</a>
+                    </li>
+
                 </ul>
             </nav>
         </div>

@@ -12,4 +12,9 @@ class Blog extends Model
     use Notifiable, HasRoles;
     public $table = 'blogs';
     protected $primaryKey = 'id';
+
+    public function category()
+    {
+        return $this->belongsTo(BlogCategory::class, 'category_id');
+    }
 }
