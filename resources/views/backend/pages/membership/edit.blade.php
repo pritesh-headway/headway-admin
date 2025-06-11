@@ -426,7 +426,312 @@
                             <button type="button" class="btn btn-secondary" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close">Cancel</button>
                         </div>
-                    </form>
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="name">Product Price</label>
+                                <input type="text" class="form-control" id="price" name="price"
+                                    placeholder="Enter Gender" value="{{ $plans->price }}" readonly autofocus>
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="name">Product Validity</label>
+                                <input type="text" class="form-control" id="validity" name="validity"
+                                    placeholder="Enter Gender" value="{{ $plans->validity }}" readonly autofocus>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="name">Gender</label>
+                                <input type="text" class="form-control" id="gender" name="gender"
+                                    placeholder="Enter Gender" value="{{ $admin->gender }}" readonly autofocus>
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Date Of Birth</label>
+                                <input type="date" name="date_of_birth" id="date_of_birth" class="form-control"
+                                    value="{{ $admin->date_of_birth }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Qualification</label>
+                                <input type="text" name="qualification" id="qualification" class="form-control"
+                                    value="{{ $admin->qualification }}" readonly />
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Occupation</label>
+                                <input type="text" name="occupation" id="occupation" class="form-control"
+                                    value="{{ $admin->occupation }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Designation</label>
+                                <input type="text" name="designation" id="designation" class="form-control"
+                                    value="{{ $admin->designation }}" readonly />
+
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Mobile No</label>
+                                <input type="text" name="mobile_no" id="mobile_no" class="form-control"
+                                    value="{{ $admin->mobile_no }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Email ID</label>
+                                <input type="text" name="email" id="email" class="form-control"
+                                    value="{{ $admin->email }}" readonly />
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Date Of Anniversary</label>
+                                <input type="date" name="date_of_anniversary" id="date_of_anniversary"
+                                    class="form-control" value="{{ $admin->date_of_anniversary }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Nationality</label>
+                                <input type="text" name="nationality" id="nationality" class="form-control"
+                                    value="{{ $admin->nationality }}" readonly />
+
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Address</label>
+                                <input type="text" name="address" id="address" class="form-control"
+                                    value="{{ $admin->address }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">City</label>
+                                <input type="text" name="city" id="city" class="form-control" value="{{ $admin->city }}"
+                                    readonly />
+
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">State</label>
+                                <input type="text" name="state" id="state" class="form-control"
+                                    value="{{ $admin->state }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Pincode</label>
+                                <input type="text" name="pincode" id="pincode" class="form-control"
+                                    value="{{ $admin->pincode }}" readonly />
+
+                            </div>
+                            {{-- <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Landline No</label>
+                                <input type="text" name="landline_no" id="landline_no" class="form-control"
+                                    value="{{ $admin->landline_no }}" readonly />
+                            </div> --}}
+                        </div>
+
+                        {{-- <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Contact Person Name</label>
+                                <input type="text" name="contact_person_name" id="contact_person_name"
+                                    class="form-control" value="{{ $admin->contact_person_name }}" readonly />
+
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Contact Person Mobile</label>
+                                <input type="text" name="contact_person_mobile" id="contact_person_mobile"
+                                    class="form-control" value="{{ $admin->contact_person_mobile }}" readonly />
+                            </div>
+                        </div> --}}
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Organization Name</label>
+                                <input type="text" name="contact_person_name" id="organization_name"
+                                    class="form-control" value="{{ $admin->organization_name }}" readonly />
+
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Bussiness City</label>
+                                <input type="text" name="bussiness_city" id="bussiness_city" class="form-control"
+                                    value="{{ $admin->bussiness_city }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Organization Name</label>
+                                <input type="text" name="organization_name" id="organization_name" class="form-control"
+                                    value="{{ $admin->organization_name }}" readonly />
+
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Bussiness City</label>
+                                <input type="text" name="bussiness_city" id="bussiness_city" class="form-control"
+                                    value="{{ $admin->bussiness_city }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Bussiness State</label>
+                                <input type="text" name="bussiness_state" id="bussiness_state" class="form-control"
+                                    value="{{ $admin->bussiness_state }}" readonly />
+
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Bussiness Pincode</label>
+                                <input type="text" name="bussiness_pincode" id="bussiness_pincode" class="form-control"
+                                    value="{{ $admin->bussiness_pincode }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Registered Office Address</label>
+                                <input type="text" name="registered_office_address" id="registered_office_address"
+                                    class="form-control" value="{{ $admin->registered_office_address }}" readonly />
+
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Bussiness Email</label>
+                                <input type="text" name="bussiness_email" id="bussiness_email" class="form-control"
+                                    value="{{ $admin->bussiness_email }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            {{-- <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Bussiness Landline No</label>
+                                <input type="text" name="bussiness_landline_no" id="bussiness_landline_no"
+                                    class="form-control" value="{{ $admin->bussiness_landline_no }}" readonly />
+
+                            </div> --}}
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">GST No</label>
+                                <input type="text" name="gst_no" id="gst_no" class="form-control"
+                                    value="{{ $admin->gst_no }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">PAN No</label>
+                                <input type="text" name="pan_no" id="pan_no" class="form-control"
+                                    value="{{ $admin->pan_no }}" readonly />
+
+                            </div>
+                            {{-- <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">FAX No</label>
+                                <input type="text" name="fax_no" id="fax_no" class="form-control"
+                                    value="{{ $admin->fax_no }}" readonly />
+                            </div> --}}
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Date Of Incorporation</label>
+                                <input type="date" name="date_of_incorporation" id="date_of_incorporation"
+                                    class="form-control" value="{{ $admin->date_of_incorporation }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Organization Type</label>
+                                <input type="text" name="organization_type" id="organization_type" class="form-control"
+                                    value="{{ $admin->organization_type }}" readonly />
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Payment Receipt</label>
+                                {{-- <input type="file" name="payment_receipt" id="payment_receipt"
+                                    class="form-control" /> --}}
+                                <br />
+                                <a href="{{ asset('payment_receipts/'.$admin->payment_receipt) }}" target="_blank"><img
+                                        src="{{ asset('payment_receipts/'.$admin->payment_receipt) }}" alt="Blog Image"
+                                        width="150px" height="100px" /></a>
+                            </div>
+                        </div>
+
+                        {{-- <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Bank Name</label>
+                                <input type="text" name="bank_name" id="bank_name" class="form-control"
+                                    value="{{ $admin->bank_name }}" readonly />
+
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Account No</label>
+                                <input type="text" name="account_no" id="account_no" class="form-control"
+                                    value="{{ $admin->account_no }}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Account Operation Since</label>
+                                <input type="text" name="account_operation_since" id="account_operation_since"
+                                    class="form-control" value="{{ $admin->account_operation_since }}" readonly />
+
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Branch Address</label>
+                                <input type="text" name="branch_address" id="branch_address" class="form-control"
+                                    value="{{ $admin->branch_address }}" readonly />
+                            </div>
+                        </div> --}}
+
+                        <div class="form-row">
+                            {{-- <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">IFSC Code</label>
+                                <input type="text" name="ifsc_code" id="ifsc_code" class="form-control"
+                                    value="{{ $admin->ifsc_code }}" readonly />
+
+                            </div> --}}
+
+                        </div>
+
+                        <div class="form-row">
+
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="username">Status</label>
+                                <select class="form-control " id="status" name="status">
+                                    <option value="1" {{ old('status')=='1' ? 'selected' : '' }} {{ $admin->status=='1'
+                                        ? 'selected' : '' }}>Active
+                                    </option>
+                                    <option value="0" {{ old('status')=='0' ? 'selected' : '' }} {{ $admin->status=='0'
+                                        ? 'selected' : '' }}>Inactive
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="username">Membership Status</label>
+                                <select class="form-control " id="membership_status" name="membership_status">
+                                    <option style="background-color: red;" value="Pending" {{
+                                        old('membership_status')=='Pending' ? 'selected' : '' }} {{ $admin->
+                                        membership_status=='Pending'
+                                        ? 'selected' : '' }}>Pending
+                                    </option>
+                                    <option style="background-color: orange;" value="Declined" {{
+                                        old('membership_status')=='Declined' ? 'selected' : '' }} {{ $admin->
+                                        membership_status=='Declined'
+                                        ? 'selected' : '' }}>Declined
+                                    </option>
+                                    <option style="background-color: green;" value="Approved" {{
+                                        old('membership_status')=='Approved' ? 'selected' : '' }} {{ $admin->
+                                        membership_status=='Approved'
+                                        ? 'selected' : '' }}>Approved
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button> --}}
+                        <a href="{{ route('admin.membership.index') }}"
+                            class="btn btn-secondary mt-4 pr-4 pl-4">Back</a>
+                        {{--
+                    </form> --}}
                 </div>
             </div>
         </div>

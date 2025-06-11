@@ -15,9 +15,21 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Role;
+use App\Services\CurlApiService;
+use App\Services\FcmNotificationService;
 
 class MembersController extends Controller
 {
+
+    protected $fcmNotificationService;
+    protected $curlApiService;
+    public function __construct(CurlApiService $curlApiService, FcmNotificationService $fcmNotificationService)
+    {
+        $this->fcmNotificationService = $fcmNotificationService;
+        $this->curlApiService = $curlApiService;
+    }
+
+
     /**
      * Display a listing of the resource.
      */
@@ -138,15 +150,6 @@ class MembersController extends Controller
     {
         // dd($request);
         try {
-            // MemberModule::create([
-            //     'module_id' => $request->serviceID,
-            //     'member_id' => $request->memberID,
-            //     'membership_id' => $request->membershipID,
-            //     'date' => $request->date,
-            //     'time' => $request->time,
-            //     'module_status' => $request->status,
-            //     'remarks' => $request->remarks
-            // ]);
             $members = MemberModule::updateOrInsert(
                 [
                     'member_id' => $request->memberID,
@@ -166,6 +169,19 @@ class MembersController extends Controller
                     'remarks' => $request->remarks
                 ]
             );
+
+            $newData  = json_encode(array());
+            $message = "CMD visit date has been assigned for " . date('d-m-Y', strtotime($request->date)) . ".";
+
+            $body = array('receiver_id' => $request->memberID, 'title' => $message, 'message' => $message, 'data' => $newData, 'content_available' => true);
+            $sendNotification = $this->fcmNotificationService->sendFcmNotification($body);
+            // $notifData = json_decode($sendNotification->getContent(), true);
+            // if (isset($notifData['status']) && $notifData['status'] == true) {
+            //     return $sendNotification->getContent();
+            // } else {
+            //     return $sendNotification->getContent();
+            // }
+
             return response()->json(['status' => true]);
         } catch (\Throwable $th) {
             return response()->json(['status' => false]);

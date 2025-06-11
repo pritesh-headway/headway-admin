@@ -1504,16 +1504,16 @@ class ApiController extends Controller
                 'email' => 'required|email',
                 'date_of_anniversary' => 'nullable|date',
                 'nationality' => 'required|string|max:255',
-                'personal_ContactPerson_email' => 'required|email',
+                // 'personal_ContactPerson_email' => 'required|email',
 
                 // Address
                 'address' => 'required|string|max:500',
                 'city' => 'required|string|max:255',
                 'state' => 'required|string|max:255',
                 'pincode' => 'required|digits:6',
-                'landline_no' => 'nullable',
-                'contact_person_name' => 'nullable|string|max:255',
-                'contact_person_mobile' => 'nullable|digits:10',
+                // 'landline_no' => 'nullable|digits_between:6,15',
+                // 'contact_person_name' => 'nullable|string|max:255',
+                // 'contact_person_mobile' => 'nullable|digits:10',
 
                 // Business Information
                 'organization_name' => 'required|string|max:255',
@@ -1522,22 +1522,22 @@ class ApiController extends Controller
                 'bussiness_pincode' => 'required|digits:6',
                 'bussiness_landline_no' => 'nullable',
                 'bussiness_email' => 'required|email',
-                'fax_no' => 'nullable',
+                // 'fax_no' => 'required',
                 'registered_office_address' => 'required|string|max:500',
                 'gst_no' => 'required|regex:/^(\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1})$/',
                 'pan_no' => 'required|regex:/^[A-Z]{5}\d{4}[A-Z]{1}$/',
                 'date_of_incorporation' => 'required|date',
                 'organization_type' => 'required|string|max:255',
-                'business_fax_no' => 'nullable',
+                // 'business_fax_no' => 'required',
                 'business_ContactPerson_name' => 'required|string|max:255',
                 'business_ContactPerson_mobile' => 'required|digits:10',
 
                 // Bank Details
-                'bank_name' => 'required|string|max:255',
-                'account_no' => 'required|digits_between:9,18',
-                'branch_name' => 'required|string|max:255',
-                'account_operation_since' => 'required',
-                'branch_address' => 'required|string',
+                // 'bank_name' => 'required|string|max:255',
+                // 'account_no' => 'required|digits_between:9,18',
+                // 'branch_name' => 'required|string|max:255',
+                // 'account_operation_since' => 'required',
+                // 'branch_address' => 'required|string',
 
                 //  Product Details
                 'product_id' => 'required',
