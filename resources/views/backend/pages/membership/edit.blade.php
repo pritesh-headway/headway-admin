@@ -176,14 +176,14 @@ Membership Edit - Admin Panel
                                     value="{{ $admin->pincode }}" readonly />
 
                             </div>
-                            <div class="form-group col-md-6 col-sm-6">
+                            {{-- <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Landline No</label>
                                 <input type="text" name="landline_no" id="landline_no" class="form-control"
                                     value="{{ $admin->landline_no }}" readonly />
-                            </div>
+                            </div> --}}
                         </div>
 
-                        <div class="form-row">
+                        {{-- <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Contact Person Name</label>
                                 <input type="text" name="contact_person_name" id="contact_person_name"
@@ -195,7 +195,7 @@ Membership Edit - Admin Panel
                                 <input type="text" name="contact_person_mobile" id="contact_person_mobile"
                                     class="form-control" value="{{ $admin->contact_person_mobile }}" readonly />
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
@@ -254,12 +254,12 @@ Membership Edit - Admin Panel
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-6">
+                            {{-- <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Bussiness Landline No</label>
                                 <input type="text" name="bussiness_landline_no" id="bussiness_landline_no"
                                     class="form-control" value="{{ $admin->bussiness_landline_no }}" readonly />
 
-                            </div>
+                            </div> --}}
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">GST No</label>
                                 <input type="text" name="gst_no" id="gst_no" class="form-control"
@@ -274,27 +274,37 @@ Membership Edit - Admin Panel
                                     value="{{ $admin->pan_no }}" readonly />
 
                             </div>
-                            <div class="form-group col-md-6 col-sm-6">
+                            {{-- <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">FAX No</label>
                                 <input type="text" name="fax_no" id="fax_no" class="form-control"
                                     value="{{ $admin->fax_no }}" readonly />
-                            </div>
-                        </div>
-
-                        <div class="form-row">
+                            </div> --}}
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Date Of Incorporation</label>
                                 <input type="date" name="date_of_incorporation" id="date_of_incorporation"
                                     class="form-control" value="{{ $admin->date_of_incorporation }}" readonly />
                             </div>
+                        </div>
+
+                        <div class="form-row">
+
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Organization Type</label>
                                 <input type="text" name="organization_type" id="organization_type" class="form-control"
                                     value="{{ $admin->organization_type }}" readonly />
                             </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Payment Receipt</label>
+                                {{-- <input type="file" name="payment_receipt" id="payment_receipt"
+                                    class="form-control" /> --}}
+                                <br />
+                                <a href="{{ asset('payment_receipts/'.$admin->payment_receipt) }}" target="_blank"><img
+                                        src="{{ asset('payment_receipts/'.$admin->payment_receipt) }}" alt="Blog Image"
+                                        width="150px" height="100px" /></a>
+                            </div>
                         </div>
 
-                        <div class="form-row">
+                        {{-- <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Bank Name</label>
                                 <input type="text" name="bank_name" id="bank_name" class="form-control"
@@ -320,24 +330,16 @@ Membership Edit - Admin Panel
                                 <input type="text" name="branch_address" id="branch_address" class="form-control"
                                     value="{{ $admin->branch_address }}" readonly />
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-6">
+                            {{-- <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">IFSC Code</label>
                                 <input type="text" name="ifsc_code" id="ifsc_code" class="form-control"
                                     value="{{ $admin->ifsc_code }}" readonly />
 
-                            </div>
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label for="password">Payment Receipt</label>
-                                {{-- <input type="file" name="payment_receipt" id="payment_receipt"
-                                    class="form-control" /> --}}
-                                <br />
-                                <a href="{{ asset('payment_receipts/'.$admin->payment_receipt) }}" target="_blank"><img
-                                        src="{{ asset('payment_receipts/'.$admin->payment_receipt) }}" alt="Blog Image"
-                                        width="150px" height="100px" /></a>
-                            </div>
+                            </div> --}}
+
                         </div>
 
                         <div class="form-row">

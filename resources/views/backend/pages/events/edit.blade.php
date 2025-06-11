@@ -66,18 +66,23 @@ Event Edit - Admin Panel
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Description</label>
-                                <textarea class="form-control" id="description"
-                                    name="description">{{ $admin->description }}</textarea>
+                                <label for="name">Date</label>
+                                <input type="date" class="form-control" id="event_date" name="event_date"
+                                    value="{{ $admin->event_date }}" required autofocus>
                             </div>
+
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Hours</label>
                                 <input type="text" class="form-control" id="hours" name="hours" placeholder="Enter Hour"
                                     value="{{ $admin->hours }}" required autofocus>
                             </div>
                         </div>
-
                         <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">Description</label>
+                                <textarea class="form-control" id="description"
+                                    name="description">{{ $admin->description }}</textarea>
+                            </div>
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Event Image</label>
                                 <input type="file" name="image" id="image" class="form-control" />
@@ -85,6 +90,10 @@ Event Edit - Admin Panel
                                 <img src="{{ asset('events/'.$admin->image) }}" alt="Event Image" width="100px"
                                     height="80px" />
                             </div>
+                        </div>
+
+
+                        <div class="form-row">
 
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>

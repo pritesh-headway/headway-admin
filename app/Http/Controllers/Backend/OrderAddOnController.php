@@ -117,16 +117,21 @@ class OrderAddOnController extends Controller
         $admin->save();
 
         $newData  = json_encode(array());
-        if ($request->is_verify == 1) {
+        if ($request->purchase_status == 'Approved') {
             $message = "Add On Service has been approved by the admin. All details have been successfully verified.";
-        } else {
+        } else if ($request->purchase_status == 'Declined') {
             $message = "Add On Service has been rejected by the admin. Please review the submitted details and try again.";
         }
         $body = array('receiver_id' => $admin->user_id, 'title' => $message, 'message' => $message, 'data' => $newData, 'content_available' => true);
         $sendNotification = $this->fcmNotificationService->sendFcmNotification($body);
+        // $notifData = json_decode($sendNotification->getContent(), true);
+        // if (isset($notifData['status']) && $notifData['status'] == true) {
+        //     return $sendNotification->getContent();
+        // } else {
+        //     return $sendNotification->getContent();
+        // }
 
-
-        session()->flash('success', 'Membership Status has been updated.');
+        session()->flash('success', 'Add On Service Status has been updated.');
         return redirect()->route('admin.orderaddon.index'); //back();
     }
 
