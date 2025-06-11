@@ -87,3 +87,4 @@ Route::post('v1/get_notification_data', [ApiController::class, 'getNotificationD
 Route::post('v1/newsletter_subscription', [ApiController::class, 'newsletterSubscription']);
 Route::post('v1/update_notification_data', [ApiController::class, 'updateNotificationData']);
 Route::post('v1/user_profile_update', [ApiController::class, 'updateUserProfile']);
+Route::post('v1/gen_settings', [ApiController::class, 'getGeneralSettings']);

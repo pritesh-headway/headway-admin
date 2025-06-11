@@ -57,6 +57,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::resource('roles', RolesController::class);
     Route::resource('admins', AdminsController::class);
     Route::resource('banner', BannerController::class);
+    Route::resource('settings', \App\Http\Controllers\Backend\SettingsController::class);
     Route::resource('cms', CmsController::class);
     Route::resource('blogs', BlogsController::class);
     Route::resource('client', ClientController::class);

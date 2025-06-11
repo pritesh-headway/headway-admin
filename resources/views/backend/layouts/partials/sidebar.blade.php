@@ -498,6 +498,12 @@
                             Requests</a>
                     </li>
 
+                    <li
+                        class="{{ Route::is('admin.settings.index') || Route::is('admin.settings.edit') ? 'active' : '' }}">
+                        <a href="{{ route('admin.settings.index') }}"> <i class="fa fa-cog"></i><span></span>Settings
+                            </a>
+                    </li>
+
                 </ul>
             </nav>
         </div>

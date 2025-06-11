@@ -31,6 +31,7 @@ use App\Models\Service;
 use App\Models\Services;
 use App\Models\UserDevices;
 use App\Models\Video;
+use App\Models\Setting;
 
 
 class ApiController extends Controller
@@ -2129,6 +2130,11 @@ class ApiController extends Controller
             // 5. Banner Popup
             $bannerPopup = Banner::where('is_popup', 1)
                 ->first();
+
+            $genSettings = DB::table('settings')
+                ->get()->mapWithKeys(function ($item) {
+                    return [$item->name => $item->value]; // creates key-value pairs
+                });
             $bannerPopupUrl = $bannerPopup && $bannerPopup->image
                 ? $base_url . 'banners/' . $bannerPopup->image
                 : '';
@@ -2139,12 +2145,65 @@ class ApiController extends Controller
                 'our_client' => $ourClient,
                 'get_in_touch' => $getInTouch,
                 'bannerPopup' => $bannerPopupUrl,
+                'settings' => [
+                    'address' => $genSettings['address'] ?? '',
+                    'website' => $genSettings['web_url'] ?? '',
+                    'mobile' => $genSettings['mobile'] ?? '',
+                    'email' => $genSettings['email'] ?? '',
+                    'happy_client' => $genSettings['happy_client'] ?? 0,
+                    'years_of_experience' => $genSettings['years_of_experience'] ?? 0,
+                    'our_location' => $genSettings['our_location'] ?? '',
+                    'awards' => $genSettings['awards'] ?? 0,
+                ]
             ];
 
             return response()->json([
                 'status' => true,
                 'message' => 'Get Dashboard data successfully.',
                 'data' => $dashboardData
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+    public function getGeneralSettings()
+    {
+        try {
+            $base_url = $this->base_url;
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+
+            $settings = DB::table('settings')
+                ->get()
+                ->mapWithKeys(function ($item) {
+                    return [$item->name => $item->value]; // creates key-value pairs
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'General settings fetched successfully',
+                'data' => [
+                    'address' => $settings['address'] ?? '',
+                    'website' => $settings['web_url'] ?? '',
+                    'mobile' => $settings['mobile'] ?? '',
+                    'email' => $settings['email'] ?? '',
+                    'happy_client' => $settings['happy_client'] ?? 0,
+                    'years_of_experience' => $settings['years_of_experience'] ?? 0,
+                    'our_location' => $settings['our_location'] ?? '',
+                    'awards' => $settings['awards'] ?? 0,
+                    'instagram' => $settings['instagram'] ?? '',
+                    'facebook' => $settings['facebook'] ?? '',
+                    'linkedin' => $settings['linkedin'] ?? '',
+                    'youtube' => $settings['youtube'] ?? '',
+                    'twitter' => $settings['twitter'] ?? '',
+                ]
             ], 200);
 
         } catch (\Throwable $th) {
@@ -2193,17 +2252,19 @@ class ApiController extends Controller
 
     public function getAboutStartupV2()
     {
+        $base_url = $this->base_url;
         try {
+
             // OSS Galleries: from banners table where title is 'oss_gallery'
             $ossGalleries = DB::table('testimonials')
                 ->where('status', 1)
                 ->where('is_deleted', 0)
                 ->get(['id', 'title', 'image', 'description as desc'])
-                ->map(function ($item) {
+                ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
                         'title' => $item->title,
-                        'image' => config('APP_URL') . 'testimonials/' . $item->image,
+                        'image' => $base_url . '/testimonials/' . $item->image,
                         'desc' => $item->desc,
                     ];
                 });
@@ -2233,15 +2294,20 @@ class ApiController extends Controller
             //     ->where('status', 'active')
             //     ->get();
 
+            $brochure = DB::table('settings')
+                ->where('name', 'All in one Brochure')
+                ->first();
+
+            $brochureUrl = $brochure ? $base_url . '/' . $brochure->value : '';
             $clientTestimonials = DB::table('clients')
                 ->where('status', 1)
                 ->where('is_deleted', 0)
                 ->get(['id', 'name', 'image', 'description as comment', 'city as location'])
-                ->map(function ($item) {
+                ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
                         'name' => $item->name,
-                        'image' => config('APP_URL') . 'clients/' . $item->image,
+                        'image' => $base_url . '/clients/' . $item->image,
                         'location' => $item->location,
                         'comment' => $item->comment,
                     ];
@@ -2253,6 +2319,7 @@ class ApiController extends Controller
                 'oss_galleries' => $ossGalleries,
                 'about_the_startup' => $aboutStartup,
                 'what_client_say_about_us' => $clientTestimonials,
+                'brochure' => $brochureUrl,
             ];
 
             return response()->json([
@@ -2273,29 +2340,31 @@ class ApiController extends Controller
 
     public function getMmbGallaries()
     {
-        /* mmb_galleries
-Full texts
-id
-title
-images
-created_at
-updated_at
-*/
+        $base_url = $this->base_url . '/';
         try {
             $galleries = DB::table('mmb_galleries')
                 ->get(['id', 'title', 'images'])
-                ->map(function ($item) {
+                ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
                         'title' => $item->title,
-                        'image' => config('APP_URL') . 'mmb_gallery/' . $item->images
+                        'image' => $base_url . 'mmb_gallery/' . $item->images
                     ];
                 });
+
+            $brochure = DB::table('settings')
+                ->whereRaw('LOWER(name) LIKE ?', ['%all iN one brochure%'])
+                ->first();
+
+            $brochureUrl = $brochure ? $base_url . '/' . $brochure->value : '';
 
             return response()->json([
                 'status' => true,
                 'message' => 'MMB Galleries fetched successfully',
-                'data' => $galleries
+                'data' => [
+                    'galleries' => $galleries,
+                    'brochure' => $brochureUrl
+                ]
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -2308,18 +2377,19 @@ updated_at
 
     public function getServicePlanList()
     {
+        $base_url = $this->base_url . '/';
         try {
             $servicePlans = DB::table('plans')
                 ->where('status', 1)
                 ->get(['id', 'plan_name as name', 'description as service_desc', 'price', 'image', 'duration as hours'])
-                ->map(function ($item) {
+                ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
                         'name' => $item->name,
                         'service_desc' => $item->service_desc,
                         'price' => $item->price,
                         'hours' => $item->hours,
-                        'image' => config('APP_URL') . 'plans/' . $item->image
+                        'image' => $base_url . 'plans/' . $item->image
                     ];
                 });
 
@@ -2339,14 +2409,15 @@ updated_at
 
     public function getSsuGallaries()
     {
+        $base_url = $this->base_url . '/';
         try {
             $galleries = DB::table('ssu_galleries')
                 ->get(['id', 'title', 'images'])
-                ->map(function ($item) {
+                ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
                         'title' => $item->title,
-                        'image' => config('APP_URL') . 'ssu_gallery/' . $item->images
+                        'image' => $base_url . 'ssu_gallery/' . $item->images
                     ];
                 });
 
@@ -2425,7 +2496,7 @@ updated_at
                 ], 400);
             }
 
-            $base_url = rtrim(config('APP_URL'), '/') . '/';
+            $base_url = $this->base_url . '/';
 
             $blog = Blog::where('blogs.status', 1)
                 ->where('blogs.is_deleted', 0)
@@ -2478,11 +2549,11 @@ updated_at
     public function getMeetOurTeam()
     {
         try {
-            $base_url = $this->base_url;
+            $base_url = $this->base_url . '/';
 
             $teams = Team::where('status', 1)
                 ->where('is_deleted', 0)
-                ->orderBy('created_at', 'desc')
+                ->orderBy('created_at', 'asc')
                 ->get(['name', 'image', 'position'])
                 ->map(function ($team) use ($base_url) {
                     return [
@@ -2598,12 +2669,12 @@ updated_at
                 ]);
 
             if ($user) {
-                $base_url = rtrim(config('APP_URL'), '/') . '/profile_images/';
+                $base_url = $this->base_url . '/';
                 $userData = [
                     'user_id' => (string) $user->user_id,
                     'name' => $user->name ?? '',
                     'email' => $user->email ?? '',
-                    'profile_pic' => $user->avatar ? $base_url . $user->avatar : '',
+                    'profile_pic' => $user->avatar ? $base_url . 'profile_images/' . $user->avatar : '',
                     // 'gender' => $user->gender ?? '',
                     'mobile' => $user->mobile ?? '',
                     'city' => $user->city ?? '',
@@ -2629,7 +2700,7 @@ updated_at
                             'plan_name' => $plan->plan_name,
                             'description' => $plan->description,
                             'price' => $plan->price,
-                            'image' => $plan->image ? config('APP_URL') . 'plans/' . $plan->image : '',
+                            'image' => $plan->image ? $base_url . 'plans/' . $plan->image : '',
                             'validity' => $plan->validity,
                             'purchase_status' => $memberPlanOrder->purchase_status,
                             'total_amount' => $memberPlanOrder->total_amount,
@@ -2653,7 +2724,7 @@ updated_at
                             'plan_name' => $addonPlan->plan_name,
                             'description' => $addonPlan->description,
                             'price' => $addonPlan->price,
-                            'image' => $addonPlan->image ? config('APP_URL') . 'plans/' . $addonPlan->image : '',
+                            'image' => $addonPlan->image ? $base_url . 'plans/' . $addonPlan->image : '',
                             'validity' => $addonPlan->validity,
                             'purchase_status' => $addon->purchase_status,
                             'total_amount' => $addon->total_amount,
@@ -2780,6 +2851,62 @@ updated_at
         }
     }
 
+    public function newsletterSubscription(Request $request)
+    {
+        $email = $request->email;
+
+        try {
+            if (!$email) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email is required',
+                    'data' => (object) []
+                ], 400);
+            }
+
+            // Check for duplicate subscription
+            $existing = DB::table('newsletter_subscriptions')
+                ->where('email', $email)
+                ->first();
+
+            if ($existing) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'This email is already subscribed',
+                    'data' => (object) $existing
+                ], 200); // 409 Conflict
+            }
+
+            // Insert new subscription
+            DB::table('newsletter_subscriptions')->insert([
+                'email' => $email,
+                'type' => 'email',
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Get the inserted data
+            $notification = DB::table('newsletter_subscriptions')
+                ->where('email', $email)
+                ->first();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Subscription successful',
+                'data' => (object) $notification
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+
     public function updateUserProfile(Request $request)
     {
         try {
@@ -2835,7 +2962,7 @@ updated_at
             if ($request->hasFile('profile_pic')) {
                 $file = $request->file('profile_pic');
                 $filename = time() . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('images/profile_pic'), $filename);
+                $file->move(public_path('profile_images'), $filename);
                 $updateData['avatar'] = $filename;
             }
 
@@ -2875,7 +3002,7 @@ updated_at
                 ], 404);
             }
 
-            $base_url = rtrim(config('APP_URL'), '/') . '/images/profile_pic/';
+            $base_url = $this->base_url . '/profile_images/';
 
             $responseData = [
                 'name' => $user->name ?? '',
@@ -2904,6 +3031,8 @@ updated_at
             ], 500);
         }
     }
+
+
 
 
 }

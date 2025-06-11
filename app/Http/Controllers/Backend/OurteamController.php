@@ -21,7 +21,7 @@ class OurteamController extends Controller
         $this->checkAuthorization(auth()->user(), ['Ourteam.create']);
 
         return view('backend.pages.teams.index', [
-            'admins' => Team::where('is_deleted', '0')->get(),
+            'admins' => Team::where('is_deleted', '0')->orderBy('created_at', 'asc')->get(),
         ]);
     }
 
@@ -45,7 +45,7 @@ class OurteamController extends Controller
         $admin = new Team();
         $admin->name = $request->name;
         $admin->position = $request->position;
-        $admin->city = $request->city;
+        $admin->city = $request->city ?? '';
         $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -91,7 +91,7 @@ class OurteamController extends Controller
         $admin = Team::findOrFail($id);
         $admin->name = $request->name;
         $admin->position = $request->position;
-        $admin->city = $request->city;
+        $admin->city = $request->city ?? '';
         $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');

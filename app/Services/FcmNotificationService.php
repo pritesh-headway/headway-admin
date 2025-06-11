@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+// use google\apiclient as Client;
 use Google\Client as GoogleClient;
 use Illuminate\Support\Facades\Storage;
 use App\Models\UserDevices;
@@ -9,7 +10,7 @@ class FcmNotificationService
 {
     public function __construct()
     {
-       
+
     }
 
     public function sendFcmNotification($body)
@@ -36,8 +37,7 @@ class FcmNotificationService
         // dd($newArrData);
         $projectId = config('services.fcm.project_id'); # INSERT COPIED PROJECT ID
 
-        $credentialsFilePath = Storage::path('json/google-services.json');
-       
+        $credentialsFilePath = Storage::path('json\google-services.json');
         $client = new GoogleClient();
         $client->setAuthConfig($credentialsFilePath);
         $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
@@ -59,7 +59,7 @@ class FcmNotificationService
                     'notification' => [
                         'title' => $title,
                         'body'  => $description,
-                       
+
                     ],
                     "data" => $newArrData,
                     'apns' => [
@@ -131,7 +131,7 @@ class FcmNotificationService
         $projectId = config('services.fcm.project_id'); # INSERT COPIED PROJECT ID
 
         $credentialsFilePath = Storage::path('json/google-services.json');
-       
+
         $client = new GoogleClient();
         $client->setAuthConfig($credentialsFilePath);
         $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
@@ -153,7 +153,7 @@ class FcmNotificationService
                     'notification' => [
                         'title' => $title,
                         'body'  => $description,
-                       
+
                     ],
                     "data" => $newArrData,
                     'apns' => [
