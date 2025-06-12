@@ -45,6 +45,7 @@ class ClientController extends Controller
         $admin->name = $request->name;
         $admin->city = $request->city;
         $admin->description = $request->description;
+        // $admin->is_featured = $request->is_featured ? '1' : '0';
         $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -91,6 +92,7 @@ class ClientController extends Controller
         $admin->name = $request->name;
         $admin->city = $request->city;
         $admin->description = $request->description;
+        // $admin->is_featured = $request->is_featured ? '1' : '0';
         $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');

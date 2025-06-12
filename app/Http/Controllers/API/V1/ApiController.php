@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\AddOnPurchase;
+use App\Models\Team;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -30,6 +31,7 @@ use App\Models\Service;
 use App\Models\Services;
 use App\Models\UserDevices;
 use App\Models\Video;
+use App\Models\Setting;
 
 
 class ApiController extends Controller
@@ -52,6 +54,7 @@ class ApiController extends Controller
     {
         $this->per_page_show = 50;
         $this->base_url = url('/');
+        // $this->base_url = env('APP_URL');
         $this->profile_path = '/profile_images/';
         $this->banner_path = '/banners/';
         $this->client_path = '/clients/';
@@ -265,6 +268,13 @@ class ApiController extends Controller
             $optionalKey = $request->hashKey;
             $chkUserData = User::where('phone_number', $mobile)->where('status', 1)->first();
 
+            if (!$chkUserData) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not found or inactive.',
+                    'data' => (object) []
+                ], 200);
+            }
             $message = 'Your login OTP is ' . $otp . '. Headway Business Solutions' . $optionalKey . '';
             $data['SenderID'] = 'HEADAB';
             $data['SMSType'] = 4;
@@ -369,14 +379,14 @@ class ApiController extends Controller
                 $userDataInfo['plan_id'] = ($activePlan) ? $activePlan->Plans->id : '';
                 $userDataInfo['plan_icon'] = ($activePlan) ? $base_url . $this->plan_path . $activePlan->Plans->image : '';
             } else {
-                $userDataInfo = (object)[];
+                $userDataInfo = (object) [];
             }
 
 
             $activeplans = $userDataInfo;
             $we_do_title = 'What we do?';
             $we_do_info = 'Headway Business Solutions LLP goes beyond simply "coaching" and "consulting." We are committed to fostering long-term relationships with our clients, acting as trusted advisors and partners on their journey towards achieving their unique jewellery business aspirations.';
-            $Isverify  = $usersData->is_verify;
+            $Isverify = $usersData->is_verify;
 
             $our_services = Services::select('id', 'name', 'sort_desc', 'image')->where('status', 1)->where('is_deleted', 0)->orderBy('id', 'DESC')->limit(2)->get();
             $our_services = $our_services->map(function ($our_services) use ($base_url, $token) {
@@ -438,15 +448,18 @@ class ApiController extends Controller
                 return $checkToken->getContent();
             }
 
-            $plansPaginator = Plan::with(['PlanPurchase' => function ($query) use ($user_id) {
-                $query->where('user_id', $user_id);
-            }])->where('status', 1)->where('is_deleted', 0)->paginate($this->per_page_show, ['*'], 'page', $page_number);
+            $plansPaginator = Plan::with([
+                'PlanPurchase' => function ($query) use ($user_id) {
+                    $query->where('user_id', $user_id);
+                }
+            ])->where('status', 1)->where('is_deleted', 0)->paginate($this->per_page_show, ['*'], 'page', $page_number);
             // dd($plansPaginator);
             $plans = $plansPaginator->getCollection()->map(function ($plan) use ($base_url) {
                 $plan = collect($plan)
                     ->put('plan_image', $plan['image'] ? $base_url . $this->plan_path . $plan['image'] : '')
-                    ->put('active_plan', $plan['PlanPurchase'] ? (string)$plan['PlanPurchase']->purchase_status : '')
+                    ->put('active_plan', $plan['PlanPurchase'] ? (string) $plan['PlanPurchase']->purchase_status : '')
                     ->toArray();
+                $plan['duration'] = (string) $plan['duration'];
                 return $plan;
             });
 
@@ -493,9 +506,11 @@ class ApiController extends Controller
             }
             $plansPaginator = Plan::where('status', 1)->where('is_deleted', 0)->where('id', $plan_id)->get();
             $plans = $plansPaginator->map(function ($plan) use ($base_url) {
+                $plan['duration'] = (string) $plan['duration'];
                 return collect($plan)->except(['password', 'role_id', 'email_verified_at'])
                     ->put('plan_image', ($plan['image']) ? $base_url . $this->plan_path . $plan['image'] : '')
                     ->toArray();
+
             })->toArray();
 
             $result = [];
@@ -506,12 +521,16 @@ class ApiController extends Controller
                 $result = [
                     'id' => $li['id'],
                     'plan_name' => $li['plan_name'],
+                    'plan_type' => $li['plan_type'],
                     'plan_image' => $li['plan_image'],
+                    'personal_meeting' => $li['personal_meeting'],
                     'sort_desc' => $li['sort_desc'],
                     'price' => $li['price'],
-                    'validity' => $li['validity'],
+                    'duration' => $li['validity'],
                     'session' => $li['session'],
-                    'duration' => $li['duration'],
+                    'meeting_duration' => $li['duration'],
+                    'month_duration' => $li['month_duration'],
+                    'deliveries' => $li['deliveries'],
                     'tax' => $li['tax'],
                     'points' => [],
                 ];
@@ -550,12 +569,15 @@ class ApiController extends Controller
             if ($userData['status'] == false) {
                 return $checkToken->getContent();
             }
-            $blogsPaginator = Addon::with(['AddOnPurchased' => function ($query) use ($user_id, $plan_id) {
-                $query->where('user_id', $user_id);
-                $query->where('plan_id', $plan_id);
-            }])->where('status', 1)->where('is_deleted', 0)->paginate($this->per_page_show, ['*'], 'page', $page_number);
+            $blogsPaginator = Addon::with([
+                'AddOnPurchased' => function ($query) use ($user_id, $plan_id) {
+                    $query->where('user_id', $user_id);
+                    $query->where('plan_id', $plan_id);
+                }
+            ])->where('status', 1)->where('is_deleted', 0)->paginate($this->per_page_show, ['*'], 'page', $page_number);
             // dd($blogsPaginator);
             $blogs = $blogsPaginator->getCollection()->map(function ($blog) use ($base_url) {
+                $blog['on_store_visit'] = (string) $blog['on_store_visit'];
                 $blog = collect($blog)
                     ->put('active_service', ($blog['AddOnPurchased']) ? $blog['AddOnPurchased']->purchase_status : '')
                     ->toArray();
@@ -634,7 +656,7 @@ class ApiController extends Controller
 
             $courses = $coursesPaginator->getCollection()->map(function ($course) use ($base_url) {
                 $course = collect($course)
-                    ->put('course_url', $course['video_url'] ? $base_url  . $course['video_url'] : '')
+                    ->put('course_url', $course['video_url'] ? $base_url . $course['video_url'] : '')
                     ->toArray();
                 return $course;
             });
@@ -1201,7 +1223,7 @@ class ApiController extends Controller
             if ($validator->fails()) {
                 $result['status'] = false;
                 $result['message'] = $validator->errors()->first();
-                $result['data'] = (object)[];
+                $result['data'] = (object) [];
                 return response()->json($result, 200);
             }
 
@@ -1498,7 +1520,7 @@ class ApiController extends Controller
                 'bussiness_city' => 'required|string|max:255',
                 'bussiness_state' => 'required|string|max:255',
                 'bussiness_pincode' => 'required|digits:6',
-                'bussiness_landline_no' => 'nullable|digits_between:6,15',
+                'bussiness_landline_no' => 'nullable',
                 'bussiness_email' => 'required|email',
                 // 'fax_no' => 'required',
                 'registered_office_address' => 'required|string|max:500',
@@ -1544,7 +1566,7 @@ class ApiController extends Controller
             $planData['user_id'] = $user_id;
             $result = PlanPurchase::create($planData);
 
-            return response()->json(['status' => true, 'message' => 'Data saved successfully.', 'data' => $result], 200);
+            return response()->json(['status' => true, 'message' => 'Membership applied successfully.', 'data' => $result], 200);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
         }
@@ -1630,7 +1652,7 @@ class ApiController extends Controller
             if ($privacypolicy) {
                 return response()->json(['status' => true, 'message' => 'Get Web Policy data successfully.', 'data' => $privacypolicy], 200);
             } else {
-                return response()->json(['status' => true, 'message' => 'Get Web Policy data successfully.', 'data' => (object)[]], 200);
+                return response()->json(['status' => true, 'message' => 'Get Web Policy data successfully.', 'data' => (object) []], 200);
             }
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
@@ -1655,7 +1677,7 @@ class ApiController extends Controller
             if ($privacypolicy) {
                 return response()->json(['status' => true, 'message' => 'Get Web Site Policy data successfully.', 'data' => $privacypolicy], 200);
             } else {
-                return response()->json(['status' => true, 'message' => 'Get Web Site Policy data successfully', 'data' => (object)[]], 200);
+                return response()->json(['status' => true, 'message' => 'Get Web Site Policy data successfully', 'data' => (object) []], 200);
             }
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
@@ -1791,7 +1813,7 @@ class ApiController extends Controller
             if ($blogsPaginator) {
                 return response()->json(['status' => true, 'message' => 'Get Membership Policy data successfully.', 'data' => $blogsPaginator], 200);
             } else {
-                return response()->json(['status' => true, 'message' => 'Get Data Processing Support data successfully..', 'data' => (object)[]], 200);
+                return response()->json(['status' => true, 'message' => 'Get Data Processing Support data successfully..', 'data' => (object) []], 200);
             }
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
@@ -1816,7 +1838,7 @@ class ApiController extends Controller
             if ($blogsPaginator) {
                 return response()->json(['status' => true, 'message' => 'Get Data Processing Support data successfully.', 'data' => $blogsPaginator], 200);
             } else {
-                return response()->json(['status' => true, 'message' => 'Get Data Processing Support data successfully..', 'data' => (object)[]], 200);
+                return response()->json(['status' => true, 'message' => 'Get Data Processing Support data successfully..', 'data' => (object) []], 200);
             }
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
@@ -1841,7 +1863,7 @@ class ApiController extends Controller
             if ($blogsPaginator) {
                 return response()->json(['status' => true, 'message' => 'Get Data Marketing Strategy data successfully.', 'data' => $blogsPaginator], 200);
             } else {
-                return response()->json(['status' => true, 'message' => 'Get Data Processing Support data successfully..', 'data' => (object)[]], 200);
+                return response()->json(['status' => true, 'message' => 'Get Data Processing Support data successfully..', 'data' => (object) []], 200);
             }
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
@@ -2045,4 +2067,972 @@ class ApiController extends Controller
             return response()->json($result, 200);
         }
     }
+
+    public function getDashboardDataV2()
+    {
+        try {
+            $base_url = $this->base_url;
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+
+            // 1. Banners
+            $banners = Banner::where('status', 1)
+                ->where('is_deleted', 0)
+                ->whereNotIn('is_popup', [1])
+                ->get()
+                ->map(function ($banner) use ($base_url) {
+                    return [
+                        'id' => $banner->id,
+                        'title' => $banner->title,
+                        'heading' => $banner->heading,
+                        'desc' => $banner->desc,
+                        'image' => $banner->image ? $base_url . 'banners/' . $banner->image : '',
+                        'is_popup' => $banner->is_popup,
+                    ];
+                });
+
+            // 2. Client Logos (no description = logo)
+            // $clientLogo = Client::where('status', 1)
+            //     ->where('is_featured', 1)
+            //     ->where('is_deleted', 0)
+            //     ->get()
+            //     ->map(function ($logo) use ($base_url) {
+            //         return [
+            //             'id' => $logo->id,
+            //             'name' => $logo->name,
+            //             'logo_image' => $logo->image ? $base_url . 'clients/' . $logo->image : '',
+            //             'is_featured' => $logo->is_featured,
+            //         ];
+            //     });
+
+            // 3. Our Clients (description present = our client)
+            $ourClient = Client::where('status', 1)
+                ->where('is_featured', 0)
+                ->where('is_deleted', 0)
+                ->whereNotNull('description')
+                ->get()
+                ->map(function ($client) use ($base_url) {
+                    return [
+                        'id' => $client->id,
+                        'title' => $client->name,
+                        'description' => $client->city,
+                        'client_logo' => $client->image ? $base_url . 'clients/' . $client->image : '',
+                        'is_featured' => $client->is_featured,
+                    ];
+                });
+
+            // 4. Get In Touch
+            $getInTouch = Cms::where('status', 1)
+                ->where('page_name', 'Marketing Strategy')
+                ->first();
+
+            // 5. Banner Popup
+            $bannerPopup = Banner::where('is_popup', 1)
+                ->first();
+
+            $genSettings = DB::table('settings')
+                ->get()->mapWithKeys(function ($item) {
+                    return [$item->name => $item->value]; // creates key-value pairs
+                });
+            $bannerPopupUrl = $bannerPopup && $bannerPopup->image
+                ? $base_url . 'banners/' . $bannerPopup->image
+                : '';
+
+            $dashboardData = [
+                'banners' => $banners,
+                // 'client_logo' => $clientLogo,
+                'our_client' => $ourClient,
+                'get_in_touch' => $getInTouch,
+                'bannerPopup' => $bannerPopupUrl,
+                'settings' => [
+                    'address' => $genSettings['address'] ?? '',
+                    'website' => $genSettings['web_url'] ?? '',
+                    'mobile' => $genSettings['mobile'] ?? '',
+                    'email' => $genSettings['email'] ?? '',
+                    'happy_client' => $genSettings['happy_client'] ?? 0,
+                    'years_of_experience' => $genSettings['years_of_experience'] ?? 0,
+                    'our_location' => $genSettings['our_location'] ?? '',
+                    'awards' => $genSettings['awards'] ?? 0,
+                ]
+            ];
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Get Dashboard data successfully.',
+                'data' => $dashboardData
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+    public function getGeneralSettings()
+    {
+        try {
+            $base_url = $this->base_url;
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+
+            $settings = DB::table('settings')
+                ->get()
+                ->mapWithKeys(function ($item) {
+                    return [$item->name => $item->value]; // creates key-value pairs
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'General settings fetched successfully',
+                'data' => [
+                    'address' => $settings['address'] ?? '',
+                    'website' => $settings['web_url'] ?? '',
+                    'mobile' => $settings['mobile'] ?? '',
+                    'email' => $settings['email'] ?? '',
+                    'happy_client' => $settings['happy_client'] ?? 0,
+                    'years_of_experience' => $settings['years_of_experience'] ?? 0,
+                    'our_location' => $settings['our_location'] ?? '',
+                    'awards' => $settings['awards'] ?? 0,
+                    'instagram' => $settings['instagram'] ?? '',
+                    'facebook' => $settings['facebook'] ?? '',
+                    'linkedin' => $settings['linkedin'] ?? '',
+                    'youtube' => $settings['youtube'] ?? '',
+                    'twitter' => $settings['twitter'] ?? '',
+                ]
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+    public function getAboutUsV2()
+    {
+        try {
+            // Fetch 'About Us' CMS entry
+            // $aboutUs = Cms::where('status', 1)
+            //     ->where('is_deleted', 0)
+            //     ->where('page_name', 'About-us')
+            //     ->first();
+
+            // Fetch YouTube Link CMS entry
+            $youtubeLink = Cms::where('status', 1)
+                ->where('is_deleted', 0)
+                ->where('page_name', 'about us youtube link')
+                ->first();
+
+            $data = [
+                // 'about_us' => $aboutUs,
+                'youtube_link' => $youtubeLink->description ?? '',
+            ];
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Record list successfully',
+                'data' => $data
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+    public function getAboutStartupV2()
+    {
+        $base_url = $this->base_url;
+        try {
+
+            // OSS Galleries: from banners table where title is 'oss_gallery'
+            $ossGalleries = DB::table('testimonials')
+                ->where('status', 1)
+                ->where('is_deleted', 0)
+                ->get(['id', 'title', 'image', 'description as desc'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'title' => $item->title,
+                        'image' => $base_url . '/testimonials/' . $item->image,
+                        'desc' => $item->desc,
+                    ];
+                });
+
+            // About the Startup: from cms where page_name is 'about_startup'
+            // $aboutStartup = Cms::where('page_name', 'About-us')
+            //     ->where('status', 1)
+            //     ->where('is_deleted', 0)
+            //     ->get(['id', 'plan_id as title', 'description']);
+
+            $aboutStartup = DB::table('about_startups')
+                ->get(['id', 'title', 'description'])
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'title' => $item->title,
+                        'description' => $item->description,
+                    ];
+                });
+
+            // Client Testimonials
+            // $clientTestimonials = Client::where('status', 1)
+            //     ->where('is_deleted', 0)
+            //     ->get(['id', 'image', 'name', 'city as location', 'description as comment']);
+
+            // $clientTestimonials = DB::table('review_ratings')
+            //     ->where('status', 'active')
+            //     ->get();
+
+            $brochure = DB::table('settings')
+                ->where('name', 'All in one Brochure')
+                ->first();
+
+            $brochureUrl = $brochure ? $base_url . '/' . $brochure->value : '';
+            $clientTestimonials = DB::table('clients')
+                ->where('status', 1)
+                ->where('is_deleted', 0)
+                ->get(['id', 'name', 'image', 'description as comment', 'city as location'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'name' => $item->name,
+                        'image' => $base_url . '/clients/' . $item->image,
+                        'location' => $item->location,
+                        'comment' => $item->comment,
+                    ];
+                });
+
+
+
+            $data = [
+                'oss_galleries' => $ossGalleries,
+                'about_the_startup' => $aboutStartup,
+                'what_client_say_about_us' => $clientTestimonials,
+                'brochure' => $brochureUrl,
+            ];
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Record list successfully',
+                'data' => $data
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+
+    public function getMmbGallaries()
+    {
+        $base_url = $this->base_url . '/';
+        try {
+            $galleries = DB::table('mmb_galleries')
+                ->get(['id', 'title', 'images'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'title' => $item->title,
+                        'image' => $base_url . 'mmb_gallery/' . $item->images
+                    ];
+                });
+
+            $brochure = DB::table('settings')
+                ->whereRaw('LOWER(name) LIKE ?', ['%all iN one brochure%'])
+                ->first();
+
+            $brochureUrl = $brochure ? $base_url . '/' . $brochure->value : '';
+
+            return response()->json([
+                'status' => true,
+                'message' => 'MMB Galleries fetched successfully',
+                'data' => [
+                    'galleries' => $galleries,
+                    'brochure' => $brochureUrl
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+    public function getServicePlanList()
+    {
+        $base_url = $this->base_url . '/';
+        try {
+            $servicePlans = DB::table('plans')
+                ->where('status', 1)
+                ->get(['id', 'plan_name as name', 'description as service_desc', 'price', 'image', 'duration as hours'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'name' => $item->name,
+                        'service_desc' => $item->service_desc,
+                        'price' => $item->price,
+                        'hours' => $item->hours,
+                        'image' => $base_url . 'plans/' . $item->image
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Service plans fetched successfully',
+                'data' => $servicePlans
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+    public function getSsuGallaries()
+    {
+        $base_url = $this->base_url . '/';
+        try {
+            $galleries = DB::table('ssu_galleries')
+                ->get(['id', 'title', 'images'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'title' => $item->title,
+                        'image' => $base_url . 'ssu_gallery/' . $item->images
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'SSU Galleries fetched successfully',
+                'data' => $galleries
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+    public function getBlogsListV2()
+    {
+        try {
+            $base_url = $this->base_url;
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+
+            $blogs = Blog::where('blogs.status', 1)
+                ->where('blogs.is_deleted', 0)
+                ->leftJoin('blog_categories', 'blogs.category_id', '=', 'blog_categories.id')
+                ->orderBy('blogs.created_at', 'desc')
+                ->get([
+                    'blogs.id',
+                    'blog_categories.name as category',
+                    'blogs.author as name',
+                    'blogs.blog_date',
+                    'blogs.title',
+                    'blogs.image',
+                    'blogs.description',
+                ])
+                ->map(function ($blog) use ($base_url) {
+                    return [
+                        'id' => $blog->id,
+                        'category' => $blog->category,
+                        'name' => $blog->name,
+                        'blog_date' => $blog->blog_date,
+                        'title' => $blog->title,
+                        'image' => $base_url . 'blogs/' . $blog->image,
+                        'description' => $blog->description,
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Blogs list fetched successfully',
+                'data' => $blogs
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+    public function getBlogDetails()
+    {
+        try {
+            $blogId = request()->blog_id;
+
+            if (!$blogId) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Missing blog_id parameter',
+                    'data' => (object) []
+                ], 400);
+            }
+
+            $base_url = $this->base_url . '/';
+
+            $blog = Blog::where('blogs.status', 1)
+                ->where('blogs.is_deleted', 0)
+                ->where('blogs.id', $blogId)
+                ->leftJoin('blog_categories', 'blogs.category_id', '=', 'blog_categories.id')
+                ->first([
+                    'blogs.id',
+                    'blog_categories.name as category',
+                    'blogs.author as name',
+                    'blogs.blog_date',
+                    'blogs.title',
+                    'blogs.image',
+                    'blogs.description',
+                ]);
+
+            if (!$blog) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Blog not found',
+                    'data' => (object) []
+                ], 404);
+            }
+
+            $data = [
+                'id' => $blog->id,
+                'category' => $blog->category,
+                'name' => $blog->name,
+                'blog_date' => $blog->blog_date,
+                'title' => $blog->title,
+                'image' => $base_url . 'blogs/' . $blog->image,
+                'description' => $blog->description,
+            ];
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Blog details fetched successfully',
+                'data' => $data
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+
+    public function getMeetOurTeam()
+    {
+        try {
+            $base_url = $this->base_url . '/';
+
+            $teams = Team::where('status', 1)
+                ->where('is_deleted', 0)
+                ->orderBy('created_at', 'asc')
+                ->get(['name', 'image', 'position'])
+                ->map(function ($team) use ($base_url) {
+                    return [
+                        'name' => $team->name,
+                        'image' => $base_url . 'teams/' . $team->image,
+                        'position' => $team->position,
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Record list successfully',
+                'data' => $teams
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+
+    public function getUserAddOnService()
+    {
+        try {
+            $addOnServices = AddOn::where('status', 1)
+                ->where('is_deleted', 0)
+                ->get(['id', 'title', 'sort_desc', 'description', 'price', 'created_at', 'updated_at'])
+                ->map(function ($service) {
+                    return [
+                        'id' => $service->id,
+                        'title' => $service->title,
+                        'description' => $service->description,
+                        'price' => $service->price,
+                        'sort_desc' => $service->sort_desc,
+                        'created_at' => $service->created_at,
+                        'updated_at' => $service->updated_at,
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Add On Services fetched successfully',
+                'data' => $addOnServices
+            ], 200);
+
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+    // public function getUserProfile()
+    // {
+    //     try {
+    //         $user = request()->user_id;
+    //         $userData = User::where('id', $user)
+    //             ->where('status', 1)
+    //             ->where('is_deleted', 0)
+    //             ->first(['id', 'name', 'email', 'phone_number', 'alternate_phone', 'avatar as image']);
+
+    //         if ($userData) {
+    //             $userData->image = $userData->image ? config('APP_URL') . 'profile_images/' . $userData->image : '';
+    //             return response()->json([
+    //                 'status' => true,
+    //                 'message' => 'User profile fetched successfully',
+    //                 'data' => $userData
+    //             ], 200);
+    //         } else {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => 'User not found',
+    //                 'data' => (object) []
+    //             ], 404);
+    //         }
+
+    //     } catch (\Throwable $th) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Something went wrong',
+    //             'error' => $th->getMessage()
+    //         ], 200);
+    //     }
+    // }
+
+    public function getUserProfile(Request $request)
+    {
+        try {
+            $userId = $request->user_id;
+
+            $user = User::where('id', $userId)
+                ->where('status', 1)
+                ->where('is_deleted', 0)
+                ->first([
+                    'id as user_id',
+                    'name',
+                    'email',
+                    'avatar',
+                    // 'gender',
+                    'phone_number as mobile',
+                    'city',
+                    'state',
+                    'pincode as zipcode',
+                    'landmark',
+                    'city'
+                ]);
+
+            if ($user) {
+                $base_url = $this->base_url . '/';
+                $userData = [
+                    'user_id' => (string) $user->user_id,
+                    'name' => $user->name ?? '',
+                    'email' => $user->email ?? '',
+                    'profile_pic' => $user->avatar ? $base_url . 'profile_images/' . $user->avatar : '',
+                    // 'gender' => $user->gender ?? '',
+                    'mobile' => $user->mobile ?? '',
+                    'city' => $user->city ?? '',
+                    'state' => $user->state ?? '',
+                    'zipcode' => $user->zipcode ?? '',
+                    'address' => $user->landmark . ', ' . $user->city . ', ' . $user->state . ', ' . $user->zipcode ?? ''
+                ];
+
+                // Get latest membership plan (where addon_id is null)
+                $memberPlanOrder = \DB::table('plan_orders')
+                    ->where('user_id', $userId)
+                    ->whereNull('addon_id')
+                    ->where('status', 1)
+                    ->where('is_deleted', 0)
+                    ->latest('created_at')
+                    ->first();
+
+                $memberPlan = (object) [];
+                if ($memberPlanOrder) {
+                    $plan = \DB::table('plans')->where('id', $memberPlanOrder->plan_id)->first();
+                    if ($plan) {
+                        $memberPlan = [
+                            'plan_name' => $plan->plan_name,
+                            'description' => $plan->description,
+                            'price' => $plan->price,
+                            'image' => $plan->image ? $base_url . 'plans/' . $plan->image : '',
+                            'validity' => $plan->validity,
+                            'purchase_status' => $memberPlanOrder->purchase_status,
+                            'total_amount' => $memberPlanOrder->total_amount,
+                        ];
+                    }
+                }
+
+                // Get all addon service plans
+                $addonOrders = \DB::table('plan_orders')
+                    ->where('user_id', $userId)
+                    ->whereNotNull('addon_id')
+                    ->where('status', 1)
+                    ->where('is_deleted', 0)
+                    ->get();
+
+                $addonservicePlan = [];
+                foreach ($addonOrders as $addon) {
+                    $addonPlan = \DB::table('plans')->where('id', $addon->addon_id)->first();
+                    if ($addonPlan) {
+                        $addonservicePlan[] = [
+                            'plan_name' => $addonPlan->plan_name,
+                            'description' => $addonPlan->description,
+                            'price' => $addonPlan->price,
+                            'image' => $addonPlan->image ? $base_url . 'plans/' . $addonPlan->image : '',
+                            'validity' => $addonPlan->validity,
+                            'purchase_status' => $addon->purchase_status,
+                            'total_amount' => $addon->total_amount,
+                        ];
+                    }
+                }
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Record found Successfully',
+                    'data' => [
+                        'user' => $userData,
+                        'memberPlan' => $memberPlan,
+                        'addonservicePlan' => $addonservicePlan
+                    ]
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not found',
+                    'data' => (object) []
+                ], 404);
+            }
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
+
+    public function getNotificationData()
+    {
+        $pushNotifications = DB::table('newsletter_subscriptions')->where('type', 'push')
+            ->select('id', 'user_id', 'email', 'is_active', 'type')
+            ->get();
+
+        $emailNotifications = DB::table('newsletter_subscriptions')->where('type', 'email')
+            ->select('id', 'user_id', 'email', 'is_active', 'type')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Notification data fetched successfully.',
+            'data' => [
+                'email' => $emailNotifications,
+                'push' => $pushNotifications
+            ]
+        ], 200);
+    }
+
+    public function updateNotificationData(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|exists:newsletter_subscriptions,id',
+                'user_id' => 'sometimes|exists:users,id',
+                'email' => 'sometimes|email',
+                'type' => 'sometimes',
+                'is_active' => 'sometimes|in:0,1',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $updateData = [];
+
+            if ($request->has('user_id')) {
+                $updateData['user_id'] = $request->user_id;
+            }
+
+            if ($request->has('is_active')) {
+                $updateData['is_active'] = $request->is_active;
+            }
+
+            if (!empty($updateData)) {
+                DB::table('newsletter_subscriptions')
+                    ->where('id', $request->id)
+                    ->update($updateData);
+            }
+            if (!empty($request->email)) {
+                DB::table('newsletter_subscriptions')
+                    ->where('id', $request->id)
+                    ->update(['email' => $request->email]);
+            }
+
+            if (!empty($request->type)) {
+                DB::table('newsletter_subscriptions')
+                    ->where('id', $request->id)
+                    ->update(['type' => $request->type]);
+            }
+
+            $updatedData = DB::table('newsletter_subscriptions')
+                ->where('id', $request->id)
+                ->first();
+
+            $notificationData = [
+                'id' => $updatedData->id,
+                'user_id' => $updatedData->user_id,
+                'email' => $updatedData->email,
+                'is_active' => $updatedData->is_active ?? 0,
+                'type' => $request->type ?? 'email',
+            ];
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Record updated Successfully',
+                'data' => $notificationData,
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function newsletterSubscription(Request $request)
+    {
+        $email = $request->email;
+
+        try {
+            if (!$email) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email is required',
+                    'data' => (object) []
+                ], 400);
+            }
+
+            // Check for duplicate subscription
+            $existing = DB::table('newsletter_subscriptions')
+                ->where('email', $email)
+                ->first();
+
+            if ($existing) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'This email is already subscribed',
+                    'data' => (object) $existing
+                ], 200); // 409 Conflict
+            }
+
+            // Insert new subscription
+            DB::table('newsletter_subscriptions')->insert([
+                'email' => $email,
+                'type' => 'email',
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Get the inserted data
+            $notification = DB::table('newsletter_subscriptions')
+                ->where('email', $email)
+                ->first();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Subscription successful',
+                'data' => (object) $notification
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    public function updateUserProfile(Request $request)
+    {
+        try {
+            $userId = $request->user_id;
+
+            if (!$userId) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User ID is required',
+                    'data' => (object) []
+                ], 400);
+            }
+
+            // Prepare data to update
+            $updateData = [];
+
+            if ($request->has('name')) {
+                $updateData['name'] = $request->name;
+            }
+
+            if ($request->has('email')) {
+                $updateData['email'] = $request->email;
+            }
+
+            if ($request->has('mobile')) {
+                // phone_number column in users table
+                $updateData['phone_number'] = $request->mobile;
+            }
+
+            if ($request->has('phone')) {
+                $updateData['alternate_phone'] = $request->phone;
+            }
+
+            if ($request->has('city')) {
+                $updateData['city'] = $request->city;
+            }
+
+            if ($request->has('state')) {
+                $updateData['state'] = $request->state;
+            }
+
+            if ($request->has('zipcode')) {
+                // pincode column in users table
+                $updateData['pincode'] = $request->zipcode;
+            }
+
+            if ($request->has('address')) {
+                // storing in landmark column
+                $updateData['landmark'] = $request->address;
+            }
+
+            // Handle profile_pic upload if present
+            if ($request->hasFile('profile_pic')) {
+                $file = $request->file('profile_pic');
+                $filename = time() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('profile_images'), $filename);
+                $updateData['avatar'] = $filename;
+            }
+
+            if (empty($updateData)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'No fields to update',
+                    'data' => (object) []
+                ], 400);
+            }
+
+            // Update the user record
+            DB::table('users')->where('id', $userId)->update($updateData);
+
+            // Fetch updated user data to return
+            $user = DB::table('users')
+                ->where('id', $userId)
+                ->where('status', 1)
+                ->where('is_deleted', 0)
+                ->first([
+                    'name',
+                    'email',
+                    'avatar',
+                    'phone_number as mobile',
+                    'alternate_phone as phone',
+                    'city',
+                    'state',
+                    'pincode as zipcode',
+                    'landmark as address'
+                ]);
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not found after update',
+                    'data' => (object) []
+                ], 404);
+            }
+
+            $base_url = $this->base_url . '/profile_images/';
+
+            $responseData = [
+                'name' => $user->name ?? '',
+                'email' => $user->email ?? '',
+                'phone' => $user->phone ?? '',
+                'profile_pic' => $user->avatar ? $base_url . $user->avatar : '',
+                'gender' => '', // as per your example, gender is blank
+                'mobile' => $user->mobile ?? '',
+                'city' => $user->city ?? '',
+                'state' => $user->state ?? '',
+                'zipcode' => $user->zipcode ?? '',
+                'address' => $user->address ?? '',
+            ];
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Profile updated Successfully',
+                'data' => $responseData
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+
+
+
 }

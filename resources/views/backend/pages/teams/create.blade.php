@@ -58,7 +58,7 @@ Team Create - Admin Panel
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">City</label>
                                 <input type="text" class="form-control" id="city" name="city" placeholder="Enter City"
-                                    required autofocus value="{{ old('city') }}" required>
+                                     autofocus value="{{ old('city') }}" >
                             </div>
 
                         </div>
@@ -91,7 +91,7 @@ Team Create - Admin Panel
                         </div>
 
                         <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
-                        <a href="{{ route('admin.client.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
+                        <a href="{{ route('admin.ourteam.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
                     </form>
                 </div>
             </div>

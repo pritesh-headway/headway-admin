@@ -59,7 +59,7 @@ Team Edit - Admin Panel
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Client City</label>
                                 <input type="text" class="form-control" id="city" name="city" placeholder="Enter City"
-                                    value="{{ $admin->city }}" required autofocus>
+                                    value="{{ $admin->city }}"  autofocus>
                             </div>
                         </div>
 

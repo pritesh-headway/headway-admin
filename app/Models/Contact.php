@@ -11,6 +11,6 @@ class Contact extends Model
 {
     use Notifiable, HasRoles;
     public $table = 'contacts';
-    protected $fillable = ['name', 'email', 'country_code', 'phone', 'message'];
+    protected $fillable = ['name', 'email', 'country_code', 'phone', 'message', 'city'];
     protected $primaryKey = 'id';
 }
