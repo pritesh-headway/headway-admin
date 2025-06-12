@@ -2110,7 +2110,6 @@ class ApiController extends Controller
             $ourClient = Client::where('status', 1)
                 ->where('is_featured', 0)
                 ->where('is_deleted', 0)
-                ->whereNotNull('description')
                 ->get()
                 ->map(function ($client) use ($base_url) {
                     return [
