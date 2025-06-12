@@ -132,9 +132,9 @@ class MembershipController extends Controller
         $planorder->save();
 
         $newData  = json_encode(array());
-        if ($request->membership_statuss == 'Approved') {
+        if ($request->is_verify == 1) {
             $message = "Plan membership has been approved by the admin. All details have been successfully verified.";
-        } else if ($request->membership_statuss == 'Declined') {
+        } else {
             $message = "Plan membership has been rejected by the admin. Please review the submitted details and try again.";
         }
         $body = array('receiver_id' => $admin->user_id, 'title' => $message, 'message' => $message, 'data' => $newData, 'content_available' => true);
