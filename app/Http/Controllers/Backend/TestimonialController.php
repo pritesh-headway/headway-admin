@@ -43,6 +43,8 @@ class TestimonialController extends Controller
         $admin = new Testimonial();
         $admin->title = $request->title;
         $admin->description = $request->desc;
+        $admin->city = $request->city;
+        $admin->rating = $request->rating;
         $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -87,6 +89,8 @@ class TestimonialController extends Controller
         $admin = Testimonial::findOrFail($id);
         $admin->title = $request->title;
         $admin->description = $request->desc;
+        $admin->city = $request->city;
+        $admin->rating = $request->rating;
         $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
