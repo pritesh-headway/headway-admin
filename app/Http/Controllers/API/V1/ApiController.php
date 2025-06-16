@@ -32,6 +32,7 @@ use App\Models\Services;
 use App\Models\UserDevices;
 use App\Models\Video;
 use App\Models\Setting;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 class ApiController extends Controller
@@ -167,6 +168,79 @@ class ApiController extends Controller
     /**
      * Login User
      */
+    // public function login(Request $request)
+    // {
+    //     try {
+    //         $validator = Validator::make($request->all(), [
+    //             'country_code' => 'required|digits:2',
+    //             'mobile' => 'required|min:10|digits:10',
+    //             'otp' => 'required|min:4|digits:4',
+    //             'device_type' => 'required',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             $result['status'] = false;
+    //             $result['message'] = $validator->errors()->first();
+    //             $result['data'] = (object) [];
+    //             return response()->json($result, 200);
+    //         }
+
+    //         $mobile = $request->mobile;
+    //         $otp = $request->otp;
+    //         $device_token = isset($request->device_token) ?? '';
+    //         $device_type = isset($request->device_type) ?? '';
+    //         $api_version = isset($request->api_version) ?? '';
+    //         $app_version = isset($request->app_version) ?? '';
+    //         $os_version = isset($request->os_version) ?? '';
+    //         $device_model_name = isset($request->device_model_name) ?? '';
+    //         $app_language = isset($request->app_language) ?? '';
+    //         $base_url = $this->base_url;
+    //         $user = User::where('phone_number', $mobile)->where('status', operator: 1)->first();
+    //         if (!$user || $user->otp !== $otp || Carbon::now()->greaterThan($user->otp_expires_at)) {
+    //             $result['status'] = false;
+    //             $result['message'] = 'Invalid OTP or OTP expired';
+    //             $result['data'] = (object) [];
+    //             return response()->json($result, 200);
+    //         }
+
+    //         // Create token or session
+    //         $token = $user->createToken('authToken')->plainTextToken;
+
+    //         $user->otp = null; // Clear the OTP
+    //         $user->otp_expires_at = null; // Clear OTP expiration
+    //         // $user->is_first_time = 0;
+    //         $user->remember_token = $token;
+    //         $user->save();
+
+    //         $arr = [
+    //             'status' => 1,
+    //             'device_token' => $device_token,
+    //             'device_type' => $device_type,
+    //             'api_version' => $api_version,
+    //             'app_version' => $app_version,
+    //             'os_version' => $os_version,
+    //             'device_model_name' => $device_model_name,
+    //             'login_token' => $token,
+    //             'user_id' => $user->id,
+    //         ];
+    //         DB::table('user_devices')->insertGetId($arr);
+    //         $userData = User::where('phone_number', $mobile)->where('status', operator: 1)->get();
+    //         $data = $userData->map(function ($user) use ($base_url, $token) {
+    //             return collect($user)->except(['password', 'email_verified_at', 'otp', 'otp_expires_at', 'remember_token'])
+    //                 ->put('user_id', $user['id'])
+    //                 ->put('token', $token)
+    //                 ->put('is_first_time', $user['is_first_time'])
+    //                 ->put('avatar', ($user['avatar']) ? $base_url . $this->profile_path . $user['avatar'] : '')
+    //                 ->toArray();
+    //         })->first();
+
+    //         return response()->json(['status' => true, 'message' => 'Login successfully!', 'data' => $data]);
+    //     } catch (\Throwable $th) {
+    //         return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+    //     }
+    // }
+
+
     public function login(Request $request)
     {
         try {
@@ -178,60 +252,43 @@ class ApiController extends Controller
             ]);
 
             if ($validator->fails()) {
-                $result['status'] = false;
-                $result['message'] = $validator->errors()->first();
-                $result['data'] = (object) [];
-                return response()->json($result, 200);
+                return response()->json(['status' => false, 'message' => $validator->errors()->first(), 'data' => (object) []], 200);
             }
 
-            $mobile = $request->mobile;
-            $otp = $request->otp;
-            $device_token = isset($request->device_token) ?? '';
-            $device_type = isset($request->device_type) ?? '';
-            $api_version = isset($request->api_version) ?? '';
-            $app_version = isset($request->app_version) ?? '';
-            $os_version = isset($request->os_version) ?? '';
-            $device_model_name = isset($request->device_model_name) ?? '';
-            $app_language = isset($request->app_language) ?? '';
-            $base_url = $this->base_url;
-            $user = User::where('phone_number', $mobile)->where('status', operator: 1)->first();
-            if (!$user || $user->otp !== $otp || Carbon::now()->greaterThan($user->otp_expires_at)) {
-                $result['status'] = false;
-                $result['message'] = 'Invalid OTP or OTP expired';
-                $result['data'] = (object) [];
-                return response()->json($result, 200);
+            $user = User::where('phone_number', $request->mobile)
+                ->where('status', 1)
+                ->first();
+
+            if (!$user || $user->otp !== $request->otp || Carbon::now()->greaterThan($user->otp_expires_at)) {
+                return response()->json(['status' => false, 'message' => 'Invalid OTP or OTP expired', 'data' => (object) []], 200);
             }
 
-            // Create token or session
-            $token = $user->createToken('authToken')->plainTextToken;
+            // Generate JWT token
+            $token = JWTAuth::fromUser($user);
 
-            $user->otp = null; // Clear the OTP
-            $user->otp_expires_at = null; // Clear OTP expiration
-            // $user->is_first_time = 0;
+            $user->otp = null;
+            $user->otp_expires_at = null;
             $user->remember_token = $token;
             $user->save();
 
-            $arr = [
+            DB::table('user_devices')->insertGetId([
                 'status' => 1,
-                'device_token' => $device_token,
-                'device_type' => $device_type,
-                'api_version' => $api_version,
-                'app_version' => $app_version,
-                'os_version' => $os_version,
-                'device_model_name' => $device_model_name,
+                'device_token' => $request->device_token ?? '',
+                'device_type' => $request->device_type,
+                'api_version' => $request->api_version ?? '',
+                'app_version' => $request->app_version ?? '',
+                'os_version' => $request->os_version ?? '',
+                'device_model_name' => $request->device_model_name ?? '',
                 'login_token' => $token,
                 'user_id' => $user->id,
+            ]);
+
+            $data = [
+                'user_id' => $user->id,
+                'token' => $token,
+                'is_first_time' => $user->is_first_time,
+                'avatar' => $user->avatar ? $this->base_url . $this->profile_path . $user->avatar : '',
             ];
-            DB::table('user_devices')->insertGetId($arr);
-            $userData = User::where('phone_number', $mobile)->where('status', operator: 1)->get();
-            $data = $userData->map(function ($user) use ($base_url, $token) {
-                return collect($user)->except(['password', 'email_verified_at', 'otp', 'otp_expires_at', 'remember_token'])
-                    ->put('user_id', $user['id'])
-                    ->put('token', $token)
-                    ->put('is_first_time', $user['is_first_time'])
-                    ->put('avatar', ($user['avatar']) ? $base_url . $this->profile_path . $user['avatar'] : '')
-                    ->toArray();
-            })->first();
 
             return response()->json(['status' => true, 'message' => 'Login successfully!', 'data' => $data]);
         } catch (\Throwable $th) {
@@ -2369,12 +2426,47 @@ class ApiController extends Controller
                 ->whereRaw('LOWER(name) LIKE ?', ['%all iN one brochure%'])
                 ->first();
 
+            $services = Services::select('id', 'name', 'service_desc', 'image')
+                ->where('status', 1)
+                ->where('parent_id', config('custome.BUSSINESS_ID'))
+                ->where('is_deleted', 0)
+                ->get();
+            $formatted = $services->map(function ($service, $index) {
+                // Proper CSV parsing to handle quoted strings with commas
+                $rawFeatures = str_getcsv($service->service_desc);
+
+                // Process and filter features
+                $features = collect($rawFeatures)
+                    ->map(function ($desc) {
+                        return trim(html_entity_decode($desc));
+                    })
+                    ->filter(function ($desc) {
+                        return !empty($desc) && $desc !== '""' && $desc !== '"';
+                    })
+                    ->values()
+                    ->map(function ($desc, $i) {
+                        return [
+                            'id' => $i + 1,
+                            'feature' => $desc,
+                        ];
+                    });
+
+                return [
+                    'id' => $service->id,
+                    'title' => $service->name,
+                    'imgUrl' => $service->image ? $this->base_url . '/services/' . $service->image : '',
+                    'features' => $features,
+                ];
+            });
+
+
             $brochureUrl = $brochure ? $base_url . $brochure->value : '';
 
             return response()->json([
                 'status' => true,
                 'message' => 'MMB Galleries fetched successfully',
                 'data' => [
+                    'mmb_services' => $formatted,
                     'galleries' => $galleries,
                     'brochure' => $brochureUrl
                 ]
