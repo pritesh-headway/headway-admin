@@ -58,7 +58,8 @@
                                     <th width="5%">{{ __('Sl') }}</th>
                                     <th width="10%">{{ __('Title') }}</th>
                                     <th width="10%">{{ __('Heading') }}</th>
-                                    <th width="40%">{{ __('Image') }}</th>
+                                    <th width="10%">{{ __('status') }}</th>
+                                    <th width="20%">{{ __('Image') }}</th>
                                     <th width="15%">{{ __('Action') }}</th>
                                 </tr>
                             </thead>
@@ -68,6 +69,7 @@
                                     <td>{{ $loop->index+1 }}</td>
                                     <td>{{ $admin->title }}</td>
                                     <td>{{ $admin->heading }}</td>
+                                    <td>{{ $admin->status == 1 ? 'Active' : 'Inactive' }}</td>
                                     <td><img src="{{ asset('/banners/') }}/{{ $admin->image }}" width="100px"
                                             height="80px"></td>
                                     <td>
