@@ -504,6 +504,12 @@
                             </a>
                     </li>
 
+                    <li
+                        class="{{ Route::is('admin.startups.index') || Route::is('admin.startups.edit') ? 'active' : '' }}">
+                        <a href="{{ route('admin.startups.index') }}"> <i class="fa fa-cog"></i><span></span>About Startups
+                            </a>
+                    </li>
+
                 </ul>
             </nav>
         </div>
