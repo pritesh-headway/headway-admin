@@ -2,37 +2,38 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Http\Controllers\Controller;
-use App\Models\AddOnPurchase;
+use Carbon\Carbon;
+use App\Models\Cms;
+use App\Models\Blog;
+use App\Models\Plan;
 use App\Models\Team;
 use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use App\Services\CurlApiService;
-use App\Services\FcmNotificationService;
 use App\Models\Addon;
-use App\Models\Banner;
-use App\Models\Blog;
-use App\Models\Client;
-use App\Models\Cms;
-use App\Models\Contact;
-use App\Models\MemberBatch;
-use App\Models\MemberModule;
-use App\Models\Membership;
-use App\Models\Modules;
-use App\Models\NotificationSetting;
-use App\Models\OurCourses;
-use App\Models\Plan;
-use App\Models\PlanPurchase;
-use App\Models\Service;
-use App\Models\Services;
-use App\Models\UserDevices;
 use App\Models\Video;
+use App\Models\Banner;
+use App\Models\Client;
+use App\Models\Contact;
+use App\Models\Modules;
+use App\Models\Service;
 use App\Models\Setting;
+use App\Models\Services;
+use App\Models\Membership;
+use App\Models\OurCourses;
+use App\Models\MemberBatch;
+use App\Models\UserDevices;
+use Illuminate\Support\Str;
+use App\Models\MemberModule;
+use App\Models\PlanPurchase;
+use Illuminate\Http\Request;
+use App\Models\AddOnPurchase;
+use App\Services\CurlApiService;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Models\NotificationSetting;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use App\Services\FcmNotificationService;
+use Illuminate\Support\Facades\Validator;
 
 
 class ApiController extends Controller
@@ -2110,6 +2111,10 @@ class ApiController extends Controller
 
     public function tokenVerify($token)
     {
+
+         if ($token && Str::startsWith($token, 'Bearer ')) {
+            $token = Str::replaceFirst('Bearer ', '', $token);
+        }
         $user = DB::table('user_devices')
             ->where('user_devices.login_token', '=', $token)
             ->where('user_devices.status', '=', 1)

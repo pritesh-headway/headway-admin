@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*', 'POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['*','https://headway.org.in/','http://192.168.1.13:3000/#/'],
 
     'allowed_origins_patterns' => [],
 

@@ -23,13 +23,24 @@ class CustomJwtMiddleware
     {
         try {
             // ✅ Step 1: Inject custom token header into standard Authorization
-            if ($request->hasHeader('token')) {
+            // if ($request->hasHeader('token')) {
+            //     $token = $request->header('token');
+            //     $request->headers->set('Authorization', 'Bearer ' . $token);
+            // }
+            $token = null;
+            if ($request->hasHeader('Authorization')) {
+                $token = $request->header('Authorization');
+                if (str_starts_with($token, 'Bearer ')) {
+                    $token = trim(str_replace('Bearer ', '', $token));
+                }
+            } elseif ($request->hasHeader('token')) {
                 $token = $request->header('token');
-                $request->headers->set('Authorization', 'Bearer ' . $token);
+            } else {
+                return response()->json(['status' => false, 'message' => 'Token not provided'], 401);
             }
 
             // ✅ Step 2: Retrieve the token
-            $token = JWTAuth::getToken();
+            // $token = JWTAuth::getToken();
             if (!$token) {
                 return response()->json(['status' => false, 'message' => 'Token not provided'], 401);
             }
@@ -46,7 +57,6 @@ class CustomJwtMiddleware
 
             // ✅ Step 5: Set authenticated user for current request
             auth()->setUser($user);
-
         } catch (TokenExpiredException $e) {
             return response()->json(['status' => false, 'message' => 'Token has expired'], 401);
         } catch (TokenInvalidException $e) {
@@ -56,6 +66,7 @@ class CustomJwtMiddleware
         } catch (Exception $e) {
             return response()->json(['status' => false, 'message' => 'Authorization error', 'error' => $e->getMessage()], 500);
         }
+        // dd("here");
 
         return $next($request);
     }
