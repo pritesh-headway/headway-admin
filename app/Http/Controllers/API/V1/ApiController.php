@@ -2127,7 +2127,7 @@ class ApiController extends Controller
                 ->first();
 
             // 5. Banner Popup
-            $bannerPopup = Banner::where('is_popup', 1)->where('status', 1)
+            $bannerPopup = Banner::where('is_popup', 1)->where('status', 1)->where('is_deleted', 0)
                 ->first();
 
             $genSettings = DB::table('settings')
