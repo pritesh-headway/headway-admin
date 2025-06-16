@@ -509,6 +509,8 @@
                 }
             ],
             "time": "2025-03-06T22:45:56+00:00"
+<<<<<<< HEAD
+=======
         },
         {
             "name": "firebase/php-jwt",
@@ -572,6 +574,7 @@
                 "source": "https://github.com/firebase/php-jwt/tree/v6.11.1"
             },
             "time": "2025-04-09T20:32:01+00:00"
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
         },
         {
             "name": "fruitcake/php-cors",
@@ -715,7 +718,7 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.397.1",
+            "version": "v0.398.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
@@ -753,7 +756,7 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.397.1"
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.398.0"
             },
             "time": "2025-06-04T17:28:44+00:00"
         },
@@ -1293,6 +1296,18 @@
         },
         {
             "name": "laravel/framework",
+<<<<<<< HEAD
+            "version": "v11.45.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/framework.git",
+                "reference": "b09ba32795b8e71df10856a2694706663984a239"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/b09ba32795b8e71df10856a2694706663984a239",
+                "reference": "b09ba32795b8e71df10856a2694706663984a239",
+=======
             "version": "v11.45.0",
             "source": {
                 "type": "git",
@@ -1303,6 +1318,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/laravel/framework/zipball/d0730deb427632004d24801be7ca1ed2c10fbc4e",
                 "reference": "d0730deb427632004d24801be7ca1ed2c10fbc4e",
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
                 "shasum": ""
             },
             "require": {
@@ -1504,7 +1520,11 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
+<<<<<<< HEAD
+            "time": "2025-06-03T14:01:40+00:00"
+=======
             "time": "2025-05-20T15:15:58+00:00"
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
         },
         {
             "name": "laravel/prompts",
@@ -2871,6 +2891,8 @@
                 }
             ],
             "time": "2025-05-08T08:14:37+00:00"
+<<<<<<< HEAD
+=======
         },
         {
             "name": "paragonie/constant_time_encoding",
@@ -2988,6 +3010,7 @@
                 "source": "https://github.com/paragonie/random_compat"
             },
             "time": "2020-10-15T08:29:30+00:00"
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
         },
         {
             "name": "phpoption/phpoption",
@@ -6569,6 +6592,18 @@
         },
         {
             "name": "filp/whoops",
+<<<<<<< HEAD
+            "version": "2.18.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/filp/whoops.git",
+                "reference": "89dabca1490bc77dbcab41c2b20968c7e44bf7c3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/filp/whoops/zipball/89dabca1490bc77dbcab41c2b20968c7e44bf7c3",
+                "reference": "89dabca1490bc77dbcab41c2b20968c7e44bf7c3",
+=======
             "version": "2.18.0",
             "source": {
                 "type": "git",
@@ -6579,6 +6614,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/filp/whoops/zipball/a7de6c3c6c3c022f5cfc337f8ede6a14460cf77e",
                 "reference": "a7de6c3c6c3c022f5cfc337f8ede6a14460cf77e",
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
                 "shasum": ""
             },
             "require": {
@@ -6628,7 +6664,11 @@
             ],
             "support": {
                 "issues": "https://github.com/filp/whoops/issues",
+<<<<<<< HEAD
+                "source": "https://github.com/filp/whoops/tree/2.18.2"
+=======
                 "source": "https://github.com/filp/whoops/tree/2.18.0"
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
             },
             "funding": [
                 {
@@ -6636,7 +6676,11 @@
                     "type": "github"
                 }
             ],
+<<<<<<< HEAD
+            "time": "2025-06-11T20:42:19+00:00"
+=======
             "time": "2025-03-15T12:00:00+00:00"
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -6963,6 +7007,25 @@
         },
         {
             "name": "nunomaduro/collision",
+<<<<<<< HEAD
+            "version": "v8.8.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nunomaduro/collision.git",
+                "reference": "44ccb82e3e21efb5446748d2a3c81a030ac22bd5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nunomaduro/collision/zipball/44ccb82e3e21efb5446748d2a3c81a030ac22bd5",
+                "reference": "44ccb82e3e21efb5446748d2a3c81a030ac22bd5",
+                "shasum": ""
+            },
+            "require": {
+                "filp/whoops": "^2.18.1",
+                "nunomaduro/termwind": "^2.3.1",
+                "php": "^8.2.0",
+                "symfony/console": "^7.3.0"
+=======
             "version": "v8.8.0",
             "source": {
                 "type": "git",
@@ -6980,6 +7043,7 @@
                 "nunomaduro/termwind": "^2.3.0",
                 "php": "^8.2.0",
                 "symfony/console": "^7.2.5"
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
             },
             "conflict": {
                 "laravel/framework": "<11.44.2 || >=13.0.0",
@@ -6987,6 +7051,17 @@
             },
             "require-dev": {
                 "brianium/paratest": "^7.8.3",
+<<<<<<< HEAD
+                "larastan/larastan": "^3.4.2",
+                "laravel/framework": "^11.44.2 || ^12.18",
+                "laravel/pint": "^1.22.1",
+                "laravel/sail": "^1.43.1",
+                "laravel/sanctum": "^4.1.1",
+                "laravel/tinker": "^2.10.1",
+                "orchestra/testbench-core": "^9.12.0 || ^10.4",
+                "pestphp/pest": "^3.8.2",
+                "sebastian/environment": "^7.2.1 || ^8.0"
+=======
                 "larastan/larastan": "^3.2",
                 "laravel/framework": "^11.44.2 || ^12.6",
                 "laravel/pint": "^1.21.2",
@@ -6996,6 +7071,7 @@
                 "orchestra/testbench-core": "^9.12.0 || ^10.1",
                 "pestphp/pest": "^3.8.0",
                 "sebastian/environment": "^7.2.0 || ^8.0"
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
             },
             "type": "library",
             "extra": {
@@ -7058,7 +7134,11 @@
                     "type": "patreon"
                 }
             ],
+<<<<<<< HEAD
+            "time": "2025-06-11T01:04:21+00:00"
+=======
             "time": "2025-04-03T14:33:09+00:00"
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
         },
         {
             "name": "phar-io/manifest",
@@ -7503,6 +7583,18 @@
         },
         {
             "name": "phpunit/phpunit",
+<<<<<<< HEAD
+            "version": "11.5.22",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sebastianbergmann/phpunit.git",
+                "reference": "4cd72faaa8f811e4cc63040cba167757660a5538"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4cd72faaa8f811e4cc63040cba167757660a5538",
+                "reference": "4cd72faaa8f811e4cc63040cba167757660a5538",
+=======
             "version": "11.5.21",
             "source": {
                 "type": "git",
@@ -7513,6 +7605,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/d565e2cdc21a7db9dc6c399c1fc2083b8010f289",
                 "reference": "d565e2cdc21a7db9dc6c399c1fc2083b8010f289",
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
                 "shasum": ""
             },
             "require": {
@@ -7584,7 +7677,11 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
+<<<<<<< HEAD
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.22"
+=======
                 "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.21"
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
             },
             "funding": [
                 {
@@ -7608,7 +7705,11 @@
                     "type": "tidelift"
                 }
             ],
+<<<<<<< HEAD
+            "time": "2025-06-06T02:48:05+00:00"
+=======
             "time": "2025-05-21T12:35:00+00:00"
+>>>>>>> 7db302c624d6c37b7bd7d7d761c1d6b9e2fda878
         },
         {
             "name": "sebastian/cli-parser",
@@ -9105,12 +9206,12 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "platform-dev": [],
+    "plugin-api-version": "2.2.0"
 }
