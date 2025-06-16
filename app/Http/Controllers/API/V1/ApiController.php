@@ -1031,52 +1031,117 @@ class ApiController extends Controller
     /**
      * get make business list.
      */
+    // public function getBusinessList(Request $request)
+    // {
+    //     try {
+    //         $base_url = $this->base_url;
+    //         $user_id = $request->user_id;
+    //         $loginType = $request->user_type;
+    //         $token = $request->header('token');
+    //         $checkToken = $this->tokenVerify($token);
+    //         $page_number = $request->page;
+
+    //         $userData = json_decode($checkToken->getContent(), true);
+    //         if ($userData['status'] == false) {
+    //             return $checkToken->getContent();
+    //         }
+    //         $startupPaginator = Services::select('id', 'name', 'service_desc')->where('status', 1)->where('parent_id', config('custome.BUSSINESS_ID'))->where('is_deleted', 0)->get();
+
+    //         $result = [];
+    //         $finalData = [];
+    //         $id = 1;
+
+    //         foreach ($startupPaginator as $li) {
+    //             $result = [
+    //                 'name' => $li['name'],
+    //                 'id' => $li['id'],
+    //                 'points' => [],
+    //             ];
+
+    //             $lis = explode(',', $li['service_desc']); // Split service_desc into an array
+    //             foreach ($lis as $value) {
+    //                 $result['points'][] = [
+    //                     'id' => $id,
+    //                     'name' => trim($value), // Trim whitespace
+    //                 ];
+    //                 $id++;
+    //             }
+
+    //             $finalData[] = $result; // Add the processed result to finalData
+    //         }
+
+    //         // dd($finalData);
+
+    //         return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully.', 'data' => $finalData], 200);
+    //     } catch (\Throwable $th) {
+    //         return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+    //     }
+    // }
+
     public function getBusinessList(Request $request)
     {
         try {
-            $base_url = $this->base_url;
-            $user_id = $request->user_id;
-            $loginType = $request->user_type;
+            $base_url = $this->base_url . '/';
             $token = $request->header('token');
             $checkToken = $this->tokenVerify($token);
-            $page_number = $request->page;
 
             $userData = json_decode($checkToken->getContent(), true);
             if ($userData['status'] == false) {
                 return $checkToken->getContent();
             }
-            $startupPaginator = Services::select('id', 'name', 'service_desc')->where('status', 1)->where('parent_id', config('custome.BUSSINESS_ID'))->where('is_deleted', 0)->get();
 
-            $result = [];
-            $finalData = [];
-            $id = 1;
+            $services = Services::select('id', 'name', 'service_desc', 'image')
+                ->where('status', 1)
+                ->where('parent_id', config('custome.BUSSINESS_ID'))
+                ->where('is_deleted', 0)
+                ->get();
 
-            foreach ($startupPaginator as $li) {
-                $result = [
-                    'name' => $li['name'],
-                    'id' => $li['id'],
-                    'points' => [],
+            $formatted = $services->map(function ($service, $index) use ($base_url) {
+                // Decode HTML entities and normalize various quote types
+                $csvInput = html_entity_decode($service->service_desc, ENT_QUOTES | ENT_HTML5);
+                $csvInput = str_replace(['&quot;', '&#34;', '“', '”'], '"', $csvInput);
+
+                // Parse with str_getcsv to respect quoted values
+                $rawFeatures = str_getcsv($csvInput);
+
+                $features = collect($rawFeatures)
+                    ->map(function ($desc) {
+                        return trim(strip_tags($desc));
+                    })
+                    ->filter(function ($desc) {
+                        return !empty($desc) && $desc !== '""' && $desc !== '"';
+                    })
+                    ->values()
+                    ->map(function ($desc, $i) {
+                        return [
+                            'id' => $i + 1,
+                            'name' => $desc,
+                        ];
+                    });
+
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'image' => $service->image ? $base_url . 'services/' . $service->image : '',
+                    'points' => $features,
                 ];
+            });
 
-                $lis = explode(',', $li['service_desc']); // Split service_desc into an array
-                foreach ($lis as $value) {
-                    $result['points'][] = [
-                        'id' => $id,
-                        'name' => trim($value), // Trim whitespace
-                    ];
-                    $id++;
-                }
-
-                $finalData[] = $result; // Add the processed result to finalData
-            }
-
-            // dd($finalData);
-
-            return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully.', 'data' => $finalData], 200);
+            return response()->json([
+                'status' => true,
+                'message' => 'Business list fetched successfully.',
+                'data' => $formatted
+            ], 200);
         } catch (\Throwable $th) {
-            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
         }
     }
+
+
 
     /**
      * get development business list.
