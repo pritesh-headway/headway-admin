@@ -8,6 +8,7 @@
  */
 // error_reporting(0);
 // dd(21);
+
 define('LARAVEL_START', microtime(true));
 
 /*

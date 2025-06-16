@@ -26,6 +26,10 @@ class ProfileController extends Controller
      */
     public function updateProfile(Request $request)
     {
+	header('Access-Control-Allow-Origin: https://yourdomain.com');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('Access-Control-Allow-Credentials: true');
 
         $token = $request->header('token') ?? $request->header('Authorization');
         if ($token && Str::startsWith($token, 'Bearer ')) {
@@ -112,6 +116,10 @@ class ProfileController extends Controller
      */
     public function getProfile(Request $request)
     {
+header('Access-Control-Allow-Origin: https://yourdomain.com');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('Access-Control-Allow-Credentials: true');
         try {
             $token = $request->header('token') ?? $request->header('Authorization');
             if ($token && Str::startsWith($token, 'Bearer ')) {
