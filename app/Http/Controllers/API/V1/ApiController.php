@@ -2112,7 +2112,7 @@ class ApiController extends Controller
     public function tokenVerify($token)
     {
 
-         if ($token && Str::startsWith($token, 'Bearer ')) {
+        if ($token && Str::startsWith($token, 'Bearer ')) {
             $token = Str::replaceFirst('Bearer ', '', $token);
         }
         $user = DB::table('user_devices')
@@ -2437,13 +2437,19 @@ class ApiController extends Controller
                 ->where('is_deleted', 0)
                 ->get();
             $formatted = $services->map(function ($service, $index) {
-                // Proper CSV parsing to handle quoted strings with commas
-                $rawFeatures = str_getcsv($service->service_desc);
+                // Step 1: Decode HTML entities and normalize quotes
+                $csvInput = html_entity_decode($service->service_desc, ENT_QUOTES | ENT_HTML5);
 
-                // Process and filter features
+                // Step 2: Normalize various quote types to standard double quotes
+                $csvInput = str_replace(['&quot;', '&#34;', '“', '”'], '"', $csvInput);
+
+                // Step 3: Parse using str_getcsv which respects quoted strings
+                $rawFeatures = str_getcsv($csvInput);
+
                 $features = collect($rawFeatures)
                     ->map(function ($desc) {
-                        return trim(html_entity_decode($desc));
+                        // Remove any HTML tags, but preserve quoted content
+                        return trim(strip_tags($desc));
                     })
                     ->filter(function ($desc) {
                         return !empty($desc) && $desc !== '""' && $desc !== '"';
@@ -2463,6 +2469,7 @@ class ApiController extends Controller
                     'features' => $features,
                 ];
             });
+
 
 
             $brochureUrl = $brochure ? $base_url . $brochure->value : '';
