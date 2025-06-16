@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use Google\Service\Dataproc\StartupConfig;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,7 @@ use App\Http\Controllers\Backend\ServiceController;
 use App\Http\Controllers\Backend\ServicesController;
 use App\Http\Controllers\Backend\TestimonialController;
 use App\Http\Controllers\Backend\VideoGalleryController;
+use App\Http\Controllers\Backend\StartupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +69,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::resource('testimonial', TestimonialController::class);
     Route::resource('contact', ContactController::class);
     Route::resource('service', ServiceController::class);
+    Route::resource('startups',StartupController::class);
     Route::resource('batch', BatchController::class);
     Route::resource('addonservice', AddOnServiceController::class);
     Route::resource('videogallery', VideoGalleryController::class);
