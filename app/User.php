@@ -42,6 +42,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+
+
+
     public static function getpermissionGroups()
     {
         $permission_groups = DB::table('permissions')

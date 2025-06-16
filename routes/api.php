@@ -20,22 +20,18 @@ use App\Http\Controllers\API\V1\ProfileController;
 //     return $request->user();
 // });
 
-Route::options('{any}', function () {
-    return response('', 200)
-        ->header('Access-Control-Allow-Origin', '*')
-        ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-        ->header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization');
-})->where('any', '.*');
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware('jwt.verify')->get('/user', function (Request $request) {
     return $request->user();
 });
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::post('v1/sendOtp', [ApiController::class, 'sendOtp']);
 Route::post('v1/login', [ApiController::class, 'login']);
 Route::post('v1/resend_otp', [ApiController::class, 'resendOtp']);
 Route::post('v1/profile/update', [ProfileController::class, 'updateProfile']);
-Route::post('v1/profile/getProfile', [ProfileController::class, 'getProfile']);
+Route::post('v1/profile/getProfile', [ProfileController::class, 'getProfile'])->middleware('jwt.verify');
 Route::post('v1/getBlogsList', [ApiController::class, 'getBlogsList']);
 Route::post('v1/getPlanList', [ApiController::class, 'getPlanList']);
 Route::post('v1/getPlanDetail', [ApiController::class, 'getPlanDetail']);
