@@ -2127,7 +2127,7 @@ class ApiController extends Controller
                 ->first();
 
             // 5. Banner Popup
-            $bannerPopup = Banner::where('is_popup', 1)
+            $bannerPopup = Banner::where('is_popup', 1)->where('status', 1)->where('is_deleted', 0)
                 ->first();
 
             $genSettings = DB::table('settings')
@@ -2298,10 +2298,23 @@ class ApiController extends Controller
                 ->first();
 
             $brochureUrl = $brochure ? $base_url . '/' . $brochure->value : '';
-            $clientTestimonials = DB::table('clients')
+            // $clientTestimonials = DB::table('clients')
+            //     ->where('status', 1)
+            //     ->where('is_deleted', 0)
+            //     ->get(['id', 'name', 'image', 'description as comment', 'city as location'])
+            //     ->map(function ($item) use ($base_url) {
+            //         return [
+            //             'id' => $item->id,
+            //             'name' => $item->name,
+            //             'image' => $base_url . '/clients/' . $item->image,
+            //             'location' => $item->location,
+            //             'comment' => $item->comment,
+            //         ];
+            //     });
+            $clientTestimonials = DB::table('testimonials')
                 ->where('status', 1)
                 ->where('is_deleted', 0)
-                ->get(['id', 'name', 'image', 'description as comment', 'city as location'])
+                ->get(['id', 'title as  name', 'image', 'description as comment', 'city as location', 'rating'])
                 ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
@@ -2309,6 +2322,7 @@ class ApiController extends Controller
                         'image' => $base_url . '/clients/' . $item->image,
                         'location' => $item->location,
                         'comment' => $item->comment,
+                        'rating' => $item->rating ? (int) $item->rating : 0, // Ensure rating is an integer
                     ];
                 });
 
@@ -2355,7 +2369,7 @@ class ApiController extends Controller
                 ->whereRaw('LOWER(name) LIKE ?', ['%all iN one brochure%'])
                 ->first();
 
-            $brochureUrl = $brochure ? $base_url . '/' . $brochure->value : '';
+            $brochureUrl = $brochure ? $base_url . $brochure->value : '';
 
             return response()->json([
                 'status' => true,

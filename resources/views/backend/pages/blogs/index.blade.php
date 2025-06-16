@@ -58,7 +58,8 @@
                                     <th width="5%">{{ __('Sl') }}</th>
                                     <th width="10%">{{ __('Title') }}</th>
                                     <th width="10%">{{ __('Author') }}</th>
-                                    <th width="40%">{{ __('Image') }}</th>
+                                    <th width="20%">{{ __('Image') }}</th>
+                                    <th width="10%">{{ __('Status') }}</th>
                                     <th width="15%">{{ __('Action') }}</th>
                                 </tr>
                             </thead>
@@ -70,6 +71,7 @@
                                     <td>{{ $admin->author }}</td>
                                     <td><img src="{{ asset('/blogs/') }}/{{ $admin->image }}" width="100px"
                                             height="80px"></td>
+                                    <td>{{ $admin->status == 1 ? 'Active' : 'Inactive' }}</td>
                                     <td>
                                         @if (auth()->user()->can('blogs.edit'))
                                         <a class="btn btn-success text-white"
