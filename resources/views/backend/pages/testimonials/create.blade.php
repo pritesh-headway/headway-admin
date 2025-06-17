@@ -22,11 +22,11 @@ Testimonial Create - Admin Panel
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">Testimonial Create</h4>
+                <h4 class="page-title pull-left">Client Review Create</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ route('admin.testimonial.index') }}">All Testimonials</a></li>
-                    <li><span>Create Testimonial</span></li>
+                    <li><a href="{{ route('admin.testimonial.index') }}">All Client Reviews</a></li>
+                    <li><span>Create Client Review</span></li>
                 </ul>
             </div>
         </div>
@@ -43,7 +43,7 @@ Testimonial Create - Admin Panel
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title">Create New Testimonial</h4>
+                    <h4 class="header-title">Create New Client Review</h4>
                     @include('backend.layouts.partials.messages')
 
                     <form action="{{ route('admin.testimonial.store') }}" method="POST" enctype="multipart/form-data">

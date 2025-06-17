@@ -30,6 +30,7 @@ use App\Http\Controllers\Backend\ServicesController;
 use App\Http\Controllers\Backend\TestimonialController;
 use App\Http\Controllers\Backend\VideoGalleryController;
 use App\Http\Controllers\Backend\StartupController;
+use App\Http\Controllers\GalleryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,7 +70,22 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::resource('testimonial', TestimonialController::class);
     Route::resource('contact', ContactController::class);
     Route::resource('service', ServiceController::class);
-    Route::resource('startups',StartupController::class);
+    Route::resource('startups', StartupController::class);
+    // Route::resource('gallery', GalleryController::class);
+    // Gallery Index
+    Route::get('gallery', [GalleryController::class, 'index'])->name('gallery.index');
+
+    // Create Gallery (requires ?type=ssu or ?type=mmb)
+    Route::get('gallery/create', [GalleryController::class, 'create'])->name('gallery.create');
+    Route::post('gallery/store', [GalleryController::class, 'store'])->name('gallery.store');
+
+    // Edit Gallery (pass both ID and type in query)
+    Route::get('gallery/{id}/edit', [GalleryController::class, 'edit'])->name('gallery.edit');
+    Route::post('gallery/{id}/update', [GalleryController::class, 'update'])->name('gallery.update');
+
+    // Delete Gallery (pass both ID and type as route parameters)
+    Route::get('gallery/{id}/delete/{type}', [GalleryController::class, 'destroy'])->name('gallery.delete');
+
     Route::resource('batch', BatchController::class);
     Route::resource('addonservice', AddOnServiceController::class);
     Route::resource('videogallery', VideoGalleryController::class);

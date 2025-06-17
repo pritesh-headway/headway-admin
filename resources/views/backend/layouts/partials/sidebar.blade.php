@@ -416,7 +416,7 @@
                             $usr->can('testimonial.delete'))
                         <li>
                             <a href="javascript:void(0)" aria-expanded="true"><i
-                                    class="fa fa-thumbs-up"></i><span>Testimonials</span>
+                                    class="fa fa-thumbs-up"></i><span>Client Reviews</span>
                             </a>
                             <ul
                                 class="collapse {{ Route::is('admin.testimonial.create') || Route::is('admin.testimonial.index') || Route::is('admin.testimonial.edit') || Route::is('admin.testimonial.show') ? 'in' : '' }}">
@@ -424,13 +424,13 @@
                                 @if ($usr->can('testimonial.view'))
                                     <li
                                         class="{{ Route::is('admin.testimonial.index') || Route::is('admin.testimonial.edit') ? 'active' : '' }}">
-                                        <a href="{{ route('admin.testimonial.index') }}">All Testimonials</a>
+                                        <a href="{{ route('admin.testimonial.index') }}">All Client Reviews</a>
                                     </li>
                                 @endif
 
                                 @if ($usr->can('testimonial.create'))
                                     <li class="{{ Route::is('admin.testimonial.create') ? 'active' : '' }}"><a
-                                            href="{{ route('admin.testimonial.create') }}">Create Testimonial</a></li>
+                                            href="{{ route('admin.testimonial.create') }}">Create Client Review</a></li>
                                 @endif
                             </ul>
                         </li>
@@ -507,6 +507,12 @@
                     <li
                         class="{{ Route::is('admin.startups.index') || Route::is('admin.startups.edit') ? 'active' : '' }}">
                         <a href="{{ route('admin.startups.index') }}"> <i class="fa fa-cog"></i><span></span>About Startups
+                            </a>
+                    </li>
+
+                     <li
+                        class="{{ Route::is('admin.gallery.index') || Route::is('admin.gallery.edit') ? 'active' : '' }}">
+                        <a href="{{ route('admin.gallery.index') }}"> <i class="fa fa-cog"></i><span></span>MMB & SSU Gallery
                             </a>
                     </li>
 

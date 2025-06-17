@@ -21,11 +21,11 @@ Testimonial Edit - Admin Panel
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">Testimonial Edit</h4>
+                <h4 class="page-title pull-left">Client Review Edit</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ route('admin.testimonial.index') }}">All Testimonials</a></li>
-                    <li><span>Edit Testimonial - {{ $admin->title }}</span></li>
+                    <li><a href="{{ route('admin.testimonial.index') }}">All Client Reviews</a></li>
+                    <li><span>Edit Client Review - {{ $admin->title }}</span></li>
                 </ul>
             </div>
         </div>
@@ -42,7 +42,7 @@ Testimonial Edit - Admin Panel
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title">Edit Testimonial - {{ $admin->title }}</h4>
+                    <h4 class="header-title">Edit Client Review - {{ $admin->title }}</h4>
                     @include('backend.layouts.partials.messages')
 
                     <form action="{{ route('admin.testimonial.update', $admin->id) }}" method="POST"
@@ -67,14 +67,14 @@ Testimonial Edit - Admin Panel
                                 <label for="city">City/Location</label>
                                 <input type="text" class="form-control" id="city" name="city"
                                     placeholder="Enter City" value="{{ $admin->city }}">
-                          
+
                         </div>
 
                         <div class="form-row">
                                 <label for="rating">Rating</label>
                                 <input type="text" class="form-control" id="rating" name="rating"
                                     placeholder="Enter rating" value="{{ $admin->rating }}">
-                         
+
                         </div>
 
 
