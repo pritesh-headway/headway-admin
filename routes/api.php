@@ -91,3 +91,6 @@ Route::post('v1/newsletter_subscription', [ApiController::class, 'newsletterSubs
 Route::post('v1/update_notification_data', [ApiController::class, 'updateNotificationData']);
 Route::post('v1/user_profile_update', [ApiController::class, 'updateUserProfile']);
 Route::post('v1/gen_settings', [ApiController::class, 'getGeneralSettings']);
+Route::post('v1/idb_page', [ApiController::class, 'getIdbPage']);
+Route::post('v1/intelligent_hr', [ApiController::class, 'getIntelligentHR']);
+Route::post('v1/jewellery_vidyapith', [ApiController::class, 'getJewelleryVidyapith']);

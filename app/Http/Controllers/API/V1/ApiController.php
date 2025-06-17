@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Models\Testimonial;
 use Carbon\Carbon;
 use App\Models\Cms;
 use App\Models\Blog;
@@ -3215,6 +3216,129 @@ class ApiController extends Controller
     }
 
 
+    public function getIdbPage()
+    {
+        try {
+            $base_url = $this->base_url . '/';
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
 
+            $idplist = Services::where('status', 1)->where('is_deleted', 0)->where('parent_id', config('custome.DEVELOPMENT_BUSSINESS_ID'))->get();
+            $idplist = $idplist->map(function ($item) use ($base_url) {
+                return [
+                    'id' => $item->id,
+                    'title' => $item->name,
+                    'image' => $item->image ? $base_url . '/services/' . $item->image : '',
+                    'description' => $item->service_desc,
+                ];
+            });
+
+            $reviews = Testimonial::where('status', 1)
+                ->where('is_deleted', 0)
+                ->get(['id', 'title as name', 'image', 'description as comment', 'city as location', 'rating'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'name' => $item->name,
+                        'image' => $item->image ? $base_url . '/testimonials/' . $item->image : '',
+                        'location' => $item->location,
+                        'comment' => $item->comment,
+                        'rating' => $item->rating ? (int) $item->rating : 0, // Ensure rating is an integer
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'IDP Page data fetched successfully',
+                'data' => [
+                    'idplist' => $idplist,
+                    'reviews' => $reviews
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getIntelligentHR()
+    {
+        try {
+            $base_url = $this->base_url . '/';
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+
+            $services = Services::where('status', 1)
+                ->where('is_deleted', 0)
+                ->where('parent_id', config('custome.HR_ID'))
+                ->get(['id', 'name', 'service_desc', 'image'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'title' => $item->name,
+                        'description' => $item->service_desc,
+                        'image' => $item->image ? $base_url . 'services/' . $item->image : '',
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Intelligent HR data fetched successfully',
+                'data' => [
+                    'services' => $services
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getJewelleryVidyapith()
+    {
+        // this function to get the ssu gallery data and youtube_link from gen_settings table
+        try {
+            $base_url = $this->base_url . '/';
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+            $galleries = DB::table('ssu_galleries')
+                ->get(['id', 'title', 'images'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'title' => $item->title,
+                        'image' => $base_url . 'ssu_gallery/' . $item->images
+                    ];
+                });
+
+            $youtubeLink = DB::table('settings')
+                ->where('name', 'youtube_intro')
+                ->value('value');
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Jewellery Vidyapith data fetched successfully',
+                'data' => [
+                    'galleries' => $galleries,
+                    'youtube_link' => $youtubeLink
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
 
 }
