@@ -1504,16 +1504,16 @@ class ApiController extends Controller
                 'email' => 'required|email',
                 'date_of_anniversary' => 'nullable|date',
                 'nationality' => 'required|string|max:255',
-                // 'personal_ContactPerson_email' => 'required|email',
+                'personal_ContactPerson_email' => 'required|email',
 
                 // Address
                 'address' => 'required|string|max:500',
                 'city' => 'required|string|max:255',
                 'state' => 'required|string|max:255',
                 'pincode' => 'required|digits:6',
-                // 'landline_no' => 'nullable|digits_between:6,15',
-                // 'contact_person_name' => 'nullable|string|max:255',
-                // 'contact_person_mobile' => 'nullable|digits:10',
+                'landline_no' => 'nullable',
+                'contact_person_name' => 'nullable|string|max:255',
+                'contact_person_mobile' => 'nullable|digits:10',
 
                 // Business Information
                 'organization_name' => 'required|string|max:255',
@@ -1522,22 +1522,22 @@ class ApiController extends Controller
                 'bussiness_pincode' => 'required|digits:6',
                 'bussiness_landline_no' => 'nullable',
                 'bussiness_email' => 'required|email',
-                // 'fax_no' => 'required',
+                'fax_no' => 'nullable',
                 'registered_office_address' => 'required|string|max:500',
                 'gst_no' => 'required|regex:/^(\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1})$/',
                 'pan_no' => 'required|regex:/^[A-Z]{5}\d{4}[A-Z]{1}$/',
                 'date_of_incorporation' => 'required|date',
                 'organization_type' => 'required|string|max:255',
-                // 'business_fax_no' => 'required',
+                'business_fax_no' => 'nullable',
                 'business_ContactPerson_name' => 'required|string|max:255',
                 'business_ContactPerson_mobile' => 'required|digits:10',
 
                 // Bank Details
-                // 'bank_name' => 'required|string|max:255',
-                // 'account_no' => 'required|digits_between:9,18',
-                // 'branch_name' => 'required|string|max:255',
-                // 'account_operation_since' => 'required',
-                // 'branch_address' => 'required|string',
+                'bank_name' => 'required|string|max:255',
+                'account_no' => 'required|digits_between:9,18',
+                'branch_name' => 'required|string|max:255',
+                'account_operation_since' => 'required',
+                'branch_address' => 'required|string',
 
                 //  Product Details
                 'product_id' => 'required',
@@ -2110,7 +2110,6 @@ class ApiController extends Controller
             $ourClient = Client::where('status', 1)
                 ->where('is_featured', 0)
                 ->where('is_deleted', 0)
-                ->whereNotNull('description')
                 ->get()
                 ->map(function ($client) use ($base_url) {
                     return [
@@ -2128,7 +2127,7 @@ class ApiController extends Controller
                 ->first();
 
             // 5. Banner Popup
-            $bannerPopup = Banner::where('is_popup', 1)
+            $bannerPopup = Banner::where('is_popup', 1)->where('status', 1)->where('is_deleted', 0)
                 ->first();
 
             $genSettings = DB::table('settings')
@@ -2299,10 +2298,23 @@ class ApiController extends Controller
                 ->first();
 
             $brochureUrl = $brochure ? $base_url . '/' . $brochure->value : '';
-            $clientTestimonials = DB::table('clients')
+            // $clientTestimonials = DB::table('clients')
+            //     ->where('status', 1)
+            //     ->where('is_deleted', 0)
+            //     ->get(['id', 'name', 'image', 'description as comment', 'city as location'])
+            //     ->map(function ($item) use ($base_url) {
+            //         return [
+            //             'id' => $item->id,
+            //             'name' => $item->name,
+            //             'image' => $base_url . '/clients/' . $item->image,
+            //             'location' => $item->location,
+            //             'comment' => $item->comment,
+            //         ];
+            //     });
+            $clientTestimonials = DB::table('testimonials')
                 ->where('status', 1)
                 ->where('is_deleted', 0)
-                ->get(['id', 'name', 'image', 'description as comment', 'city as location'])
+                ->get(['id', 'title as  name', 'image', 'description as comment', 'city as location', 'rating'])
                 ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
@@ -2310,6 +2322,7 @@ class ApiController extends Controller
                         'image' => $base_url . '/clients/' . $item->image,
                         'location' => $item->location,
                         'comment' => $item->comment,
+                        'rating' => $item->rating ? (int) $item->rating : 0, // Ensure rating is an integer
                     ];
                 });
 
@@ -2356,7 +2369,7 @@ class ApiController extends Controller
                 ->whereRaw('LOWER(name) LIKE ?', ['%all iN one brochure%'])
                 ->first();
 
-            $brochureUrl = $brochure ? $base_url . '/' . $brochure->value : '';
+            $brochureUrl = $brochure ? $base_url . $brochure->value : '';
 
             return response()->json([
                 'status' => true,

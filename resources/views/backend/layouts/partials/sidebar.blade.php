@@ -493,7 +493,7 @@
                         </li>
                     @endif
                     <li
-                        class="{{ Route::is('admin.videogallery.index') || Route::is('admin.videogallery.edit') ? 'active' : '' }}">
+                        class="{{ Route::is('admin.contact.index') || Route::is('admin.contact.edit') ? 'active' : '' }}">
                         <a href="{{ route('admin.contact.index') }}"> <i class="fa fa-book"></i><span></span>Contact
                             Requests</a>
                     </li>

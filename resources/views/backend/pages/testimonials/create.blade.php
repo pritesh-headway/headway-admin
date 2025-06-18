@@ -63,6 +63,22 @@ Testimonial Create - Admin Panel
                             </div>
                         </div>
 
+                        <div class="form-row">
+                            <div class="form-group col-md-12 col-sm-12">
+                                <label for="city">City/Location</label>
+                                <input type="text" class="form-control" id="city" name="city"
+                                    placeholder="Enter City"value="{{ old('city') }}">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-12 col-sm-12">
+                                <label for="rating">Rating</label>
+                                <input type="text" class="form-control" id="rating" name="rating"
+                                    placeholder="Enter rating"value="{{ old('rating') }}">
+                            </div>
+                        </div>
+
 
                         <div class="form-row">
 

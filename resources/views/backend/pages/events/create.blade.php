@@ -66,11 +66,9 @@ Event Create - Admin Panel
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Date</label>
-                                <input type="date" class="form-control" id="event_date" name="event_date" value=""
-                                    required autofocus>
+                                <label for="password">Description</label>
+                                <textarea required class="form-control" id="description" name="description"></textarea>
                             </div>
-
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Hours</label>
                                 <input type="text" class="form-control" id="hours" name="hours" placeholder="Enter Hour"
@@ -79,17 +77,10 @@ Event Create - Admin Panel
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Description</label>
-                                <textarea required class="form-control" id="description" name="description"></textarea>
-                            </div>
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Image</label>
                                 <input type="file" name="image" id="image" class="form-control" required />
                             </div>
-                        </div>
-
-                        <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>
                                 <select class="form-control " id="status" name="status" required>

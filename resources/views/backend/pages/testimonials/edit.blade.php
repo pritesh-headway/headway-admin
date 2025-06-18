@@ -59,8 +59,24 @@ Testimonial Edit - Admin Panel
 
                         <div class="form-row">
                             <label for="password">Description</label>
-                            <textarea class="form-control" id="desc" name="desc">{{ $admin->desc }}</textarea>
+                            <textarea class="form-control" id="desc" name="desc">{{ old('desc', $admin->description) }}</textarea>
+
                         </div>
+
+                        <div class="form-row">
+                                <label for="city">City/Location</label>
+                                <input type="text" class="form-control" id="city" name="city"
+                                    placeholder="Enter City" value="{{ $admin->city }}">
+                          
+                        </div>
+
+                        <div class="form-row">
+                                <label for="rating">Rating</label>
+                                <input type="text" class="form-control" id="rating" name="rating"
+                                    placeholder="Enter rating" value="{{ $admin->rating }}">
+                         
+                        </div>
+
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
