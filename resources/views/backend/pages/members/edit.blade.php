@@ -89,7 +89,7 @@ Membership Edit - Admin Panel
                         @endphp
                         <li class="nav-item">
                             <a class="nav-link {{ $active }}" id="{{ $nameS }}-tab" data-toggle="tab"
-                                href="#{{ $nameS }}" role="tab">{{ $modules->title }} Details</a>
+                                href="#{{ $nameS }}" role="tab">{{ $modules->title }} </a>
                         </li>
                         @endforeach
                     </ul>
@@ -228,7 +228,7 @@ Membership Edit - Admin Panel
                                 isset($visitData[$i]) ?
                                 $statusUpdate : 'Save' }}
                             </button>
-                            @elseif ($name == 'Meetings')
+                            @elseif ($name == 'Meetings_With_CMD')
 
                             <table class="responsive-table" width="100%">
                                 <thead>
@@ -297,13 +297,14 @@ Membership Edit - Admin Panel
                                         @endfor
                                 </tbody>
                             </table>
-                            @elseif ($name == 'On_Store_Reviews')
+                            @elseif ($name == 'Review_Training')
                             <table class="responsive-table" width="100%">
                                 <thead>
                                     <tr>
                                         <th>Sr.</th>
                                         <th>Date</th>
                                         <th>Time</th>
+                                        <th>Trainer Assign</th>
                                         <th>Status</th>
                                         <th>Remarks</th>
                                         <th>Action</th>
@@ -330,6 +331,18 @@ Membership Edit - Admin Panel
                                         <td><input {{ $isReadOnly }} type="text" class="form-control time"
                                                 id="time_{{ $visitNo }}" name="module_time[]"
                                                 value="{{ isset($visitData[$i]) ? $visitData[$i]['time'] : '' }}">
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="trainer_assign[]"
+                                                id="trainer_id_{{ $visitNo }}">
+                                                <option value="">Select Trainer</option>
+                                                @foreach ($trainers as $trainer)
+                                                <option value="{{ $trainer->id }}" {{
+                                                    isset($visitData[$i]['trainer_id']) &&
+                                                    $visitData[$i]['trainer_id']==$trainer->id ? 'selected' : '' }}>
+                                                    {{ $trainer->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </td>
                                         <td>
                                             <select name="module_status[]" id="status_{{ $visitNo }}"
@@ -383,7 +396,7 @@ Membership Edit - Admin Panel
                                 isset($visitData[$i]) ?
                                 $statusUpdate : 'Save' }}
                             </button>
-                            @elseif ($name == 'On_call_team_support')
+                            @elseif ($name == 'On_Call_Team_Support')
                             @php
                             $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
                             if($visitData) {
@@ -489,13 +502,14 @@ Membership Edit - Admin Panel
                                         @endfor
                                 </tbody>
                             </table>
-                            @elseif ($name == 'Online_Reviews')
+                            @elseif ($name == 'Online_Trainings')
                             <table class="responsive-table" width="100%">
                                 <thead>
                                     <tr>
                                         <th>Sr.</th>
                                         <th>Date</th>
                                         <th>Time</th>
+                                        <th>Trainer Assign</th>
                                         <th>Status</th>
                                         <th>Remarks</th>
                                         <th>Action</th>
@@ -524,6 +538,19 @@ Membership Edit - Admin Panel
                                         <td><input {{ $isReadOnly }} type="text" class="form-control time"
                                                 id="time_{{ $visitNo }}" name="module_time[]"
                                                 value="{{ isset($visitData[$i]) ? $visitData[$i]['time'] : '' }}">
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="trainer_assign[]"
+                                                id="trainer_id_{{ $visitNo }}">
+                                                <option value="">Select Trainer</option>
+                                                @foreach ($trainers as $trainer)
+                                                <option value="{{ $trainer->id }}" {{
+                                                    isset($visitData[$i]['trainer_id']) &&
+                                                    $visitData[$i]['trainer_id']==$trainer->id ?
+                                                    'selected' : '' }}>
+                                                    {{ $trainer->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </td>
                                         <td>
                                             <select name="module_status[]" id="status_{{ $visitNo }}"
@@ -558,7 +585,7 @@ Membership Edit - Admin Panel
                                         @endfor
                                 </tbody>
                             </table>
-                            @elseif ($name == 'Online_Trainings')
+                            @elseif ($name == 'Online_Reviews')
 
                             <table class="responsive-table" width="100%">
                                 <thead>
@@ -566,6 +593,7 @@ Membership Edit - Admin Panel
                                         <th>Sr.</th>
                                         <th>Date</th>
                                         <th>Time</th>
+                                        <th>Trainer Assign</th>
                                         <th>Status</th>
                                         <th>Remarks</th>
                                         <th>Action</th>
@@ -594,6 +622,19 @@ Membership Edit - Admin Panel
                                         <td><input type="text" {{ $isReadOnly }} class="form-control time"
                                                 id="time_{{ $visitNo }}" name="module_time[]"
                                                 value="{{ isset($visitData[$i]) ? $visitData[$i]['time'] : '' }}">
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="trainer_assign[]"
+                                                id="trainer_id_{{ $visitNo }}">
+                                                <option value="">Select Trainer</option>
+                                                @foreach ($trainers as $trainer)
+                                                <option value="{{ $trainer->id }}" {{
+                                                    isset($visitData[$i]['trainer_id']) &&
+                                                    $visitData[$i]['trainer_id']==$trainer->id ?
+                                                    'selected' : '' }}>
+                                                    {{ $trainer->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </td>
                                         <td>
                                             <select name="module_status[]" id="status_{{ $visitNo }}"
@@ -646,7 +687,7 @@ Membership Edit - Admin Panel
                                 isset($visitData[$i]) ?
                                 $statusUpdate : 'Save' }}
                             </button>
-                            @elseif ($name == 'Store_Visit')
+                            @elseif ($name == 'Staff_Training')
 
                             <table class="responsive-table" width="100%">
                                 <thead>
@@ -654,6 +695,7 @@ Membership Edit - Admin Panel
                                         <th>Sr.</th>
                                         <th>Date</th>
                                         <th>Time</th>
+                                        <th>Trainer Assign</th>
                                         <th>Status</th>
                                         <th>Remarks</th>
                                         <th>Action</th>
@@ -680,6 +722,19 @@ Membership Edit - Admin Panel
                                         <td><input type="text" {{ $isReadOnly }} class="form-control time"
                                                 id="time_{{ $visitNo }}" name="module_time[]"
                                                 value="{{ isset($visitData[$i]) ? $visitData[$i]['time'] : '' }}">
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="trainer_assign[]"
+                                                id="trainer_id_{{ $visitNo }}">
+                                                <option value="">Select Trainer</option>
+                                                @foreach ($trainers as $trainer)
+                                                <option value="{{ $trainer->id }}" {{
+                                                    isset($visitData[$i]['trainer_id']) &&
+                                                    $visitData[$i]['trainer_id']==$trainer->id ?
+                                                    'selected' : '' }}>
+                                                    {{ $trainer->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </td>
                                         <td>
                                             <select name="module_status[]" id="status_{{ $visitNo }}"
@@ -820,7 +875,7 @@ Membership Edit - Admin Panel
                                 isset($visitData[$i]) ?
                                 $statusUpdate : 'Save' }}
                             </button>
-                            @elseif ($name == 'Call_Support_for_all_Formate___SOP')
+                            @elseif ($name == 'SOP')
                             @php
                             $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
                             if($visitData) {
@@ -832,7 +887,7 @@ Membership Edit - Admin Panel
                             'Completed') ? '' : 'Update Status';
                             @endphp
                             <textarea class="form-control description" id="description_{{ $moduleID }}"
-                                name="Call_Support_for_all_Formate___SOP">{{ ($visitData) ? $visitData[1]['description'] : '' }}</textarea>
+                                name="SOP">{{ ($visitData) ? $visitData[1]['description'] : '' }}</textarea>
                             <button class="btn btn-primary" style="margin-top: 1%;"
                                 onclick="addUpdateModuleText({{ $moduleID }}, {{ $member_id }}, {{ $admin->product_id }});">{{
                                 isset($visitData[$i]) ?
@@ -915,6 +970,7 @@ Membership Edit - Admin Panel
         var time = $('#time_' + i).val();
         var status = $('#status_' + i).val();
         var remarks = $('#remarks_' + i).val();
+        var trainer_id = $('#trainer_id_' + i).val();
         $.ajax({
             type: 'POST',
             url: "{{ route('admin.members.addUpdateModuleData') }}",
@@ -923,6 +979,7 @@ Membership Edit - Admin Panel
                 memberID: memberID,
                 membershipID:membershipID,
                 date: date,
+                trainer_id: trainer_id,
                 time: time,
                 status: status,
                 remarks: remarks,
@@ -946,6 +1003,7 @@ Membership Edit - Admin Panel
         var time = $('#time_' + i).val();
         var status = $('#status_' + i).val();
         var remarks = $('#remarks_' + i).val();
+        var trainer_id = $('#trainer_id_' + i).val();
         $.ajax({
             type: 'POST',
             url: "{{ route('admin.members.addUpdateModuleData') }}",
@@ -953,6 +1011,7 @@ Membership Edit - Admin Panel
                 serviceID: serviceID,
                 memberID: memberID,
                 membershipID:membershipID,
+                trainer_id: trainer_id,
                 date: date,
                 time: time,
                 status: status,

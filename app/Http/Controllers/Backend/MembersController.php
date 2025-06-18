@@ -17,6 +17,7 @@ use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Role;
 use App\Services\CurlApiService;
 use App\Services\FcmNotificationService;
+use Illuminate\Support\Facades\DB;
 
 class MembersController extends Controller
 {
@@ -94,7 +95,11 @@ class MembersController extends Controller
         $admin = Membership::findOrFail($id);
         $plans = Plan::findOrFail($admin['product_id']);
         $ids = explode(',', $plans->module_ids);
-        $modulesName = Service::whereIn('id', $ids)->get();
+        $modulesName = Service::whereIn('id', $ids)->where('status', 1)->get();
+        $trainers = DB::table('trainers')
+            ->where('status', '1')
+            ->where('is_deleted', '0')
+            ->get();
         // dd($admin);
         $dataGetNodules = MemberModule::where('member_id', $admin->user_id)->get();
         // dd($dataGetNodules);
@@ -104,6 +109,7 @@ class MembersController extends Controller
             'member_id' => $admin->user_id,
             'modulesName' => $modulesName,
             'dataGetNodules' => $dataGetNodules,
+            'trainers' => $trainers,
             'roles' => Role::all(),
         ]);
     }
