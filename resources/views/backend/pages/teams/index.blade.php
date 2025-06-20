@@ -66,7 +66,7 @@
                                             <td>{{ $loop->index + 1 }}</td>
                                             <td>{{ $admin->name }}</td>
                                             <td>{{ $admin->position }}</td>
-                                            <td><img src="{{ asset('/Teams/') }}/{{ $admin->image }}" width="100px"
+                                            <td><img src="{{ asset('/teams/') }}/{{ $admin->image }}" width="100px"
                                                     height="80px"></td>
                                             <td>
                                                 @if (auth()->user()->can('Ourteam.edit'))
