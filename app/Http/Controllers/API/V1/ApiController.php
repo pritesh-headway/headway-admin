@@ -3407,7 +3407,7 @@ class ApiController extends Controller
                 $base_url .= '/';
             }
 
-            $ourProducts = OurProduct::get(['id', 'photo', 'product_banner', 'title', 'desc', 'play_store', 'app_store', 'web_url', 'tagline'])
+            $ourProducts = OurProduct::where('status', '1')->get(['id', 'photo', 'product_banner', 'title', 'desc', 'play_store', 'app_store', 'web_url', 'tagline'])
                 ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,

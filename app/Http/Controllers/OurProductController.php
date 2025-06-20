@@ -38,6 +38,7 @@ class OurProductController extends Controller
             'app_store' => 'nullable|url',
             'web_url' => 'nullable|url',
             'tagline' => 'nullable|string',
+            'status' => 'nullable'
         ]);
 
         $product = new OurProduct();
@@ -47,6 +48,7 @@ class OurProductController extends Controller
         $product->app_store = $request->app_store;
         $product->web_url = $request->web_url;
         $product->tagline = $request->tagline;
+        $product->status = $request->status ?? '1';
 
         if ($request->hasFile('photo')) {
             $image = $request->file('photo');
@@ -88,6 +90,7 @@ class OurProductController extends Controller
             'app_store' => 'nullable|url',
             'web_url' => 'nullable|url',
             'tagline' => 'nullable|string',
+            'status' => 'nullable'
         ]);
 
         $product = OurProduct::findOrFail($id);
@@ -96,6 +99,7 @@ class OurProductController extends Controller
         $product->play_store = $request->play_store;
         $product->app_store = $request->app_store;
         $product->web_url = $request->web_url;
+        $product->status = $request->status;
         $product->tagline = $request->tagline;
 
         if ($request->hasFile('photo')) {
