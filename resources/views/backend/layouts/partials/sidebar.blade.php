@@ -506,13 +506,19 @@
 
                     <li
                         class="{{ Route::is('admin.startups.index') || Route::is('admin.startups.edit') ? 'active' : '' }}">
-                        <a href="{{ route('admin.startups.index') }}"> <i class="fa fa-cog"></i><span></span>About Startups
+                        <a href="{{ route('admin.startups.index') }}"> <i class="fa fa-briefcase"></i><span></span>About Startups
                             </a>
                     </li>
 
                      <li
                         class="{{ Route::is('admin.gallery.index') || Route::is('admin.gallery.edit') ? 'active' : '' }}">
-                        <a href="{{ route('admin.gallery.index') }}"> <i class="fa fa-cog"></i><span></span>MMB & SSU Gallery
+                        <a href="{{ route('admin.gallery.index') }}"> <i class="fa fa-camera"></i><span></span>MMB & SSU Gallery
+                            </a>
+                    </li>
+
+                    <li
+                        class="{{ Route::is('admin.our_products.index') || Route::is('admin.our_products.edit') ? 'active' : '' }}">
+                        <a href="{{ route('admin.our_products.index') }}"> <i class="fa fa-shopping-cart"></i><span></span>Our Products
                             </a>
                     </li>
 

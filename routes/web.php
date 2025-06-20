@@ -31,6 +31,7 @@ use App\Http\Controllers\Backend\TestimonialController;
 use App\Http\Controllers\Backend\VideoGalleryController;
 use App\Http\Controllers\Backend\StartupController;
 use App\Http\Controllers\GalleryController;
+use \App\Http\Controllers\OurProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,6 +72,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::resource('contact', ContactController::class);
     Route::resource('service', ServiceController::class);
     Route::resource('startups', StartupController::class);
+    Route::resource('our_products', OurProductController::class);
     // Route::resource('gallery', GalleryController::class);
     // Gallery Index
     Route::get('gallery', [GalleryController::class, 'index'])->name('gallery.index');
@@ -113,3 +115,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('/password/reset/submit', [ForgotPasswordController::class, 'reset'])->name('password.update');
 })->middleware('auth:admin');
+
+
+Route::post('admin/ourteam/move-up/{id}', [OurteamController::class, 'moveUp'])->name('admin.ourteam.moveup');
+Route::post('admin/ourteam/move-down/{id}', [OurteamController::class, 'moveDown'])->name('admin.ourteam.movedown');

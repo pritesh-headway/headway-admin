@@ -59,7 +59,7 @@ Route::post('v1/getMembershipPolicy', [ApiController::class, 'getMembershipPolic
 Route::post('v1/getDataProcessingSupport', [ApiController::class, 'getDataProcessingSupport']);
 Route::post('v1/getMarketingStrategy', [ApiController::class, 'getMarketingStrategy']);
 Route::post('v1/getDashboardData', [ApiController::class, 'getDashboardData']);
-Route::post('v1/getNotificationUser', [ApiController::class, 'getNotificationUser']);
+Route::post('v1/getNotificationUser', [ApiController::class, 'getNotificationUser'])->middleware('jwt.verify');
 Route::post('v1/getHeadwayITList', [ApiController::class, 'getHeadwayITList']);
 Route::post('v1/getJewelleryVidyapithList', [ApiController::class, 'getJewelleryVidyapithList']);
 Route::post('v1/getBusinessList', [ApiController::class, 'getBusinessList']);
@@ -94,3 +94,4 @@ Route::post('v1/gen_settings', [ApiController::class, 'getGeneralSettings']);
 Route::post('v1/idb_page', [ApiController::class, 'getIdbPage']);
 Route::post('v1/intelligent_hr', [ApiController::class, 'getIntelligentHR']);
 Route::post('v1/jewellery_vidyapith', [ApiController::class, 'getJewelleryVidyapith']);
+Route::post('v1/headway_it', [ApiController::class, 'getHeadwayIT']);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Models\OurProduct;
 use App\Models\Testimonial;
 use Carbon\Carbon;
 use App\Models\Cms;
@@ -261,7 +262,7 @@ class ApiController extends Controller
                 ->where('status', 1)
                 ->first();
 
-            if (!$user || $user->otp !== $request->otp || Carbon::now()->greaterThan($user->otp_expires_at)) {
+            if (!$user || $user->otp !== $request->otp || Carbon::now()->greaterThan((int) $user->otp_expires_at)) {
                 return response()->json(['status' => false, 'message' => 'Invalid OTP or OTP expired', 'data' => (object) []], 200);
             }
 
@@ -373,7 +374,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
 
             $userData = json_decode($checkToken->getContent(), true);
@@ -498,7 +499,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -555,7 +556,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -620,7 +621,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -676,7 +677,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $addon_id = $request->addon_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -703,7 +704,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -753,7 +754,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -803,7 +804,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -854,7 +855,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -906,7 +907,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -957,7 +958,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1006,7 +1007,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1038,7 +1039,7 @@ class ApiController extends Controller
     //         $base_url = $this->base_url;
     //         $user_id = $request->user_id;
     //         $loginType = $request->user_type;
-    //         $token = $request->header('token');
+    //         $token = $request->header('Authorization');
     //         $checkToken = $this->tokenVerify($token);
     //         $page_number = $request->page;
 
@@ -1083,7 +1084,7 @@ class ApiController extends Controller
     {
         try {
             $base_url = $this->base_url . '/';
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
 
             $userData = json_decode($checkToken->getContent(), true);
@@ -1153,7 +1154,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1183,7 +1184,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1212,7 +1213,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1260,7 +1261,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1302,7 +1303,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1331,7 +1332,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1378,7 +1379,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $loginType = $request->user_type;
             $plan_id = $request->plan_id;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1428,7 +1429,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $loginType = $request->user_type;
             $plan_id = $request->plan_id;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1477,7 +1478,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1526,7 +1527,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1568,7 +1569,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1609,7 +1610,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1705,7 +1706,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1746,7 +1747,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1768,7 +1769,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1793,7 +1794,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1818,7 +1819,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1840,7 +1841,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1862,7 +1863,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1883,7 +1884,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $page_number = $request->page;
 
             $paymentHeadway = ['account_name' => 'Headway Business Solution LLP ', 'bank_name' => 'Axis Bank', 'account_no' => '917020044782976', 'ifsc_code' => 'UTIB0001064', 'GST' => '24AAKF3737P1ZW'];
@@ -1908,7 +1909,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1929,7 +1930,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1954,7 +1955,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $loginType = $request->user_type;
             $plan_id = $request->plan_id;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1979,7 +1980,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $loginType = $request->user_type;
             $plan_id = $request->plan_id;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -2005,7 +2006,7 @@ class ApiController extends Controller
             $addon_id = $request->addon_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -2050,7 +2051,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
 
             $userData = json_decode($checkToken->getContent(), true);
@@ -2090,7 +2091,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
 
             $userData = json_decode($checkToken->getContent(), true);
@@ -2151,7 +2152,7 @@ class ApiController extends Controller
      */
     public function logout(Request $request)
     {
-        $token = $request->header('token');
+        $token = $request->header('Authorization');
         $user = User::where('id', $request->user_id)->where('status', '1')->first();
 
         $userDevice = UserDevices::where('user_id', $request->user_id)->where('login_token', $token)->where('status', '1')->first();
@@ -2383,16 +2384,26 @@ class ApiController extends Controller
         try {
 
             // OSS Galleries: from banners table where title is 'oss_gallery'
-            $ossGalleries = DB::table('testimonials')
-                ->where('status', 1)
-                ->where('is_deleted', 0)
-                ->get(['id', 'title', 'image', 'description as desc'])
+            // $ossGalleries = DB::table('testimonials')
+            //     ->where('status', 1)
+            //     ->where('is_deleted', 0)
+            //     ->get(['id', 'title', 'image', 'description as desc'])
+            //     ->map(function ($item) use ($base_url) {
+            //         return [
+            //             'id' => $item->id,
+            //             'title' => $item->title,
+            //             'image' => $base_url . '/testimonials/' . $item->image,
+            //             'desc' => $item->desc,
+            //         ];
+            //     });
+
+            $ossGalleries = DB::table('ssu_galleries')
+                ->get(['id', 'title', 'images'])
                 ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
                         'title' => $item->title,
-                        'image' => $base_url . '/testimonials/' . $item->image,
-                        'desc' => $item->desc,
+                        'image' => $base_url . '/ssu_gallery/' . $item->images
                     ];
                 });
 
@@ -2441,16 +2452,19 @@ class ApiController extends Controller
             //     });
             $clientTestimonials = DB::table('testimonials')
                 ->where('status', 1)
+                ->where('type', 'startup')
                 ->where('is_deleted', 0)
-                ->get(['id', 'title as  name', 'image', 'description as comment', 'city as location', 'rating'])
+                ->get(['id', 'title as  name', 'image', 'description as comment', 'city as location', 'rating', 'shop_name', 'type'])
                 ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
                         'name' => $item->name,
-                        'image' => $base_url . '/clients/' . $item->image,
+                        'shop_name' => $item->shop_name,
+                        'image' => $base_url . '/testimonials/' . $item->image,
                         'location' => $item->location,
                         'comment' => $item->comment,
-                        'rating' => $item->rating ? (int) $item->rating : 0, // Ensure rating is an integer
+                        'type' => $item->type,
+                        'rating' => $item->rating ? (float) $item->rating : 0, // Ensure rating is an integer
                     ];
                 });
 
@@ -2734,9 +2748,46 @@ class ApiController extends Controller
         try {
             $base_url = $this->base_url . '/';
 
-            $teams = Team::where('status', 1)
+
+            $founders = Team::where('dept', 'founder')->where('status', 1)
                 ->where('is_deleted', 0)
-                ->orderBy('created_at', 'asc')
+                ->orderBy('displayOrder', 'asc')
+                ->get(['name', 'image', 'position'])
+                ->map(function ($team) use ($base_url) {
+                    return [
+                        'name' => $team->name,
+                        'image' => $base_url . 'teams/' . $team->image,
+                        'position' => $team->position,
+                    ];
+                });
+
+            $admins = Team::where('dept', 'admin')->where('status', 1)
+                ->where('is_deleted', 0)
+                ->orderBy('displayOrder', 'asc')
+                ->get(['name', 'image', 'position'])
+                ->map(function ($team) use ($base_url) {
+                    return [
+                        'name' => $team->name,
+                        'image' => $base_url . 'teams/' . $team->image,
+                        'position' => $team->position,
+                    ];
+                });
+
+            $trainers = Team::where('dept', 'trainer')->where('status', 1)
+                ->where('is_deleted', 0)
+                ->orderBy('displayOrder', 'asc')
+                ->get(['name', 'image', 'position'])
+                ->map(function ($team) use ($base_url) {
+                    return [
+                        'name' => $team->name,
+                        'image' => $base_url . 'teams/' . $team->image,
+                        'position' => $team->position,
+                    ];
+                });
+
+            $itteam = Team::where('dept', 'it')->where('status', 1)
+                ->where('is_deleted', 0)
+                ->orderBy('displayOrder', 'asc')
                 ->get(['name', 'image', 'position'])
                 ->map(function ($team) use ($base_url) {
                     return [
@@ -2749,7 +2800,12 @@ class ApiController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Record list successfully',
-                'data' => $teams
+                'data' => [
+                    ['title' => 'Founders', 'employee' => $founders],
+                    ['title' => 'Administration', 'employee' => $admins],
+                    ['title' => 'Training Executive', 'employee' => $trainers],
+                    ['title' => 'IT Experts', 'employee' => $itteam]
+                ]
             ], 200);
 
         } catch (\Throwable $th) {
@@ -3235,16 +3291,18 @@ class ApiController extends Controller
             });
 
             $reviews = Testimonial::where('status', 1)
+                ->where('type', 'idp')
                 ->where('is_deleted', 0)
-                ->get(['id', 'title as name', 'image', 'description as comment', 'city as location', 'rating'])
+                ->get(['id', 'title as name', 'image', 'description as comment', 'city as location', 'rating', 'shop_name'])
                 ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
                         'name' => $item->name,
+                        'shop_name' => $item->shop_name, // Assuming shop_name is
                         'image' => $item->image ? $base_url . '/testimonials/' . $item->image : '',
                         'location' => $item->location,
                         'comment' => $item->comment,
-                        'rating' => $item->rating ? (int) $item->rating : 0, // Ensure rating is an integer
+                        'rating' => $item->rating ? (float) $item->rating : 0, // Ensure rating is an integer
                     ];
                 });
 
@@ -3330,6 +3388,45 @@ class ApiController extends Controller
                 'data' => [
                     'galleries' => $galleries,
                     'youtube_link' => $youtubeLink
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getHeadwayIT()
+    {
+        try {
+            $base_url = $this->base_url . '/';
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+
+            $ourProducts = OurProduct::get(['id', 'photo', 'product_banner', 'title', 'desc', 'play_store', 'app_store', 'web_url', 'tagline'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'photo' => $item->photo ? $base_url . 'products/' . $item->photo : '',
+                        'product_banner' => $item->product_banner ? $base_url . 'products/' . $item->product_banner : '',
+                        'title' => $item->title,
+                        'desc' => $item->desc,
+                        'tagline' => $item->tagline ?? '',
+                        'play_store' => $item->play_store,
+                        'app_store' => $item->app_store,
+                        'web_url' => $item->web_url
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Headway IT data fetched successfully',
+                'data' => [
+                    'our_products' => $ourProducts
                 ]
             ], 200);
         } catch (\Throwable $th) {

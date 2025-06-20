@@ -45,7 +45,9 @@ class TestimonialController extends Controller
         $admin->description = $request->desc;
         $admin->city = $request->city;
         $admin->rating = $request->rating;
+        $admin->type = $request->type; // Assuming 'type' is a field in the form
         $admin->status = $request->status;
+        $admin->shop_name = $request->shop_name;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -90,8 +92,10 @@ class TestimonialController extends Controller
         $admin->title = $request->title;
         $admin->description = $request->desc;
         $admin->city = $request->city;
+        $admin->type = $request->type; // Assuming 'type' is a field in the form
         $admin->rating = $request->rating;
         $admin->status = $request->status;
+        $admin->shop_name = $request->shop_name;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -115,6 +119,6 @@ class TestimonialController extends Controller
         $admin->is_deleted = '1';
         $admin->save();
         session()->flash('success', 'Testimonial has been deleted.');
-        return back();
+        return redirect()->route('admin.testimonial.index');
     }
 }
