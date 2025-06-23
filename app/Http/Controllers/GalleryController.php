@@ -41,11 +41,12 @@ class GalleryController extends Controller
         return view('backend.pages.gallery.create', compact('type'));
     }
 
+
     public function store(Request $request)
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'images' => 'required|file|max:3072'
+            'cropped_image' => 'required|string', // base64 string from Cropper.js
         ]);
 
         $type = $request->get('type');
@@ -54,21 +55,43 @@ class GalleryController extends Controller
 
         $fileName = null;
 
-        if ($request->hasFile('images')) {
-            $file = $request->file('images');
-            $fileName = time() . '.' . $file->getClientOriginalExtension(); // e.g., 1712905289.webp
-            $file->move(public_path($folder), $fileName);
+        if ($request->filled('cropped_image')) {
+            $base64Image = $request->cropped_image;
+
+            // Clean and decode the base64 string
+            if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $typeMatch)) {
+                $imageType = strtolower($typeMatch[1]); // jpg, png etc.
+                $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
+                $base64Image = base64_decode($base64Image);
+
+                if ($base64Image === false) {
+                    return back()->with('error', 'Invalid image data.');
+                }
+
+                // Generate file name and save
+                $fileName = time() . '.' . $imageType;
+                $path = public_path($folder);
+                if (!file_exists($path)) {
+                    mkdir($path, 0755, true);
+                }
+
+                file_put_contents($path . '/' . $fileName, $base64Image);
+            } else {
+                return back()->with('error', 'Invalid image format.');
+            }
         }
 
+        // Insert into the respective table
         DB::table($table)->insert([
             'title' => $request->title,
-            'images' => $fileName, // plain string
+            'images' => $fileName,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         return redirect()->route('admin.gallery.index')->with('success', 'Gallery created successfully.');
     }
+
 
 
     public function edit(Request $request, $id)
@@ -83,10 +106,12 @@ class GalleryController extends Controller
         return view('backend.pages.gallery.edit', compact('gallery', 'type'));
     }
 
+
     public function update(Request $request, $id)
     {
         $request->validate([
             'title' => 'required|string|max:255',
+            'cropped_image' => 'nullable|string',
             'images' => 'nullable|file|max:3072'
         ]);
 
@@ -100,8 +125,31 @@ class GalleryController extends Controller
 
         $fileName = $gallery->images;
 
-        if ($request->hasFile('images')) {
-            // Delete old image if exists
+        // Handle cropped base64 image
+        if ($request->filled('cropped_image')) {
+            if (preg_match('/^data:image\/(\w+);base64,/', $request->cropped_image, $typeMatch)) {
+                $imageType = strtolower($typeMatch[1]);
+                $base64Image = substr($request->cropped_image, strpos($request->cropped_image, ',') + 1);
+                $base64Image = base64_decode($base64Image);
+
+                if ($base64Image !== false) {
+                    // Delete old image if exists
+                    if ($fileName && File::exists(public_path("$folder/$fileName"))) {
+                        File::delete(public_path("$folder/$fileName"));
+                    }
+
+                    $fileName = time() . '.' . $imageType;
+                    $path = public_path($folder);
+                    if (!file_exists($path)) {
+                        mkdir($path, 0755, true);
+                    }
+
+                    file_put_contents($path . '/' . $fileName, $base64Image);
+                }
+            }
+        }
+        // Fallback: handle traditional file upload
+        elseif ($request->hasFile('images')) {
             if ($fileName && File::exists(public_path("$folder/$fileName"))) {
                 File::delete(public_path("$folder/$fileName"));
             }
@@ -113,7 +161,7 @@ class GalleryController extends Controller
 
         DB::table($table)->where('id', $id)->update([
             'title' => $request->title,
-            'images' => $fileName, // plain string
+            'images' => $fileName,
             'updated_at' => now(),
         ]);
 

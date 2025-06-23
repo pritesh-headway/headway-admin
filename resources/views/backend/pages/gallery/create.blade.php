@@ -6,6 +6,9 @@
 
 @section('styles')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Cropper CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+
 
     <style>
         .form-check-label {
@@ -60,8 +63,18 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6 col-sm-12">
                                     <label for="images">Gallery Image</label>
-                                    <input type="file" name="images" id="images" class="form-control" required />
+                                    <input type="file" name="images" id="imagesInput" class="form-control"
+                                        accept="image/*" required />
                                 </div>
+
+                                <!-- Preview & Crop Modal -->
+                                <div id="cropModal" style="display:none;">
+                                    <img id="imagePreview" style="max-width: 100%;" />
+                                    <button type="button" id="cropBtn" class="btn btn-success mt-2">Crop</button>
+                                </div>
+
+                                <input type="hidden" name="cropped_image" id="croppedImageInput">
+
                             </div>
 
                             <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
@@ -77,9 +90,61 @@
 
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    <!-- Cropper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
     <script>
         $(document).ready(function() {
             $('.select2').select2();
+        });
+
+        let cropper;
+        const imageInput = document.getElementById('imagesInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const cropModal = document.getElementById('cropModal');
+        const croppedImageInput = document.getElementById('croppedImageInput');
+
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.src = event.target.result;
+                    cropModal.style.display = 'block';
+
+                    // Wait for image to load
+                    imagePreview.onload = function() {
+                        if (cropper) cropper.destroy();
+                        cropper = new Cropper(imagePreview, {
+                            aspectRatio: 233 / 117, // 1.99
+                            viewMode: 1,
+                        });
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('cropBtn').addEventListener('click', function() {
+            const canvas = cropper.getCroppedCanvas({
+                width: 800, // Optional: control output size
+                height: 402,
+            });
+
+            canvas.toBlob(function(blob) {
+                const file = new File([blob], 'cropped.jpg', {
+                    type: 'image/jpeg'
+                });
+
+                // Create a temporary FormData to convert to base64
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    croppedImageInput.value = reader.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            cropModal.style.display = 'none';
         });
     </script>
 @endsection
