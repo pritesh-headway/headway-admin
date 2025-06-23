@@ -10,11 +10,16 @@
 
     <style>
         #imagePreview {
-            max-width: 100%;
-            margin-top: 15px;
             display: none;
             border: 1px solid #ccc;
             padding: 5px;
+            /* max-width: 400px; */
+            /* Limit width */
+            /* max-height: 350px; */
+            /* Limit height */
+            width: 100%;
+            /* Responsive within the limit */
+            object-fit: contain;
         }
     </style>
 @endsection
@@ -69,7 +74,11 @@
                                     height="80px" />
                             </div>
 
-                            <img id="imagePreview" />
+                            <div id="cropContainer"
+                                style="max-width: 600px; max-height: 350px; overflow: hidden; margin-top: 20px;">
+                                <img id="imagePreview" />
+                            </div>
+
 
                             <button type="submit" class="btn btn-primary mt-3">Update</button>
                             <a href="{{ route('admin.gallery.index') }}" class="btn btn-secondary mt-3">Cancel</a>

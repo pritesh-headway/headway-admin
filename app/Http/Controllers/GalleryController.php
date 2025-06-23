@@ -14,6 +14,7 @@ class GalleryController extends Controller
         return match ($type) {
             'ssu' => 'ssu_galleries',
             'mmb' => 'mmb_galleries',
+            'oss' => 'oss_galleries',
             default => abort(404, 'Invalid gallery type'),
         };
     }
@@ -23,6 +24,7 @@ class GalleryController extends Controller
         return match ($type) {
             'ssu' => 'ssu_gallery',
             'mmb' => 'mmb_gallery',
+            'oss' => 'oss_gallery',
             default => abort(404, 'Invalid gallery type'),
         };
     }
@@ -31,7 +33,8 @@ class GalleryController extends Controller
     {
         $ssuGalleries = DB::table('ssu_galleries')->get();
         $mmbGalleries = DB::table('mmb_galleries')->get();
-        return view('backend.pages.gallery.index', compact('ssuGalleries', 'mmbGalleries'));
+        $ossGalleries = DB::table('oss_galleries')->get();
+        return view('backend.pages.gallery.index', compact('ssuGalleries', 'mmbGalleries', 'ossGalleries'));
     }
 
     public function create(Request $request)

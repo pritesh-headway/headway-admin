@@ -17,6 +17,9 @@
             <li class="nav-item">
                 <a class="nav-link" id="mmb-tab" data-toggle="tab" href="#mmb" role="tab">MMB</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="oss-tab" data-toggle="tab" href="#oss" role="tab">OSS</a>
+            </li>
         </ul>
 
         <div class="tab-content" id="galleryTabContent">
@@ -42,7 +45,7 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $item->title }}</td>
                                         <td>
-                                                <img src="{{ asset('ssu_gallery/' . $item->images) }}" width="100">
+                                            <img src="{{ asset('ssu_gallery/' . $item->images) }}" width="100">
                                         </td>
                                         <td>
                                             <a href="{{ route('admin.gallery.edit', ['id' => $item->id, 'type' => 'ssu']) }}"
@@ -87,6 +90,44 @@
                                             <a href="{{ route('admin.gallery.edit', ['id' => $item->id, 'type' => 'mmb']) }}"
                                                 class="btn btn-success btn-sm">Edit</a>
                                             <a href="{{ route('admin.gallery.delete', ['id' => $item->id, 'type' => 'mmb']) }}"
+                                                onclick="return confirm('Are you sure?')"
+                                                class="btn btn-danger btn-sm">Delete</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="oss" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>OSS Gallery</h4>
+                        <a href="{{ route('admin.gallery.create', ['type' => 'oss']) }}" class="btn btn-primary mb-3">Add
+                            OSS Gallery</a>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>SL</th>
+                                    <th>Title</th>
+                                    <th>Image</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($ossGalleries as $index => $item)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $item->title }}</td>
+                                        <td>
+                                            <img src="{{ asset('oss_gallery/' . $item->images) }}" width="100">
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('admin.gallery.edit', ['id' => $item->id, 'type' => 'oss']) }}"
+                                                class="btn btn-success btn-sm">Edit</a>
+                                            <a href="{{ route('admin.gallery.delete', ['id' => $item->id, 'type' => 'oss']) }}"
                                                 onclick="return confirm('Are you sure?')"
                                                 class="btn btn-danger btn-sm">Delete</a>
                                         </td>

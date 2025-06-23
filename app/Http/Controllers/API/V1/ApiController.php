@@ -2397,13 +2397,13 @@ class ApiController extends Controller
             //         ];
             //     });
 
-            $ossGalleries = DB::table('ssu_galleries')
+            $ossGalleries = DB::table('oss_galleries')
                 ->get(['id', 'title', 'images'])
                 ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
                         'title' => $item->title,
-                        'image' => $base_url . '/ssu_gallery/' . $item->images
+                        'image' => $base_url . '/oss_gallery/' . $item->images
                     ];
                 });
 

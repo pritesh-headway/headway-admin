@@ -66,7 +66,10 @@
                                 </div>
                             </div>
 
-                            <img id="imagePreview" />
+                            <div id="cropContainer"
+                                style="max-width: 600px; max-height: 350px; overflow: hidden; margin-top: 20px;">
+                                <img id="imagePreview" />
+                            </div>
 
                             <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
                             <a href="{{ route('admin.gallery.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
