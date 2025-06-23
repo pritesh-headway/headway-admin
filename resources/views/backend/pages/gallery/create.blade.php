@@ -6,19 +6,20 @@
 
 @section('styles')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- Cropper CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
 
-
     <style>
-        .form-check-label {
-            text-transform: capitalize;
+        #imagePreview {
+            max-width: 100%;
+            margin-top: 15px;
+            display: none;
+            border: 1px solid #ccc;
+            padding: 5px;
         }
     </style>
 @endsection
 
 @section('admin-content')
-    <!-- page title area start -->
     <div class="page-title-area">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -36,46 +37,36 @@
             </div>
         </div>
     </div>
-    <!-- page title area end -->
 
     <div class="main-content-inner">
         <div class="row">
-            <!-- data table start -->
             <div class="col-12 mt-5">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="header-title">Create New Gallery Item</h4>
                         @include('backend.layouts.partials.messages')
 
-                        <form action="{{ route('admin.gallery.store') }}?type={{ $type }}" method="POST"
-                            enctype="multipart/form-data">
+                        <form id="galleryForm" action="{{ route('admin.gallery.store') }}?type={{ $type }}"
+                            method="POST" enctype="multipart/form-data">
                             @csrf
+
                             <div class="form-row">
                                 <div class="form-group col-md-6 col-sm-12">
                                     <label for="title">Title</label>
                                     <input type="text" class="form-control" id="title" name="title"
                                         placeholder="Enter Title" required value="{{ old('title') }}">
                                 </div>
-
-
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group col-md-6 col-sm-12">
-                                    <label for="images">Gallery Image</label>
-                                    <input type="file" name="images" id="imagesInput" class="form-control"
-                                        accept="image/*" required />
+                                    <label for="imagesInput">Gallery Image</label>
+                                    <input type="file" id="imagesInput" class="form-control" accept="image/*" required />
+                                    <input type="hidden" name="cropped_image" id="croppedImageInput">
                                 </div>
-
-                                <!-- Preview & Crop Modal -->
-                                <div id="cropModal" style="display:none;">
-                                    <img id="imagePreview" style="max-width: 100%;" />
-                                    <button type="button" id="cropBtn" class="btn btn-success mt-2">Crop</button>
-                                </div>
-
-                                <input type="hidden" name="cropped_image" id="croppedImageInput">
-
                             </div>
+
+                            <img id="imagePreview" />
 
                             <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
                             <a href="{{ route('admin.gallery.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
@@ -83,14 +74,12 @@
                     </div>
                 </div>
             </div>
-            <!-- data table end -->
         </div>
     </div>
 @endsection
 
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-    <!-- Cropper JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <script>
@@ -101,50 +90,50 @@
         let cropper;
         const imageInput = document.getElementById('imagesInput');
         const imagePreview = document.getElementById('imagePreview');
-        const cropModal = document.getElementById('cropModal');
         const croppedImageInput = document.getElementById('croppedImageInput');
+        const form = document.getElementById('galleryForm');
 
         imageInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    imagePreview.src = event.target.result;
-                    cropModal.style.display = 'block';
+            if (!file) return;
 
-                    // Wait for image to load
-                    imagePreview.onload = function() {
-                        if (cropper) cropper.destroy();
-                        cropper = new Cropper(imagePreview, {
-                            aspectRatio: 233 / 117, // 1.99
-                            viewMode: 1,
-                        });
-                    };
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                imagePreview.src = event.target.result;
+                imagePreview.style.display = 'block';
+
+                imagePreview.onload = function() {
+                    if (cropper) cropper.destroy();
+
+                    cropper = new Cropper(imagePreview, {
+                        aspectRatio: 233 / 117,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        background: false
+                    });
                 };
-                reader.readAsDataURL(file);
-            }
+            };
+            reader.readAsDataURL(file);
         });
 
-        document.getElementById('cropBtn').addEventListener('click', function() {
-            const canvas = cropper.getCroppedCanvas({
-                width: 800, // Optional: control output size
-                height: 402,
-            });
+        form.addEventListener('submit', function(e) {
+            if (cropper) {
+                e.preventDefault(); // Stop original form submit
 
-            canvas.toBlob(function(blob) {
-                const file = new File([blob], 'cropped.jpg', {
-                    type: 'image/jpeg'
+                const canvas = cropper.getCroppedCanvas({
+                    width: 800,
+                    height: Math.round(800 * (117 / 233))
                 });
 
-                // Create a temporary FormData to convert to base64
-                const reader = new FileReader();
-                reader.onloadend = function() {
-                    croppedImageInput.value = reader.result;
-                };
-                reader.readAsDataURL(file);
-            });
-
-            cropModal.style.display = 'none';
+                canvas.toBlob(function(blob) {
+                    const reader = new FileReader();
+                    reader.onloadend = function() {
+                        croppedImageInput.value = reader.result;
+                        form.submit(); // Submit form after image is ready
+                    };
+                    reader.readAsDataURL(blob);
+                });
+            }
         });
     </script>
 @endsection

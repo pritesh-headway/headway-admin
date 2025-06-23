@@ -9,13 +9,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
 
     <style>
-        #cropModal {
+        #imagePreview {
+            max-width: 100%;
             margin-top: 15px;
-            max-width: 100%;
-        }
-
-        #cropModal img {
-            max-width: 100%;
+            display: none;
             border: 1px solid #ccc;
             padding: 5px;
         }
@@ -49,7 +46,8 @@
                         <h4 class="header-title">Edit Gallery - {{ $gallery->title }}</h4>
                         @include('backend.layouts.partials.messages')
 
-                        <form action="{{ route('admin.gallery.update', ['id' => $gallery->id]) }}?type={{ $type }}"
+                        <form id="galleryForm"
+                            action="{{ route('admin.gallery.update', ['id' => $gallery->id]) }}?type={{ $type }}"
                             method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group">
@@ -59,7 +57,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="images">Gallery Image</label>
+                                <label for="imagesInput">Gallery Image</label>
                                 <input type="file" id="imagesInput" class="form-control" accept="image/*" />
                                 <input type="hidden" name="cropped_image" id="croppedImageInput">
 
@@ -71,11 +69,7 @@
                                     height="80px" />
                             </div>
 
-                            <!-- Crop Modal (inline) -->
-                            <div id="cropModal" style="display:none;">
-                                <img id="imagePreview" />
-                                <button type="button" id="cropBtn" class="btn btn-success mt-2">Crop</button>
-                            </div>
+                            <img id="imagePreview" />
 
                             <button type="submit" class="btn btn-primary mt-3">Update</button>
                             <a href="{{ route('admin.gallery.index') }}" class="btn btn-secondary mt-3">Cancel</a>
@@ -99,44 +93,51 @@
         let cropper;
         const imageInput = document.getElementById('imagesInput');
         const imagePreview = document.getElementById('imagePreview');
-        const cropModal = document.getElementById('cropModal');
         const croppedImageInput = document.getElementById('croppedImageInput');
+        const form = document.getElementById('galleryForm');
 
         imageInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    imagePreview.src = event.target.result;
-                    cropModal.style.display = 'block';
+            if (!file) return;
 
-                    imagePreview.onload = function() {
-                        if (cropper) cropper.destroy();
-                        cropper = new Cropper(imagePreview, {
-                            aspectRatio: 233 / 117,
-                            viewMode: 1,
-                        });
-                    };
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                imagePreview.src = event.target.result;
+                imagePreview.style.display = 'block';
+
+                imagePreview.onload = function() {
+                    if (cropper) cropper.destroy();
+
+                    cropper = new Cropper(imagePreview, {
+                        aspectRatio: 233 / 117,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        background: false,
+                    });
                 };
-                reader.readAsDataURL(file);
-            }
+            };
+            reader.readAsDataURL(file);
         });
 
-        document.getElementById('cropBtn').addEventListener('click', function() {
-            const canvas = cropper.getCroppedCanvas({
-                width: 800,
-                height: Math.round(800 * (117 / 233))
-            });
+        form.addEventListener('submit', function(e) {
+            // If cropper exists (new image selected), intercept submit
+            if (cropper) {
+                e.preventDefault();
 
-            canvas.toBlob(function(blob) {
-                const reader = new FileReader();
-                reader.onloadend = function() {
-                    croppedImageInput.value = reader.result;
-                };
-                reader.readAsDataURL(blob);
-            });
+                const canvas = cropper.getCroppedCanvas({
+                    width: 800,
+                    height: Math.round(800 * (117 / 233))
+                });
 
-            cropModal.style.display = 'none';
+                canvas.toBlob(function(blob) {
+                    const reader = new FileReader();
+                    reader.onloadend = function() {
+                        croppedImageInput.value = reader.result;
+                        form.submit(); // now submit after setting base64 image
+                    };
+                    reader.readAsDataURL(blob);
+                });
+            }
         });
     </script>
 @endsection
