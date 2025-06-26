@@ -64,12 +64,12 @@ Plan Edit - Admin Panel
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Price (Out Of Ahmedabad)</label>
-                                <input type="number" class="form-control" id="price" name="price"
+                                <input type="number" class="form-control" id="price_out_of_ah" name="price_out_of_ah"
                                     placeholder="Enter Price" value="{{ $admin->price }}" required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Price (Out Of State)</label>
-                                <input type="number" class="form-control" id="price" name="price"
+                                <input type="number" class="form-control" id="price_out_of_st" name="price_out_of_st"
                                     placeholder="Enter Price" value="{{ $admin->price }}" required autofocus>
                             </div>
                         </div>

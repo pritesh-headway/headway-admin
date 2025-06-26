@@ -62,14 +62,15 @@ Plan Create - Admin Panel
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Price (In Gujrat)</label>
-                                <input type="number" class="form-control" id="price" name="price"
-                                    placeholder="Enter Price In Gujrat" value="{{ old('price') }}" required autofocus>
+                                <label for="name">Price (Out Of Ahmedabad)</label>
+                                <input type="number" class="form-control" id="price_out_of_ah" name="price_out_of_ah"
+                                    placeholder="Enter Price Out Of Ahmedabad" value="{{ old('price_out_of_ah') }}"
+                                    required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Price (Out Of Gujrat)</label>
-                                <input type="number" class="form-control" id="price" name="price"
-                                    placeholder="Enter Price Out Of Gujrat" value="{{ old('price') }}" required
+                                <label for="name">Price (Out Of State)</label>
+                                <input type="number" class="form-control" id="price_out_of_st" name="price_out_of_st"
+                                    placeholder="Enter Price Out Of State" value="{{ old('price_out_of_st') }}" required
                                     autofocus>
                             </div>
                         </div>

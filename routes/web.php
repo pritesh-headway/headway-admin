@@ -24,6 +24,7 @@ use App\Http\Controllers\Backend\MembershipController;
 use App\Http\Controllers\Backend\ModulesController;
 use App\Http\Controllers\Backend\OrderAddOnController;
 use App\Http\Controllers\Backend\PlanController;
+use App\Http\Controllers\Backend\ScedulesController;
 use App\Http\Controllers\Backend\ServiceController;
 use App\Http\Controllers\Backend\ServicesController;
 use App\Http\Controllers\Backend\TestimonialController;
@@ -77,6 +78,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::resource('modules', ModulesController::class);
     Route::resource('members', MembersController::class);
     Route::resource('services', ServicesController::class);
+    Route::resource('scedules', ScedulesController::class);
     Route::post('members/addUpdateModuleData', [MembersController::class, 'addUpdateModuleData'])->name('members.addUpdateModuleData');
     Route::post('members/addUpdateModuleDataText', [MembersController::class, 'addUpdateModuleDataText'])->name('members.addUpdateModuleDataText');
     Route::post('membership/update/{id}', [MembershipController::class, 'update'])->name('admin.membership.update');
