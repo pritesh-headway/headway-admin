@@ -89,7 +89,7 @@ Membership Edit - Admin Panel
                         @endphp
                         <li class="nav-item">
                             <a class="nav-link {{ $active }}" id="{{ $nameS }}-tab" data-toggle="tab"
-                                href="#{{ $nameS }}" role="tab">{{ $modules->title }} Details</a>
+                                href="#{{ $nameS }}" role="tab">{{ $modules->title }} </a>
                         </li>
                         @endforeach
                     </ul>
@@ -127,7 +127,8 @@ Membership Edit - Admin Panel
                                     @php
                                     $mod = [];
                                     $mod = $dataGetNodules->where('module_id', $service['id'])->first();
-                                    $isReadOnly = !isset($mod) ? '' : 'disabled';
+                                    $isReadOnly = !isset($mod) || $mod['module_status'] !='Completed' ? '' :
+                                    'disabled="disabled"';
                                     $statusUpdate = ($mod && $mod['module_status'] == 'Completed') ? '' : 'Update
                                     Status';
                                     @endphp
@@ -177,11 +178,11 @@ Membership Edit - Admin Panel
                             @elseif ($name == 'Workbooks')
                             @php
                             $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                            if($visitData) {
+                            if ($visitData) {
                             $visitData = array_values($visitData);
                             $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                             }
-                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled="disabled"';
                             $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                             'Completed') ? '' : 'Update Status';
                             @endphp
@@ -195,11 +196,11 @@ Membership Edit - Admin Panel
                             @elseif ($name == 'Limited_on_call_team_support')
                             @php
                             $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                            if($visitData) {
+                            if ($visitData) {
                             $visitData = array_values($visitData);
                             $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                             }
-                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled="disabled"';
                             $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                             'Completed') ? '' : 'Update Status';
                             @endphp
@@ -213,11 +214,11 @@ Membership Edit - Admin Panel
                             @elseif ($name == 'Beginner_Plan')
                             @php
                             $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                            if($visitData) {
+                            if ($visitData) {
                             $visitData = array_values($visitData);
                             $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                             }
-                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled="disabled"';
                             $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                             'Completed') ? '' : 'Update Status';
                             @endphp
@@ -228,7 +229,7 @@ Membership Edit - Admin Panel
                                 isset($visitData[$i]) ?
                                 $statusUpdate : 'Save' }}
                             </button>
-                            @elseif ($name == 'Meetings')
+                            @elseif ($name == 'Meetings_With_CMD')
 
                             <table class="responsive-table" width="100%">
                                 <thead>
@@ -244,18 +245,21 @@ Membership Edit - Admin Panel
                                 <tbody>
                                     @php
                                     $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                                    if($visitData) {
+                                    if ($visitData) {
                                     $visitData = array_values($visitData);
                                     $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                                     }
                                     $visitNo = 7000000;
-                                    $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+
                                     $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                                     'Completed') ?
                                     '' : 'Update
                                     Status';
                                     @endphp
-                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i; @endphp <tr>
+                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i;
+                                        $isReadOnly=!isset($visitData[$i]) ||
+                                        $visitData[$i]['module_status']!='Completed' ? '' : 'disabled="disabled"' ;
+                                        @endphp <tr>
                                         <td>{{ $i }}</td>
                                         <td><input {{ $isReadOnly }} type="text" class="form-control date"
                                                 id="date_{{ $visitNo }}" name="module_date[]"
@@ -282,7 +286,8 @@ Membership Edit - Admin Panel
                                                 </option>
                                             </select>
                                         </td>
-                                        <td><input {{ $isReadOnly }} type="text" class="form-control"
+                                        <td>
+                                            <input {{ $isReadOnly }} type="text" class="form-control"
                                                 id="remarks_{{ $visitNo }}" name="module_remarks[]"
                                                 value="{{ isset($visitData[$i]) ? $visitData[$i]['remarks'] : '' }}">
                                         </td>
@@ -297,13 +302,14 @@ Membership Edit - Admin Panel
                                         @endfor
                                 </tbody>
                             </table>
-                            @elseif ($name == 'On_Store_Reviews')
+                            @elseif ($name == 'Review_Training')
                             <table class="responsive-table" width="100%">
                                 <thead>
                                     <tr>
                                         <th>Sr.</th>
                                         <th>Date</th>
                                         <th>Time</th>
+                                        <th>Trainer Assign</th>
                                         <th>Status</th>
                                         <th>Remarks</th>
                                         <th>Action</th>
@@ -317,11 +323,14 @@ Membership Edit - Admin Panel
                                     $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                                     }
                                     $visitNo = 6000000;
-                                    $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+
                                     $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                                     'Completed') ? '' : 'Update Status';
                                     @endphp
-                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i; @endphp <tr>
+                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i;
+                                        $isReadOnly=!isset($visitData[$i]) ||
+                                        $visitData[$i]['module_status']!='Completed' ? '' : 'disabled="disabled"' ;
+                                        @endphp <tr>
                                         <td>{{ $i }}</td>
                                         <td><input {{ $isReadOnly }} type="text" class="form-control date"
                                                 id="date_{{ $visitNo }}" name="module_date[]"
@@ -330,6 +339,18 @@ Membership Edit - Admin Panel
                                         <td><input {{ $isReadOnly }} type="text" class="form-control time"
                                                 id="time_{{ $visitNo }}" name="module_time[]"
                                                 value="{{ isset($visitData[$i]) ? $visitData[$i]['time'] : '' }}">
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="trainer_assign[]"
+                                                id="trainer_id_{{ $visitNo }}">
+                                                <option value="">Select Trainer</option>
+                                                @foreach ($trainers as $trainer)
+                                                <option value="{{ $trainer->id }}" {{
+                                                    isset($visitData[$i]['trainer_id']) &&
+                                                    $visitData[$i]['trainer_id']==$trainer->id ? 'selected' : '' }}>
+                                                    {{ $trainer->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </td>
                                         <td>
                                             <select name="module_status[]" id="status_{{ $visitNo }}"
@@ -368,11 +389,11 @@ Membership Edit - Admin Panel
                             @elseif ($name == 'Theory___Practical')
                             @php
                             $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                            if($visitData) {
+                            if ($visitData) {
                             $visitData = array_values($visitData);
                             $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                             }
-                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+
                             $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                             'Completed') ? '' : 'Update Status';
                             @endphp
@@ -383,14 +404,13 @@ Membership Edit - Admin Panel
                                 isset($visitData[$i]) ?
                                 $statusUpdate : 'Save' }}
                             </button>
-                            @elseif ($name == 'On_call_team_support')
+                            @elseif ($name == 'On_Call_Team_Support')
                             @php
                             $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
                             if($visitData) {
                             $visitData = array_values($visitData);
                             $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                             }
-                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
                             $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                             'Completed') ? '' : 'Update Status';
                             @endphp
@@ -408,7 +428,6 @@ Membership Edit - Admin Panel
                             $visitData = array_values($visitData);
                             $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                             }
-                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
                             $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                             'Completed') ? '' : 'Update Status';
                             @endphp
@@ -440,82 +459,16 @@ Membership Edit - Admin Panel
                                     $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                                     }
                                     $visitNo = 5000000;
-                                    $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+
                                     $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                                     'Completed') ?
                                     '' : 'Update
                                     Status';
                                     @endphp
-                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i; @endphp <tr>
-                                        <td>{{ $i }}</td>
-                                        <td><input {{ $isReadOnly }} type="text" class="form-control date"
-                                                id="date_{{ $visitNo }}" name="module_date[]"
-                                                value="{{ isset($visitData[$i]) ? $visitData[$i]['date'] : '' }}">
-                                        </td>
-                                        <td><input {{ $isReadOnly }} type="text" class="form-control time"
-                                                id="time_{{ $visitNo }}" name="module_time[]"
-                                                value="{{ isset($visitData[$i]) ? $visitData[$i]['time'] : '' }}">
-                                        </td>
-                                        <td>
-                                            <select name="module_status[]" id="status_{{ $visitNo }}"
-                                                class="form-control">
-                                                <option value="Pending" {{ isset($visitData[$i]) &&
-                                                    $visitData[$i]['module_status']=='Pending' ? 'selected' : '' }}>
-                                                    Pending</option>
-                                                <option value="Date Assign" {{ isset($visitData[$i]) &&
-                                                    $visitData[$i]['module_status']=='Date Assign' ? 'selected' : '' }}>
-                                                    Date
-                                                    Assign
-                                                </option>
-                                                <option value="Completed" {{ isset($visitData[$i]) &&
-                                                    $visitData[$i]['module_status']=='Completed' ? 'selected' : '' }}>
-                                                    Completed
-                                                </option>
-                                            </select>
-                                        </td>
-                                        <td><input {{ $isReadOnly }} type="text" class="form-control"
-                                                id="remarks_{{ $visitNo }}" name="module_remarks[]"
-                                                value="{{ isset($visitData[$i]) ? $visitData[$i]['remarks'] : '' }}">
-                                        </td>
-                                        <td>
-                                            @if ($statusUpdate != '')
-                                            <button class="btn btn-primary"
-                                                onclick="addUpdateModule({{ $moduleID }}, {{ $member_id }}, {{ $admin->product_id }}, {{ $visitNo }});">{{
-                                                isset($visitData[$i]) ?
-                                                $statusUpdate : 'Save' }}</button>
-                                            @endif
-                                        </td>
-                                        </tr>
-                                        @endfor
-                                </tbody>
-                            </table>
-                            @elseif ($name == 'Online_Reviews')
-                            <table class="responsive-table" width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Sr.</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Status</th>
-                                        <th>Remarks</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                    $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                                    if($visitData) {
-                                    $visitData = array_values($visitData);
-                                    $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
-                                    }
-                                    $visitNo = 4000000;
-                                    $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
-                                    $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
-                                    'Completed') ?
-                                    '' : 'Update
-                                    Status';
-                                    @endphp
-                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i; @endphp <tr>
+                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i;
+                                        $isReadOnly=!isset($visitData[$i]) ||
+                                        $visitData[$i]['module_status']!='Completed' ? '' : 'disabled="disabled"' ;
+                                        @endphp <tr>
                                         <td>{{ $i }}</td>
                                         <td><input {{ $isReadOnly }} type="text" class="form-control date"
                                                 id="date_{{ $visitNo }}" name="module_date[]"
@@ -559,13 +512,14 @@ Membership Edit - Admin Panel
                                 </tbody>
                             </table>
                             @elseif ($name == 'Online_Trainings')
-
                             <table class="responsive-table" width="100%">
                                 <thead>
                                     <tr>
                                         <th>Sr.</th>
+                                        <th>Subject</th>
                                         <th>Date</th>
                                         <th>Time</th>
+                                        <th>Trainer Assign</th>
                                         <th>Status</th>
                                         <th>Remarks</th>
                                         <th>Action</th>
@@ -574,18 +528,118 @@ Membership Edit - Admin Panel
                                 <tbody>
                                     @php
                                     $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                                    if($visitData) {
+                                    if ($visitData) {
+                                        $visitData = array_values($visitData);
+                                        $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
+                                    }
+                                    $visitNo = 4000000;
+
+                                    $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
+                                    'Completed') ? '' : 'Update Status';
+                                    @endphp
+                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i;
+                                        $isReadOnly=!isset($visitData[$i]) ||
+                                        $visitData[$i]['module_status']!='Completed' ? '' : 'disabled="disabled"' ;
+                                        @endphp <tr>
+                                        <td>{{ $i }}</td>
+                                        <td>
+                                            <select class="form-control" name="module_subject[]"
+                                                id="subject_{{ $visitNo }}">
+                                                <option value="">Select Subject</option>
+                                                @foreach ($subjects as $subject)
+                                                <option value="{{ $subject->id }}" {{
+                                                    isset($visitData[$i]['subject_id']) &&
+                                                    $visitData[$i]['subject_id']==$subject->id ? 'selected' : '' }}>
+                                                    {{ $subject->subject_name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td><input {{ $isReadOnly }} type="text" class="form-control date"
+                                                id="date_{{ $visitNo }}" name="module_date[]"
+                                                value="{{ isset($visitData[$i]) ? $visitData[$i]['date'] : '' }}">
+                                        </td>
+                                        <td><input {{ $isReadOnly }} type="text" class="form-control time"
+                                                id="time_{{ $visitNo }}" name="module_time[]"
+                                                value="{{ isset($visitData[$i]) ? $visitData[$i]['time'] : '' }}">
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="trainer_assign[]"
+                                                id="trainer_id_{{ $visitNo }}">
+                                                <option value="">Select Trainer</option>
+                                                @foreach ($trainers as $trainer)
+                                                <option value="{{ $trainer->id }}" {{
+                                                    isset($visitData[$i]['trainer_id']) &&
+                                                    $visitData[$i]['trainer_id']==$trainer->id ?
+                                                    'selected' : '' }}>
+                                                    {{ $trainer->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="module_status[]" id="status_{{ $visitNo }}"
+                                                class="form-control">
+                                                <option value="Pending" {{ isset($visitData[$i]) &&
+                                                    $visitData[$i]['module_status']=='Pending' ? 'selected' : '' }}>
+                                                    Pending</option>
+                                                <option value="Date Assign" {{ isset($visitData[$i]) &&
+                                                    $visitData[$i]['module_status']=='Date Assign' ? 'selected' : '' }}>
+                                                    Date
+                                                    Assign
+                                                </option>
+                                                <option value="Completed" {{ isset($visitData[$i]) &&
+                                                    $visitData[$i]['module_status']=='Completed' ? 'selected' : '' }}>
+                                                    Completed
+                                                </option>
+                                            </select>
+                                        </td>
+                                        <td><input {{ $isReadOnly }} type="text" class="form-control"
+                                                id="remarks_{{ $visitNo }}" name="module_remarks[]"
+                                                value="{{ isset($visitData[$i]) ? $visitData[$i]['remarks'] : '' }}">
+                                        </td>
+                                        <td>
+                                            @if ($statusUpdate != '')
+                                            <button class="btn btn-primary"
+                                                onclick="addUpdateModule({{ $moduleID }}, {{ $member_id }}, {{ $admin->product_id }}, {{ $visitNo }});">{{
+                                                isset($visitData[$i]) ?
+                                                $statusUpdate : 'Save' }}</button>
+                                            @endif
+                                        </td>
+                                        </tr>
+                                        @endfor
+                                </tbody>
+                            </table>
+                            @elseif ($name == 'Online_Reviews')
+
+                            <table class="responsive-table" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sr.</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Trainer Assign</th>
+                                        <th>Status</th>
+                                        <th>Remarks</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                    $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
+                                    if ($visitData) {
                                     $visitData = array_values($visitData);
                                     $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                                     }
                                     $visitNo = 3000000;
-                                    $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+
                                     $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                                     'Completed') ?
                                     '' : 'Update
                                     Status';
                                     @endphp
-                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i; @endphp <tr>
+                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i;
+                                        $isReadOnly=!isset($visitData[$i]) ||
+                                        $visitData[$i]['module_status']!='Completed' ? '' : 'disabled="disabled"' ;
+                                        @endphp <tr>
                                         <td>{{ $i }}</td>
                                         <td><input {{ $isReadOnly }} type="text" class="form-control date"
                                                 id="date_{{ $visitNo }}" name="module_date[]"
@@ -594,6 +648,19 @@ Membership Edit - Admin Panel
                                         <td><input type="text" {{ $isReadOnly }} class="form-control time"
                                                 id="time_{{ $visitNo }}" name="module_time[]"
                                                 value="{{ isset($visitData[$i]) ? $visitData[$i]['time'] : '' }}">
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="trainer_assign[]"
+                                                id="trainer_id_{{ $visitNo }}">
+                                                <option value="">Select Trainer</option>
+                                                @foreach ($trainers as $trainer)
+                                                <option value="{{ $trainer->id }}" {{
+                                                    isset($visitData[$i]['trainer_id']) &&
+                                                    $visitData[$i]['trainer_id']==$trainer->id ?
+                                                    'selected' : '' }}>
+                                                    {{ $trainer->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </td>
                                         <td>
                                             <select name="module_status[]" id="status_{{ $visitNo }}"
@@ -635,7 +702,7 @@ Membership Edit - Admin Panel
                             $visitData = array_values($visitData);
                             $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                             }
-                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled="disabled"';
                             $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                             'Completed') ? '' : 'Update Status';
                             @endphp
@@ -646,14 +713,16 @@ Membership Edit - Admin Panel
                                 isset($visitData[$i]) ?
                                 $statusUpdate : 'Save' }}
                             </button>
-                            @elseif ($name == 'Store_Visit')
+                            @elseif ($name == 'Staff_Training')
 
                             <table class="responsive-table" width="100%">
                                 <thead>
                                     <tr>
                                         <th>Sr.</th>
+                                        <th>Subject</th>
                                         <th>Date</th>
                                         <th>Time</th>
+                                        <th>Trainer Assign</th>
                                         <th>Status</th>
                                         <th>Remarks</th>
                                         <th>Action</th>
@@ -667,12 +736,27 @@ Membership Edit - Admin Panel
                                     $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                                     }
                                     $visitNo = 2000000;
-                                    $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+
                                     $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                                     'Completed') ? '' : 'Update Status';
                                     @endphp
-                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i; @endphp <tr>
+                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i;
+                                        $isReadOnly=!isset($visitData[$i]) ||
+                                        $visitData[$i]['module_status']!='Completed' ? '' : 'disabled="disabled"' ;
+                                        @endphp <tr>
                                         <td>{{ $i }}</td>
+                                        <td>
+                                            <select class="form-control" name="module_subject[]"
+                                                id="subject_{{ $visitNo }}">
+                                                <option value="">Select Subject</option>
+                                                @foreach ($subjects as $subject)
+                                                <option value="{{ $subject->id }}" {{
+                                                    isset($visitData[$i]['subject_id']) &&
+                                                    $visitData[$i]['subject_id']==$subject->id ? 'selected' : '' }}>
+                                                    {{ $subject->subject_name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
                                         <td><input type="text" {{ $isReadOnly }} class="form-control date"
                                                 id="date_{{ $visitNo }}" name="module_date[]"
                                                 value="{{ isset($visitData[$i]) ? $visitData[$i]['date'] : '' }}">
@@ -680,6 +764,19 @@ Membership Edit - Admin Panel
                                         <td><input type="text" {{ $isReadOnly }} class="form-control time"
                                                 id="time_{{ $visitNo }}" name="module_time[]"
                                                 value="{{ isset($visitData[$i]) ? $visitData[$i]['time'] : '' }}">
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="trainer_assign[]"
+                                                id="trainer_id_{{ $visitNo }}">
+                                                <option value="">Select Trainer</option>
+                                                @foreach ($trainers as $trainer)
+                                                <option value="{{ $trainer->id }}" {{
+                                                    isset($visitData[$i]['trainer_id']) &&
+                                                    $visitData[$i]['trainer_id']==$trainer->id ?
+                                                    'selected' : '' }}>
+                                                    {{ $trainer->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </td>
                                         <td>
                                             <select name="module_status[]" id="status_{{ $visitNo }}"
@@ -718,11 +815,11 @@ Membership Edit - Admin Panel
                             @elseif ($name == 'Organization_Plan')
                             @php
                             $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                            if($visitData) {
+                            if ($visitData) {
                             $visitData = array_values($visitData);
                             $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                             }
-                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+
                             $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                             'Completed') ? '' : 'Update Status';
                             @endphp
@@ -749,16 +846,19 @@ Membership Edit - Admin Panel
                                 <tbody>
                                     @php
                                     $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                                    if($visitData) {
+                                    if ($visitData) {
                                     $visitData = array_values($visitData);
                                     $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                                     }
                                     $visitNo = 1000000;
-                                    $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+
                                     $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                                     'Completed') ? '' : 'Update Status';
                                     @endphp
-                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i; @endphp <tr>
+                                    @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i;
+                                        $isReadOnly=!isset($visitData[$i]) ||
+                                        $visitData[$i]['module_status']!='Completed' ? '' : 'disabled="disabled"' ;
+                                        @endphp <tr>
                                         <td>{{ $i }}</td>
                                         <td><input type="text" {{ $isReadOnly }} class="form-control date"
                                                 id="date_{{ $visitNo }}" name="module_date[]"
@@ -805,11 +905,11 @@ Membership Edit - Admin Panel
                             @elseif ($name == 'Data_Processing_Support')
                             @php
                             $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                            if($visitData) {
+                            if ($visitData) {
                             $visitData = array_values($visitData);
                             $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                             }
-                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled="disabled"';
                             $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                             'Completed') ? '' : 'Update Status';
                             @endphp
@@ -820,10 +920,10 @@ Membership Edit - Admin Panel
                                 isset($visitData[$i]) ?
                                 $statusUpdate : 'Save' }}
                             </button>
-                            @elseif ($name == 'Call_Support_for_all_Formate___SOP')
+                            @elseif ($name == 'SOP')
                             @php
                             $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                            if($visitData) {
+                            if ($visitData) {
                             $visitData = array_values($visitData);
                             $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                             }
@@ -832,7 +932,7 @@ Membership Edit - Admin Panel
                             'Completed') ? '' : 'Update Status';
                             @endphp
                             <textarea class="form-control description" id="description_{{ $moduleID }}"
-                                name="Call_Support_for_all_Formate___SOP">{{ ($visitData) ? $visitData[1]['description'] : '' }}</textarea>
+                                name="SOP">{{ ($visitData) ? $visitData[1]['description'] : '' }}</textarea>
                             <button class="btn btn-primary" style="margin-top: 1%;"
                                 onclick="addUpdateModuleText({{ $moduleID }}, {{ $member_id }}, {{ $admin->product_id }});">{{
                                 isset($visitData[$i]) ?
@@ -842,11 +942,11 @@ Membership Edit - Admin Panel
                             @elseif ($name == 'SDF')
                             @php
                             $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                            if($visitData) {
+                            if ($visitData) {
                             $visitData = array_values($visitData);
                             $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                             }
-                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled';
+                            $isReadOnly = !isset($visitData[$i]) ? '' : 'disabled="disabled"';
                             $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
                             'Completed') ? '' : 'Update Status';
                             @endphp
@@ -903,8 +1003,10 @@ Membership Edit - Admin Panel
             }
         }
 
-        // Run function on change
-        select.addEventListener("change", updateBackgroundColor);
+        if(select) {
+            // Run function on change
+            select.addEventListener("change", updateBackgroundColor);
+        }
 
         // Set initial color based on selected value
         updateBackgroundColor();
@@ -915,6 +1017,8 @@ Membership Edit - Admin Panel
         var time = $('#time_' + i).val();
         var status = $('#status_' + i).val();
         var remarks = $('#remarks_' + i).val();
+        var trainer_id = $('#trainer_id_' + i).val();
+        var subject_id = $('#subject_' + i).val();
         $.ajax({
             type: 'POST',
             url: "{{ route('admin.members.addUpdateModuleData') }}",
@@ -923,6 +1027,7 @@ Membership Edit - Admin Panel
                 memberID: memberID,
                 membershipID:membershipID,
                 date: date,
+                trainer_id: trainer_id,
                 time: time,
                 status: status,
                 remarks: remarks,
@@ -946,6 +1051,8 @@ Membership Edit - Admin Panel
         var time = $('#time_' + i).val();
         var status = $('#status_' + i).val();
         var remarks = $('#remarks_' + i).val();
+        var trainer_id = $('#trainer_id_' + i).val();
+        var subject_id = $('#subject_' + i).val();
         $.ajax({
             type: 'POST',
             url: "{{ route('admin.members.addUpdateModuleData') }}",
@@ -953,6 +1060,8 @@ Membership Edit - Admin Panel
                 serviceID: serviceID,
                 memberID: memberID,
                 membershipID:membershipID,
+                trainer_id: trainer_id,
+                subject_id: subject_id,
                 date: date,
                 time: time,
                 status: status,

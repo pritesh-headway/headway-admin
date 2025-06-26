@@ -510,7 +510,6 @@ class ApiController extends Controller
                 return collect($plan)->except(['password', 'role_id', 'email_verified_at'])
                     ->put('plan_image', ($plan['image']) ? $base_url . $this->plan_path . $plan['image'] : '')
                     ->toArray();
-
             })->toArray();
 
             $result = [];
@@ -1504,40 +1503,40 @@ class ApiController extends Controller
                 'email' => 'required|email',
                 'date_of_anniversary' => 'nullable|date',
                 'nationality' => 'required|string|max:255',
-                'personal_ContactPerson_email' => 'required|email',
+                // 'personal_ContactPerson_email' => 'required|email',
 
                 // Address
                 'address' => 'required|string|max:500',
                 'city' => 'required|string|max:255',
                 'state' => 'required|string|max:255',
                 'pincode' => 'required|digits:6',
-                'landline_no' => 'nullable',
-                'contact_person_name' => 'nullable|string|max:255',
-                'contact_person_mobile' => 'nullable|digits:10',
+                // 'landline_no' => 'nullable',
+                // 'contact_person_name' => 'nullable|string|max:255',
+                // 'contact_person_mobile' => 'nullable|digits:10',
 
                 // Business Information
                 'organization_name' => 'required|string|max:255',
                 'bussiness_city' => 'required|string|max:255',
                 'bussiness_state' => 'required|string|max:255',
                 'bussiness_pincode' => 'required|digits:6',
-                'bussiness_landline_no' => 'nullable',
+                // 'bussiness_landline_no' => 'nullable',
                 'bussiness_email' => 'required|email',
-                'fax_no' => 'nullable',
+                // 'fax_no' => 'nullable',
                 'registered_office_address' => 'required|string|max:500',
                 'gst_no' => 'required|regex:/^(\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1})$/',
                 'pan_no' => 'required|regex:/^[A-Z]{5}\d{4}[A-Z]{1}$/',
                 'date_of_incorporation' => 'required|date',
                 'organization_type' => 'required|string|max:255',
-                'business_fax_no' => 'nullable',
+                // 'business_fax_no' => 'nullable',
                 'business_ContactPerson_name' => 'required|string|max:255',
                 'business_ContactPerson_mobile' => 'required|digits:10',
 
                 // Bank Details
-                'bank_name' => 'required|string|max:255',
-                'account_no' => 'required|digits_between:9,18',
-                'branch_name' => 'required|string|max:255',
-                'account_operation_since' => 'required',
-                'branch_address' => 'required|string',
+                // 'bank_name' => 'required|string|max:255',
+                // 'account_no' => 'required|digits_between:9,18',
+                // 'branch_name' => 'required|string|max:255',
+                // 'account_operation_since' => 'required',
+                // 'branch_address' => 'required|string',
 
                 //  Product Details
                 'product_id' => 'required',
@@ -2161,7 +2160,6 @@ class ApiController extends Controller
                 'message' => 'Get Dashboard data successfully.',
                 'data' => $dashboardData
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2204,7 +2202,6 @@ class ApiController extends Controller
                     'twitter' => $settings['twitter'] ?? '',
                 ]
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2239,7 +2236,6 @@ class ApiController extends Controller
                 'message' => 'Record list successfully',
                 'data' => $data
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2340,7 +2336,6 @@ class ApiController extends Controller
                 'message' => 'Record list successfully',
                 'data' => $data
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2486,7 +2481,6 @@ class ApiController extends Controller
                 'message' => 'Blogs list fetched successfully',
                 'data' => $blogs
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2548,7 +2542,6 @@ class ApiController extends Controller
                 'message' => 'Blog details fetched successfully',
                 'data' => $data
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2581,7 +2574,6 @@ class ApiController extends Controller
                 'message' => 'Record list successfully',
                 'data' => $teams
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2615,8 +2607,6 @@ class ApiController extends Controller
                 'message' => 'Add On Services fetched successfully',
                 'data' => $addOnServices
             ], 200);
-
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2761,7 +2751,6 @@ class ApiController extends Controller
                     'data' => (object) []
                 ], 404);
             }
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2854,7 +2843,6 @@ class ApiController extends Controller
                 'message' => 'Record updated Successfully',
                 'data' => $notificationData,
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2909,7 +2897,6 @@ class ApiController extends Controller
                 'message' => 'Subscription successful',
                 'data' => (object) $notification
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -3035,7 +3022,6 @@ class ApiController extends Controller
                 'message' => 'Profile updated Successfully',
                 'data' => $responseData
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -3044,8 +3030,4 @@ class ApiController extends Controller
             ], 500);
         }
     }
-
-
-
-
 }
