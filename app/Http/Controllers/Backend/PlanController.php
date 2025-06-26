@@ -48,6 +48,8 @@ class PlanController extends Controller
         $admin->plan_name = $request->plan_name;
         $admin->sort_desc = $request->sort_desc;
         $admin->price = $request->price;
+        $admin->price = $request->price;
+        $admin->price = $request->price;
         $admin->validity = $request->validity;
         $admin->session = $request->session;
         $admin->description = $request->description;

@@ -15,6 +15,9 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Role;
+use App\Services\CurlApiService;
+use App\Services\FcmNotificationService;
+use Illuminate\Support\Facades\DB;
 
 class MembersController extends Controller
 {
@@ -82,7 +85,16 @@ class MembersController extends Controller
         $admin = Membership::findOrFail($id);
         $plans = Plan::findOrFail($admin['product_id']);
         $ids = explode(',', $plans->module_ids);
-        $modulesName = Service::whereIn('id', $ids)->get();
+        $modulesName = Service::whereIn('id', $ids)->where('status', 1)->get();
+        $trainers = DB::table('trainers')
+            ->where('status', '1')
+            ->where('is_deleted', '0')
+            ->get();
+
+        $subjects =  DB::table('trainer_subjects')
+            ->where('status', '1')
+            ->where('is_deleted', '0')
+            ->get();
         // dd($admin);
         $dataGetNodules = MemberModule::where('member_id', $admin->user_id)->get();
         // dd($dataGetNodules);
@@ -92,6 +104,8 @@ class MembersController extends Controller
             'member_id' => $admin->user_id,
             'modulesName' => $modulesName,
             'dataGetNodules' => $dataGetNodules,
+            'subjects' => $subjects,
+            'trainers' => $trainers,
             'roles' => Role::all(),
         ]);
     }
@@ -160,6 +174,8 @@ class MembersController extends Controller
                     'module_id' => $request->serviceID,
                     'member_id' => $request->memberID,
                     'membership_id' => $request->membershipID,
+                    'trainer_id' => $request->trainer_id,
+                    'subject_id' => $request->subject_id,
                     'date' => $request->date,
                     'time' => $request->time,
                     'module_status' => $request->status,
@@ -186,6 +202,8 @@ class MembersController extends Controller
                     'module_id' => $request->serviceID,
                     'member_id' => $request->memberID,
                     'membership_id' => $request->membershipID,
+                    'trainer_id' => $request->trainer_id,
+                    'subject_id' => $request->subject_id,
                     'description' => $request->remarks
                 ]
             );

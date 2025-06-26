@@ -570,7 +570,6 @@ class ApiController extends Controller
                 return collect($plan)->except(['password', 'role_id', 'email_verified_at'])
                     ->put('plan_image', ($plan['image']) ? $base_url . $this->plan_path . $plan['image'] : '')
                     ->toArray();
-
             })->toArray();
 
             $result = [];
@@ -1629,40 +1628,40 @@ class ApiController extends Controller
                 'email' => 'required|email',
                 'date_of_anniversary' => 'nullable|date',
                 'nationality' => 'required|string|max:255',
-                'personal_ContactPerson_email' => 'required|email',
+                // 'personal_ContactPerson_email' => 'required|email',
 
                 // Address
                 'address' => 'required|string|max:500',
                 'city' => 'required|string|max:255',
                 'state' => 'required|string|max:255',
                 'pincode' => 'required|digits:6',
-                'landline_no' => 'nullable',
-                'contact_person_name' => 'nullable|string|max:255',
-                'contact_person_mobile' => 'nullable|digits:10',
+                // 'landline_no' => 'nullable',
+                // 'contact_person_name' => 'nullable|string|max:255',
+                // 'contact_person_mobile' => 'nullable|digits:10',
 
                 // Business Information
                 'organization_name' => 'required|string|max:255',
                 'bussiness_city' => 'required|string|max:255',
                 'bussiness_state' => 'required|string|max:255',
                 'bussiness_pincode' => 'required|digits:6',
-                'bussiness_landline_no' => 'nullable',
+                // 'bussiness_landline_no' => 'nullable',
                 'bussiness_email' => 'required|email',
-                'fax_no' => 'nullable',
+                // 'fax_no' => 'nullable',
                 'registered_office_address' => 'required|string|max:500',
                 'gst_no' => 'required|regex:/^(\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1})$/',
                 'pan_no' => 'required|regex:/^[A-Z]{5}\d{4}[A-Z]{1}$/',
                 'date_of_incorporation' => 'required|date',
                 'organization_type' => 'required|string|max:255',
-                'business_fax_no' => 'nullable',
+                // 'business_fax_no' => 'nullable',
                 'business_ContactPerson_name' => 'required|string|max:255',
                 'business_ContactPerson_mobile' => 'required|digits:10',
 
                 // Bank Details
-                'bank_name' => 'required|string|max:255',
-                'account_no' => 'required|digits_between:9,18',
-                'branch_name' => 'required|string|max:255',
-                'account_operation_since' => 'required',
-                'branch_address' => 'required|string',
+                // 'bank_name' => 'required|string|max:255',
+                // 'account_no' => 'required|digits_between:9,18',
+                // 'branch_name' => 'required|string|max:255',
+                // 'account_operation_since' => 'required',
+                // 'branch_address' => 'required|string',
 
                 //  Product Details
                 'product_id' => 'required',
@@ -2290,7 +2289,6 @@ class ApiController extends Controller
                 'message' => 'Get Dashboard data successfully.',
                 'data' => $dashboardData
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2333,7 +2331,6 @@ class ApiController extends Controller
                     'twitter' => $settings['twitter'] ?? '',
                 ]
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2368,7 +2365,6 @@ class ApiController extends Controller
                 'message' => 'Record list successfully',
                 'data' => $data
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2482,7 +2478,6 @@ class ApiController extends Controller
                 'message' => 'Record list successfully',
                 'data' => $data
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2670,7 +2665,6 @@ class ApiController extends Controller
                 'message' => 'Blogs list fetched successfully',
                 'data' => $blogs
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2732,7 +2726,6 @@ class ApiController extends Controller
                 'message' => 'Blog details fetched successfully',
                 'data' => $data
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2807,7 +2800,6 @@ class ApiController extends Controller
                     ['title' => 'IT Experts', 'employee' => $itteam]
                 ]
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2841,8 +2833,6 @@ class ApiController extends Controller
                 'message' => 'Add On Services fetched successfully',
                 'data' => $addOnServices
             ], 200);
-
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -2987,7 +2977,6 @@ class ApiController extends Controller
                     'data' => (object) []
                 ], 404);
             }
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -3080,7 +3069,6 @@ class ApiController extends Controller
                 'message' => 'Record updated Successfully',
                 'data' => $notificationData,
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -3135,7 +3123,6 @@ class ApiController extends Controller
                 'message' => 'Subscription successful',
                 'data' => (object) $notification
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -3261,7 +3248,6 @@ class ApiController extends Controller
                 'message' => 'Profile updated Successfully',
                 'data' => $responseData
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -3272,170 +3258,6 @@ class ApiController extends Controller
     }
 
 
-    public function getIdbPage()
-    {
-        try {
-            $base_url = $this->base_url . '/';
-            if (substr($base_url, -1) !== '/') {
-                $base_url .= '/';
-            }
 
-            $idplist = Services::where('status', 1)->where('is_deleted', 0)->where('parent_id', config('custome.DEVELOPMENT_BUSSINESS_ID'))->get();
-            $idplist = $idplist->map(function ($item) use ($base_url) {
-                return [
-                    'id' => $item->id,
-                    'title' => $item->name,
-                    'image' => $item->image ? $base_url . '/services/' . $item->image : '',
-                    'description' => $item->service_desc,
-                ];
-            });
-
-            $reviews = Testimonial::where('status', 1)
-                ->where('type', 'idp')
-                ->where('is_deleted', 0)
-                ->get(['id', 'title as name', 'image', 'description as comment', 'city as location', 'rating', 'shop_name'])
-                ->map(function ($item) use ($base_url) {
-                    return [
-                        'id' => $item->id,
-                        'name' => $item->name,
-                        'shop_name' => $item->shop_name, // Assuming shop_name is
-                        'image' => $item->image ? $base_url . '/testimonials/' . $item->image : '',
-                        'location' => $item->location,
-                        'comment' => $item->comment,
-                        'rating' => $item->rating ? (float) $item->rating : 0, // Ensure rating is an integer
-                    ];
-                });
-
-            return response()->json([
-                'status' => true,
-                'message' => 'IDP Page data fetched successfully',
-                'data' => [
-                    'idplist' => $idplist,
-                    'reviews' => $reviews
-                ]
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Something went wrong',
-                'error' => $th->getMessage()
-            ], 500);
-        }
-    }
-
-    public function getIntelligentHR()
-    {
-        try {
-            $base_url = $this->base_url . '/';
-            if (substr($base_url, -1) !== '/') {
-                $base_url .= '/';
-            }
-
-            $services = Services::where('status', 1)
-                ->where('is_deleted', 0)
-                ->where('parent_id', config('custome.HR_ID'))
-                ->get(['id', 'name', 'service_desc', 'image'])
-                ->map(function ($item) use ($base_url) {
-                    return [
-                        'id' => $item->id,
-                        'title' => $item->name,
-                        'description' => $item->service_desc,
-                        'image' => $item->image ? $base_url . 'services/' . $item->image : '',
-                    ];
-                });
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Intelligent HR data fetched successfully',
-                'data' => [
-                    'services' => $services
-                ]
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Something went wrong',
-                'error' => $th->getMessage()
-            ], 500);
-        }
-    }
-
-    public function getJewelleryVidyapith()
-    {
-        // this function to get the ssu gallery data and youtube_link from gen_settings table
-        try {
-            $base_url = $this->base_url . '/';
-            if (substr($base_url, -1) !== '/') {
-                $base_url .= '/';
-            }
-            $galleries = DB::table('ssu_galleries')
-                ->get(['id', 'title', 'images'])
-                ->map(function ($item) use ($base_url) {
-                    return [
-                        'id' => $item->id,
-                        'title' => $item->title,
-                        'image' => $base_url . 'ssu_gallery/' . $item->images
-                    ];
-                });
-
-            $youtubeLink = DB::table('settings')
-                ->where('name', 'youtube_intro')
-                ->value('value');
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Jewellery Vidyapith data fetched successfully',
-                'data' => [
-                    'galleries' => $galleries,
-                    'youtube_link' => $youtubeLink
-                ]
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Something went wrong',
-                'error' => $th->getMessage()
-            ], 500);
-        }
-    }
-
-    public function getHeadwayIT()
-    {
-        try {
-            $base_url = $this->base_url . '/';
-            if (substr($base_url, -1) !== '/') {
-                $base_url .= '/';
-            }
-
-            $ourProducts = OurProduct::where('status', '1')->get(['id', 'photo', 'product_banner', 'title', 'desc', 'play_store', 'app_store', 'web_url', 'tagline'])
-                ->map(function ($item) use ($base_url) {
-                    return [
-                        'id' => $item->id,
-                        'photo' => $item->photo ? $base_url . 'products/' . $item->photo : '',
-                        'product_banner' => $item->product_banner ? $base_url . 'products/' . $item->product_banner : '',
-                        'title' => $item->title,
-                        'desc' => $item->desc,
-                        'tagline' => $item->tagline ?? '',
-                        'play_store' => $item->play_store,
-                        'app_store' => $item->app_store,
-                        'web_url' => $item->web_url
-                    ];
-                });
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Headway IT data fetched successfully',
-                'data' => [
-                    'our_products' => $ourProducts
-                ]
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Something went wrong',
-                'error' => $th->getMessage()
-            ], 500);
-        }
-    }
 
 }

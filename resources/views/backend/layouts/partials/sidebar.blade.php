@@ -150,6 +150,25 @@
                     @endif
 
                     @if (
+                        $usr->can('scedule.create') ||
+                            $usr->can('scedule.view') ||
+                            $usr->can('scedule.edit') ||
+                            $usr->can('scedule.delete'))
+                        <li>
+                            <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-tasks"></i><span>
+                                    Scedule Module
+                                </span></a>
+                            <ul
+                                class="collapse {{ Route::is('admin.scedules.create') || Route::is('admin.scedules.index') || Route::is('admin.scedules.edit') || Route::is('admin.scedules.show') ? 'in' : '' }}">
+                                @if ($usr->can('scedule.create'))
+                                    <li class="{{ Route::is('admin.scedules.create') ? 'active' : '' }}"><a
+                                            href="{{ route('admin.scedules.create') }}">Scedule</a></li>
+                                @endif
+                            </ul>
+                        </li>
+                    @endif
+
+                    @if (
                         $usr->can('members.create') ||
                             $usr->can('members.view') ||
                             $usr->can('members.edit') ||
@@ -416,7 +435,7 @@
                             $usr->can('testimonial.delete'))
                         <li>
                             <a href="javascript:void(0)" aria-expanded="true"><i
-                                    class="fa fa-thumbs-up"></i><span>Client Reviews</span>
+                                    class="fa fa-thumbs-up"></i><span>Testimonials</span>
                             </a>
                             <ul
                                 class="collapse {{ Route::is('admin.testimonial.create') || Route::is('admin.testimonial.index') || Route::is('admin.testimonial.edit') || Route::is('admin.testimonial.show') ? 'in' : '' }}">
@@ -424,13 +443,13 @@
                                 @if ($usr->can('testimonial.view'))
                                     <li
                                         class="{{ Route::is('admin.testimonial.index') || Route::is('admin.testimonial.edit') ? 'active' : '' }}">
-                                        <a href="{{ route('admin.testimonial.index') }}">All Client Reviews</a>
+                                        <a href="{{ route('admin.testimonial.index') }}">All Testimonials</a>
                                     </li>
                                 @endif
 
                                 @if ($usr->can('testimonial.create'))
                                     <li class="{{ Route::is('admin.testimonial.create') ? 'active' : '' }}"><a
-                                            href="{{ route('admin.testimonial.create') }}">Create Client Review</a></li>
+                                            href="{{ route('admin.testimonial.create') }}">Create Testimonial</a></li>
                                 @endif
                             </ul>
                         </li>
@@ -501,25 +520,19 @@
                     <li
                         class="{{ Route::is('admin.settings.index') || Route::is('admin.settings.edit') ? 'active' : '' }}">
                         <a href="{{ route('admin.settings.index') }}"> <i class="fa fa-cog"></i><span></span>Settings
-                            </a>
+                        </a>
                     </li>
-
                     <li
-                        class="{{ Route::is('admin.startups.index') || Route::is('admin.startups.edit') ? 'active' : '' }}">
-                        <a href="{{ route('admin.startups.index') }}"> <i class="fa fa-briefcase"></i><span></span>About Startups
-                            </a>
+                        class="{{ Route::is('admin.exibition_visitors.index') || Route::is('admin.exibition_visitors.edit') ? 'active' : '' }}">
+                        <a href="{{ route('admin.exibition_visitors.index') }}"> <i
+                                class="fa fa-users"></i><span></span>Exibition Visitors
+                        </a>
                     </li>
-
-                     <li
-                        class="{{ Route::is('admin.gallery.index') || Route::is('admin.gallery.edit') ? 'active' : '' }}">
-                        <a href="{{ route('admin.gallery.index') }}"> <i class="fa fa-camera"></i><span></span>MMB & SSU Gallery
-                            </a>
-                    </li>
-
                     <li
-                        class="{{ Route::is('admin.our_products.index') || Route::is('admin.our_products.edit') ? 'active' : '' }}">
-                        <a href="{{ route('admin.our_products.index') }}"> <i class="fa fa-shopping-cart"></i><span></span>Our Products
-                            </a>
+                        class="{{ Route::is('admin.candidate.index') || Route::is('admin.candidate.edit') ? 'active' : '' }}">
+                        <a href="{{ route('admin.candidate.index') }}"> <i
+                                class="fa fa-book"></i><span></span>Candidate Registrations
+                        </a>
                     </li>
 
                 </ul>

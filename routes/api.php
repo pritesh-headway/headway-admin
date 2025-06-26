@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\V1\ApiController;
 use App\Http\Controllers\API\V1\ProfileController;
+use App\Http\Controllers\ExibitionVisitorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,3 +96,6 @@ Route::post('v1/idb_page', [ApiController::class, 'getIdbPage']);
 Route::post('v1/intelligent_hr', [ApiController::class, 'getIntelligentHR']);
 Route::post('v1/jewellery_vidyapith', [ApiController::class, 'getJewelleryVidyapith']);
 Route::post('v1/headway_it', [ApiController::class, 'getHeadwayIT']);
+
+// Route::get('v1/visitor_form', [ExibitionVisitorController::class, 'form'])->name('exibition_visitors.form');
+// Route::post('v1/visitor-submit', [ExibitionVisitorController::class, 'store'])->name('exibition_visitors.store');
