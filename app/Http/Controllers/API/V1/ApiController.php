@@ -244,29 +244,107 @@ class ApiController extends Controller
     // }
 
 
+    // public function login(Request $request)
+    // {
+    //     try {
+    //         $validator = Validator::make($request->all(), [
+    //             'country_code' => 'required|digits:2',
+    //             'mobile' => 'required|min:10|digits:10',
+    //             'otp' => 'required|min:4|digits:4',
+    //             'device_type' => 'required',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             return response()->json(['status' => false, 'message' => $validator->errors()->first(), 'data' => (object) []], 200);
+    //         }
+
+    //         $user = User::where('phone_number', $request->mobile)
+    //             ->where('status', 1)
+    //             ->first();
+
+    //         if (!$user || $user->otp !== $request->otp || Carbon::now()->greaterThan((int) $user->otp_expires_at)) {
+    //             return response()->json(['status' => false, 'message' => 'Invalid OTP or OTP expired', 'data' => (object) []], 200);
+    //         }
+
+    //         // Generate JWT token
+    //         $token = JWTAuth::fromUser($user);
+
+    //         $user->otp = null;
+    //         $user->otp_expires_at = null;
+    //         $user->remember_token = $token;
+    //         $user->save();
+
+    //         DB::table('user_devices')->insertGetId([
+    //             'status' => 1,
+    //             'device_token' => $request->device_token ?? '',
+    //             'device_type' => $request->device_type,
+    //             'api_version' => $request->api_version ?? '',
+    //             'app_version' => $request->app_version ?? '',
+    //             'os_version' => $request->os_version ?? '',
+    //             'device_model_name' => $request->device_model_name ?? '',
+    //             'login_token' => $token,
+    //             'user_id' => $user->id,
+    //         ]);
+
+    //         $data = [
+    //             'user_id' => $user->id,
+    //             'token' => $token,
+    //             'is_first_time' => $user->is_first_time,
+    //             'avatar' => $user->avatar ? $this->base_url . $this->profile_path . $user->avatar : '',
+    //         ];
+
+    //         return response()->json(['status' => true, 'message' => 'Login successfully!', 'data' => $data]);
+    //     } catch (\Throwable $th) {
+    //         return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+    //     }
+    // }
+
     public function login(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'country_code' => 'required|digits:2',
-                'mobile' => 'required|min:10|digits:10',
-                'otp' => 'required|min:4|digits:4',
+                'mobile' => 'required|digits:10',
+                'otp' => 'required|digits:4',
                 'device_type' => 'required',
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()->first(), 'data' => (object) []], 200);
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()->first(),
+                    'data' => (object) []
+                ], 200);
             }
 
-            $user = User::where('phone_number', $request->mobile)
+            $mobile = $request->mobile;
+            $otp = $request->otp;
+            $device_token = $request->device_token ?? '';
+            $device_type = $request->device_type ?? '';
+            $api_version = $request->api_version ?? '';
+            $app_version = $request->app_version ?? '';
+            $os_version = $request->os_version ?? '';
+            $device_model_name = $request->device_model_name ?? '';
+            $app_language = $request->app_language ?? '';
+            $base_url = config('app.url'); // fallback
+            $user = User::with('MemberBatch')
+                ->where('phone_number', $mobile)
                 ->where('status', 1)
+                ->where('is_deleted', 0)
                 ->first();
 
-            if (!$user || $user->otp !== $request->otp || Carbon::now()->greaterThan((int) $user->otp_expires_at)) {
-                return response()->json(['status' => false, 'message' => 'Invalid OTP or OTP expired', 'data' => (object) []], 200);
+            if (
+                !$user ||
+                $user->otp !== $otp ||
+                Carbon::now()->greaterThan(Carbon::parse($user->otp_expires_at))
+            ) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Invalid OTP or OTP expired',
+                    'data' => (object) []
+                ], 200);
             }
 
-            // Generate JWT token
             $token = JWTAuth::fromUser($user);
 
             $user->otp = null;
@@ -274,30 +352,45 @@ class ApiController extends Controller
             $user->remember_token = $token;
             $user->save();
 
-            DB::table('user_devices')->insertGetId([
-                'status' => 1,
-                'device_token' => $request->device_token ?? '',
-                'device_type' => $request->device_type,
-                'api_version' => $request->api_version ?? '',
-                'app_version' => $request->app_version ?? '',
-                'os_version' => $request->os_version ?? '',
-                'device_model_name' => $request->device_model_name ?? '',
-                'login_token' => $token,
+            DB::table('user_devices')->insert([
                 'user_id' => $user->id,
+                'device_token' => $device_token,
+                'device_type' => $device_type,
+                'api_version' => $api_version,
+                'app_version' => $app_version,
+                'os_version' => $os_version,
+                'device_model_name' => $device_model_name,
+                'app_language' => $app_language,
+                'login_token' => $token,
+                'status' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
-            $data = [
-                'user_id' => $user->id,
-                'token' => $token,
-                'is_first_time' => $user->is_first_time,
-                'avatar' => $user->avatar ? $this->base_url . $this->profile_path . $user->avatar : '',
-            ];
+            // Use the same structure as in getProfile
+            $data = collect($user)
+                ->except(['password', 'email_verified_at', 'otp', 'otp_expires_at', 'remember_token', 'member_batch'])
+                ->put('user_id', $user->id)
+                ->put('headway_id', $user->MemberBatch ? (string) $user->MemberBatch->headway_id : '--')
+                ->put('batch_number', $user->MemberBatch ? $user->MemberBatch->batch : '--')
+                ->put('avatar', $user->avatar ? $base_url . '/uploads/profile/' . $user->avatar : '')
+                ->put('token', $token)
+                ->toArray();
 
-            return response()->json(['status' => true, 'message' => 'Login successfully!', 'data' => $data]);
+            return response()->json([
+                'status' => true,
+                'message' => 'Login successfully!',
+                'data' => $data,
+            ]);
         } catch (\Throwable $th) {
-            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
         }
     }
+
 
     /**
      * registr/Otp send to mobile.
@@ -3258,6 +3351,171 @@ class ApiController extends Controller
     }
 
 
+    public function getHeadwayIT()
+    {
+        try {
+            $base_url = $this->base_url . '/';
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+
+            $ourProducts = OurProduct::where('status', '1')->get(['id', 'photo', 'product_banner', 'title', 'desc', 'play_store', 'app_store', 'web_url', 'tagline'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'photo' => $item->photo ? $base_url . 'products/' . $item->photo : '',
+                        'product_banner' => $item->product_banner ? $base_url . 'products/' . $item->product_banner : '',
+                        'title' => $item->title,
+                        'desc' => $item->desc,
+                        'tagline' => $item->tagline ?? '',
+                        'play_store' => $item->play_store,
+                        'app_store' => $item->app_store,
+                        'web_url' => $item->web_url
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Headway IT data fetched successfully',
+                'data' => [
+                    'our_products' => $ourProducts
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getJewelleryVidyapith()
+    {
+        // this function to get the ssu gallery data and youtube_link from gen_settings table
+        try {
+            $base_url = $this->base_url . '/';
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+            $galleries = DB::table('ssu_galleries')
+                ->get(['id', 'title', 'images'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'title' => $item->title,
+                        'image' => $base_url . 'ssu_gallery/' . $item->images
+                    ];
+                });
+
+            $youtubeLink = DB::table('settings')
+                ->where('name', 'youtube_intro')
+                ->value('value');
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Jewellery Vidyapith data fetched successfully',
+                'data' => [
+                    'galleries' => $galleries,
+                    'youtube_link' => $youtubeLink
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getIntelligentHR()
+    {
+        try {
+            $base_url = $this->base_url . '/';
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+
+            $services = Services::where('status', 1)
+                ->where('is_deleted', 0)
+                ->where('parent_id', config('custome.HR_ID'))
+                ->get(['id', 'name', 'service_desc', 'image'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'title' => $item->name,
+                        'description' => $item->service_desc,
+                        'image' => $item->image ? $base_url . 'services/' . $item->image : '',
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Intelligent HR data fetched successfully',
+                'data' => [
+                    'services' => $services
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getIdbPage()
+    {
+        try {
+            $base_url = $this->base_url . '/';
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+
+            $idplist = Services::where('status', 1)->where('is_deleted', 0)->where('parent_id', config('custome.DEVELOPMENT_BUSSINESS_ID'))->get();
+            $idplist = $idplist->map(function ($item) use ($base_url) {
+                return [
+                    'id' => $item->id,
+                    'title' => $item->name,
+                    'image' => $item->image ? $base_url . '/services/' . $item->image : '',
+                    'description' => $item->service_desc,
+                ];
+            });
+
+            $reviews = Testimonial::where('status', 1)
+                ->where('type', 'idp')
+                ->where('is_deleted', 0)
+                ->get(['id', 'title as name', 'image', 'description as comment', 'city as location', 'rating', 'shop_name'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'name' => $item->name,
+                        'shop_name' => $item->shop_name, // Assuming shop_name is
+                        'image' => $item->image ? $base_url . '/testimonials/' . $item->image : '',
+                        'location' => $item->location,
+                        'comment' => $item->comment,
+                        'rating' => $item->rating ? (float) $item->rating : 0, // Ensure rating is an integer
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'IDP Page data fetched successfully',
+                'data' => [
+                    'idplist' => $idplist,
+                    'reviews' => $reviews
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
 
 
 }
