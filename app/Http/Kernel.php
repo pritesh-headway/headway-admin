@@ -21,8 +21,8 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\CorsMiddleware::class,
-	\Illuminate\Http\Middleware\HandleCors::class,
-	\App\Http\Middleware\CorsMiddleware::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
+        \App\Http\Middleware\CorsMiddleware::class,
 
 
     ];
@@ -41,16 +41,20 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-	    \Illuminate\Http\Middleware\HandleCors::class,
+            \Illuminate\Http\Middleware\HandleCors::class,
+
+            \Illuminate\Http\Middleware\HandleCors::class,
 
         ],
 
         'api' => [
-           \App\Http\Middleware\CorsMiddleware::class,
-	   // \App\Http\Middleware\BypassOptions::class,
+            \App\Http\Middleware\CorsMiddleware::class,
+            // \App\Http\Middleware\BypassOptions::class,
             'throttle:60,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-	    \Illuminate\Http\Middleware\HandleCors::class,
+            \Illuminate\Http\Middleware\HandleCors::class,
+
+            \Illuminate\Http\Middleware\HandleCors::class,
 
         ],
     ];

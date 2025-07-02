@@ -126,3 +126,16 @@ If you like my work you may consider buying me a ☕ / 🍕
 
 ## Contribution
 Contribution is open. Create Pull-request and I'll add it to the project if it's good enough.
+
+
+
+Today's Work on HBS Admin panel:
+1. Made the Exhibitors Visitor Form and Candidate Registration Form dynamic, accessible from the Admin Panel, and added functionality to export the data to an Excel sheet. (ongoing)
+Today's Work on HBS HR Attendance management system:
+2. Develop the payroll and salary pages (ongoing)
+
+
+Today's Work on HBS Admin panel:
+1. Made the Exhibitors Visitor Form and Candidate Registration Form dynamic, accessible from the Admin Panel, and added functionality to export the data to an Excel sheet. (ongoing)
+Today's Work on HBS HR Attendance management system:
+2. Develop the payroll and salary pages (ongoing)

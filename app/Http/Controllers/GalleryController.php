@@ -15,6 +15,7 @@ class GalleryController extends Controller
             'ssu' => 'ssu_galleries',
             'mmb' => 'mmb_galleries',
             'oss' => 'oss_galleries',
+            'gen' => 'gen_galleries',
             default => abort(404, 'Invalid gallery type'),
         };
     }
@@ -25,17 +26,21 @@ class GalleryController extends Controller
             'ssu' => 'ssu_gallery',
             'mmb' => 'mmb_gallery',
             'oss' => 'oss_gallery',
+            'gen' => 'gen_gallery',
             default => abort(404, 'Invalid gallery type'),
         };
     }
 
     public function index()
     {
-        $ssuGalleries = DB::table('ssu_galleries')->get();
-        $mmbGalleries = DB::table('mmb_galleries')->get();
-        $ossGalleries = DB::table('oss_galleries')->get();
-        return view('backend.pages.gallery.index', compact('ssuGalleries', 'mmbGalleries', 'ossGalleries'));
+        $ssuGalleries = DB::table('ssu_galleries')->simplePaginate(5, ['*'], 'ssu');
+        $mmbGalleries = DB::table('mmb_galleries')->simplePaginate(5, ['*'], 'mmb');
+        $ossGalleries = DB::table('oss_galleries')->simplePaginate(5, ['*'], 'oss');
+        $genGalleries = DB::table('gen_galleries')->simplePaginate(5, ['*'], 'gen');
+
+        return view('backend.pages.gallery.index', compact('ssuGalleries', 'mmbGalleries', 'ossGalleries', 'genGalleries'));
     }
+
 
     public function create(Request $request)
     {
@@ -47,53 +52,75 @@ class GalleryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'cropped_image' => 'required|string', // base64 string from Cropper.js
-        ]);
-
         $type = $request->get('type');
         $table = $this->resolveTable($type);
         $folder = $this->resolveFolder($type);
 
-        $fileName = null;
+        // Conditional validation
+        $rules = [];
 
-        if ($request->filled('cropped_image')) {
-            $base64Image = $request->cropped_image;
-
-            // Clean and decode the base64 string
-            if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $typeMatch)) {
-                $imageType = strtolower($typeMatch[1]); // jpg, png etc.
-                $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
-                $base64Image = base64_decode($base64Image);
-
-                if ($base64Image === false) {
-                    return back()->with('error', 'Invalid image data.');
-                }
-
-                // Generate file name and save
-                $fileName = time() . '.' . $imageType;
-                $path = public_path($folder);
-                if (!file_exists($path)) {
-                    mkdir($path, 0755, true);
-                }
-
-                file_put_contents($path . '/' . $fileName, $base64Image);
-            } else {
-                return back()->with('error', 'Invalid image format.');
-            }
+        if ($type === 'gen') {
+            $rules['imagesInput'] = 'required|array';
+            $rules['imagesInput.*'] = 'image|mimes:jpeg,png,jpg,webp|max:25600'; // 25MB per image
+        } else {
+            $rules['title'] = 'required|string|max:255';
+            $rules['cropped_image'] = 'required|string'; // base64 image string
         }
 
-        // Insert into the respective table
-        DB::table($table)->insert([
-            'title' => $request->title,
-            'images' => $fileName,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $validated = $request->validate($rules);
 
-        return redirect()->route('admin.gallery.index')->with('success', 'Gallery created successfully.');
+        $path = public_path($folder);
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
+
+        // 🔹 Handle GEN: multiple file upload
+        if ($type === 'gen') {
+            foreach ($request->file('imagesInput') as $file) {
+                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move($path, $fileName);
+
+                DB::table($table)->insert([
+                    'title' => 'Image - ' . now()->format('Y-m-d H:i:s'),
+                    'images' => $fileName,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            return redirect()->route('admin.gallery.index')->with('success', 'Gallery images uploaded successfully.');
+        }
+
+        // 🔹 Handle other types (base64 image)
+        $base64Image = $request->cropped_image;
+
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $typeMatch)) {
+            $imageType = strtolower($typeMatch[1]);
+            $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
+            $base64Image = base64_decode($base64Image);
+
+            if ($base64Image === false) {
+                return back()->with('error', 'Invalid image data.');
+            }
+
+            $fileName = time() . '.' . $imageType;
+            file_put_contents($path . '/' . $fileName, $base64Image);
+
+            DB::table($table)->insert([
+                'title' => $validated['title'],
+                'images' => $fileName,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return redirect()->route('admin.gallery.index')->with('success', 'Gallery item created successfully.');
+        }
+
+        return back()->with('error', 'Invalid image format.');
     }
+
+
+
 
 
 
@@ -112,34 +139,50 @@ class GalleryController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'cropped_image' => 'nullable|string',
-            'images' => 'nullable|file|max:3072'
-        ]);
-
         $type = $request->get('type');
         $table = $this->resolveTable($type);
         $folder = $this->resolveFolder($type);
 
+        // Validate inputs based on type
+        $rules = [
+            'title' => 'required|string|max:255',
+        ];
+
+        if ($type === 'gen') {
+            $rules['imagesInput'] = 'nullable';
+        } else {
+            $rules['cropped_image'] = 'nullable|string';
+            $rules['imagesInput'] = 'nullable';
+        }
+
+        $validated = $request->validate($rules);
+
+        // Fetch gallery record
         $gallery = DB::table($table)->where('id', $id)->first();
-        if (!$gallery)
+        if (!$gallery) {
             abort(404);
+        }
 
         $fileName = $gallery->images;
 
-        // Handle cropped base64 image
-        if ($request->filled('cropped_image')) {
+        // 🔹 Case: gen (simple file upload, no crop)
+        if ($type === 'gen' && $request->hasFile('imagesInput')) {
+            $this->deleteOldGalleryImage($folder, $fileName);
+
+            $image = $request->file('imagesInput');
+            $fileName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path($folder), $fileName);
+        }
+
+        // 🔹 Case: cropped image (non-gen types)
+        elseif ($type !== 'gen' && $request->filled('cropped_image')) {
             if (preg_match('/^data:image\/(\w+);base64,/', $request->cropped_image, $typeMatch)) {
                 $imageType = strtolower($typeMatch[1]);
                 $base64Image = substr($request->cropped_image, strpos($request->cropped_image, ',') + 1);
                 $base64Image = base64_decode($base64Image);
 
                 if ($base64Image !== false) {
-                    // Delete old image if exists
-                    if ($fileName && File::exists(public_path("$folder/$fileName"))) {
-                        File::delete(public_path("$folder/$fileName"));
-                    }
+                    $this->deleteOldGalleryImage($folder, $fileName);
 
                     $fileName = time() . '.' . $imageType;
                     $path = public_path($folder);
@@ -151,25 +194,36 @@ class GalleryController extends Controller
                 }
             }
         }
-        // Fallback: handle traditional file upload
-        elseif ($request->hasFile('images')) {
-            if ($fileName && File::exists(public_path("$folder/$fileName"))) {
-                File::delete(public_path("$folder/$fileName"));
-            }
 
-            $file = $request->file('images');
+        // 🔹 Fallback: direct file upload for non-gen types
+        elseif ($type !== 'gen' && $request->hasFile('imagesInput')) {
+            $this->deleteOldGalleryImage($folder, $fileName);
+
+            $file = $request->file('imagesInput');
             $fileName = time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path($folder), $fileName);
         }
 
+        // Update the DB
         DB::table($table)->where('id', $id)->update([
-            'title' => $request->title,
+            'title' => $validated['title'],
             'images' => $fileName,
             'updated_at' => now(),
         ]);
 
         return redirect()->route('admin.gallery.index')->with('success', 'Gallery updated successfully.');
     }
+
+    // ✅ Reusable image deletion helper
+    protected function deleteOldGalleryImage($folder, $fileName)
+    {
+        $path = public_path("$folder/$fileName");
+        if ($fileName && File::exists($path)) {
+            File::delete($path);
+        }
+    }
+
+
 
 
     public function destroy($id, $type)

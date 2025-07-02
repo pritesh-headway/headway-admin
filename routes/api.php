@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\V1\ApiController;
 use App\Http\Controllers\API\V1\ProfileController;
+use App\Http\Controllers\ExibitionVisitorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,6 +82,7 @@ Route::post('v1/about_startup', [ApiController::class, 'getAboutStartupV2']);
 Route::post('v1/mmb_gallaries', [ApiController::class, 'getMmbGallaries']);
 Route::post('v1/service_plan_list', [ApiController::class, 'getServicePlanList']);
 Route::post('v1/ssu_gallaries', [ApiController::class, 'getSsuGallaries']);
+Route::post('v1/gen_gallaries', [ApiController::class, 'getGenGallaries']);
 Route::post('v1/blogs_list', [ApiController::class, 'getBlogsListV2']);
 Route::post('v1/blog_details', [ApiController::class, 'getBlogDetails']);
 Route::post('v1/meet_our_team', [ApiController::class, 'getMeetOurTeam']);
@@ -95,3 +97,6 @@ Route::post('v1/idb_page', [ApiController::class, 'getIdbPage']);
 Route::post('v1/intelligent_hr', [ApiController::class, 'getIntelligentHR']);
 Route::post('v1/jewellery_vidyapith', [ApiController::class, 'getJewelleryVidyapith']);
 Route::post('v1/headway_it', [ApiController::class, 'getHeadwayIT']);
+
+// Route::get('v1/visitor_form', [ExibitionVisitorController::class, 'form'])->name('exibition_visitors.form');
+// Route::post('v1/visitor-submit', [ExibitionVisitorController::class, 'store'])->name('exibition_visitors.store');
