@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
@@ -26,17 +27,21 @@ class ProfileController extends Controller
     public function updateProfile(Request $request)
     {
 
-        $token = $request->header('token');
+        $token = $request->header('token') ?? $request->header('Authorization');
+        if ($token && Str::startsWith($token, 'Bearer ')) {
+            $token = Str::replaceFirst('Bearer ', '', $token);
+        }
         $user_id = $request->user_id;
-        $base_url =  $this->base_url;
+        $base_url = $this->base_url;
         $user = DB::table('user_devices')
             ->where('user_devices.login_token', '=', $token)
             ->where('user_devices.status', '=', 1)
             ->count();
+        // dd($user);
         if ($user == '' || $user == null || $user == 0) {
             $result['status'] = false;
             $result['message'] = "Token given is invalid, Please login again.";
-            $result['data'] = (object)[];
+            $result['data'] = (object) [];
             return response()->json($result, 200);
         }
 
@@ -61,7 +66,7 @@ class ProfileController extends Controller
         if ($validator->fails()) {
             $result['status'] = false;
             $result['message'] = $validator->errors()->first();
-            $result['data'] = (object)[];
+            $result['data'] = (object) [];
             return response()->json($result, 200);
         }
 
@@ -108,9 +113,12 @@ class ProfileController extends Controller
     public function getProfile(Request $request)
     {
         try {
-            $token = $request->header('token');
+            $token = $request->header('token') ?? $request->header('Authorization');
+            if ($token && Str::startsWith($token, 'Bearer ')) {
+                $token = Str::replaceFirst('Bearer ', '', $token);
+            }
             $user_id = $request->user_id;
-            $base_url =  $this->base_url;
+            $base_url = $this->base_url;
             $user = DB::table('user_devices')
                 ->where('user_devices.login_token', '=', $token)
                 ->where('user_devices.status', '=', 1)
@@ -118,7 +126,7 @@ class ProfileController extends Controller
             if ($user == '' || $user == null || $user == 0) {
                 $result['status'] = false;
                 $result['message'] = "Token given is invalid, Please login again.";
-                $result['data'] = (object)[];
+                $result['data'] = (object) [];
                 return response()->json($result, 200);
             }
 
@@ -127,7 +135,7 @@ class ProfileController extends Controller
             $data = $user->map(function ($user) use ($base_url, $token) {
                 return collect($user)->except(['password', 'email_verified_at', 'otp', 'otp_expires_at', 'remember_token', 'member_batch'])
                     ->put('user_id', $user['id'])
-                    ->put('headway_id', ($user->MemberBatch) ? (string)$user->MemberBatch['headway_id'] : '--')
+                    ->put('headway_id', ($user->MemberBatch) ? (string) $user->MemberBatch['headway_id'] : '--')
                     ->put('batch_number', ($user->MemberBatch) ? $user->MemberBatch['batch'] : '--')
                     ->put('avatar', ($user['avatar']) ? $base_url . $this->profile_path . $user['avatar'] : '')
                     ->toArray();

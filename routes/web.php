@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use Google\Service\Dataproc\StartupConfig;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,11 @@ use App\Http\Controllers\Backend\ServiceController;
 use App\Http\Controllers\Backend\ServicesController;
 use App\Http\Controllers\Backend\TestimonialController;
 use App\Http\Controllers\Backend\VideoGalleryController;
+use App\Http\Controllers\Backend\StartupController;
+use App\Http\Controllers\GalleryController;
+use \App\Http\Controllers\OurProductController;
+use App\Http\Controllers\ExibitionVisitorController;
+use App\Http\Controllers\CandidateRegistrationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +74,23 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::resource('testimonial', TestimonialController::class);
     Route::resource('contact', ContactController::class);
     Route::resource('service', ServiceController::class);
+    Route::resource('startups', StartupController::class);
+    Route::resource('our_products', OurProductController::class);
+    // Route::resource('gallery', GalleryController::class);
+    // Gallery Index
+    Route::get('gallery', [GalleryController::class, 'index'])->name('gallery.index');
+
+    // Create Gallery (requires ?type=ssu or ?type=mmb)
+    Route::get('gallery/create', [GalleryController::class, 'create'])->name('gallery.create');
+    Route::post('gallery/store', [GalleryController::class, 'store'])->name('gallery.store');
+
+    // Edit Gallery (pass both ID and type in query)
+    Route::get('gallery/{id}/edit', [GalleryController::class, 'edit'])->name('gallery.edit');
+    Route::post('gallery/{id}/update', [GalleryController::class, 'update'])->name('gallery.update');
+
+    // Delete Gallery (pass both ID and type as route parameters)
+    Route::get('gallery/{id}/delete/{type}', [GalleryController::class, 'destroy'])->name('gallery.delete');
+
     Route::resource('batch', BatchController::class);
     Route::resource('addonservice', AddOnServiceController::class);
     Route::resource('videogallery', VideoGalleryController::class);
@@ -102,4 +125,32 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     // Forget Password Routes.
     Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('/password/reset/submit', [ForgotPasswordController::class, 'reset'])->name('password.update');
+
+
+    Route::get('/exibition-visitors', [ExibitionVisitorController::class, 'index'])->name('exibition_visitors.index');
+    Route::get('/exibition-visitors/{id}', [ExibitionVisitorController::class, 'view'])->name('exibition_visitors.view');
+    Route::get('/exibition-visitors/create', [ExibitionVisitorController::class, 'create'])->name('exibition_visitors.create');
+    Route::post('/exibition-visitors/store', [ExibitionVisitorController::class, 'store'])->name('exibition_visitors.store');
+    Route::get('/exibition-visitors/edit/{id}', [ExibitionVisitorController::class, 'edit'])->name('exibition_visitors.edit');
+    Route::post('/exibition-visitors/update/{id}', [ExibitionVisitorController::class, 'update'])->name('exibition_visitors.update');
+    Route::get('/exibition-visitors/delete/{id}', [ExibitionVisitorController::class, 'destroy'])->name('exibition_visitors.destroy');
+    Route::post('/exibition-visitors/export', [ExibitionVisitorController::class, 'export'])->name('exibition_visitors.export');
+
+
+    Route::get('admin/candidate/form', [CandidateRegistrationController::class, 'create'])->name('candidate.form');
+    Route::post('admin/candidate/store', [CandidateRegistrationController::class, 'store'])->name('candidate.store');
+    Route::get('admin/candidate', [CandidateRegistrationController::class, 'index'])->name('candidate.index');
+    Route::get('admin/candidate/view/{id}', [CandidateRegistrationController::class, 'show'])->name('candidate.view');
+    Route::get('admin/candidate/edit/{id}', [CandidateRegistrationController::class, 'edit'])->name('candidate.edit');
+    Route::post('admin/candidate/update/{id}', [CandidateRegistrationController::class, 'update'])->name('candidate.update');
+    Route::get('admin/candidate/delete/{id}', [CandidateRegistrationController::class, 'destroy'])->name('candidate.delete');
+    Route::post('admin/candidate/export', [CandidateRegistrationController::class, 'export'])->name('candidate.export');
 })->middleware('auth:admin');
+
+Route::get('api/v1/visitor_form', [ExibitionVisitorController::class, 'form'])->name('exibition_visitors.form');
+Route::post('api/v1/visitor-submit', [ExibitionVisitorController::class, 'store'])->name('exibition_visitors.store');
+Route::get('api/v1/candidate-form', [CandidateRegistrationController::class, 'form'])->name('candidate.form');
+Route::post('api/v1/candidate-form', [CandidateRegistrationController::class, 'store'])->name('candidate.store');
+
+Route::post('admin/ourteam/move-up/{id}', [OurteamController::class, 'moveUp'])->name('admin.ourteam.moveup');
+Route::post('admin/ourteam/move-down/{id}', [OurteamController::class, 'moveDown'])->name('admin.ourteam.movedown');

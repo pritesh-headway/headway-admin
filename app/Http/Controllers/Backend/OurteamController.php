@@ -21,9 +21,50 @@ class OurteamController extends Controller
         $this->checkAuthorization(auth()->user(), ['Ourteam.create']);
 
         return view('backend.pages.teams.index', [
-            'admins' => Team::where('is_deleted', '0')->orderBy('created_at', 'asc')->get(),
+            'admins' => Team::where('is_deleted', '0')->orderBy('displayOrder', 'asc')->get(),
         ]);
     }
+
+    public function moveUp($id)
+    {
+        $team = Team::findOrFail($id);
+
+        $above = Team::where('displayOrder', '<', $team->displayOrder)
+            ->orderBy('displayOrder', 'desc')
+            ->first();
+
+        if ($above) {
+            $temp = $team->displayOrder;
+            $team->displayOrder = $above->displayOrder;
+            $above->displayOrder = $temp;
+
+            $team->save();
+            $above->save();
+        }
+
+        return back();
+    }
+
+    public function moveDown($id)
+    {
+        $team = Team::findOrFail($id);
+
+        $below = Team::where('displayOrder', '>', $team->displayOrder)
+            ->orderBy('displayOrder', 'asc')
+            ->first();
+
+        if ($below) {
+            $temp = $team->displayOrder;
+            $team->displayOrder = $below->displayOrder;
+            $below->displayOrder = $temp;
+
+            $team->save();
+            $below->save();
+        }
+
+        return back();
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -46,6 +87,7 @@ class OurteamController extends Controller
         $admin->name = $request->name;
         $admin->position = $request->position;
         $admin->city = $request->city ?? '';
+        $admin->dept = $request->dept ?? 'admin';
         $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -87,11 +129,11 @@ class OurteamController extends Controller
     public function update(Request $request, int $id): RedirectResponse
     {
         $this->checkAuthorization(auth()->user(), ['Ourteam.edit']);
-
         $admin = Team::findOrFail($id);
         $admin->name = $request->name;
         $admin->position = $request->position;
         $admin->city = $request->city ?? '';
+        $admin->dept = $request->dept;
         $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');

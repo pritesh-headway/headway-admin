@@ -2,22 +2,17 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Http\Controllers\Controller;
-use App\Models\AddOnPurchase;
+use App\Models\OurProduct;
+use App\Models\Testimonial;
+use Carbon\Carbon;
+use App\Models\Cms;
+use App\Models\Blog;
+use App\Models\Plan;
 use App\Models\Team;
 use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use App\Services\CurlApiService;
-use App\Services\FcmNotificationService;
 use App\Models\Addon;
 use App\Models\Banner;
-use App\Models\Blog;
 use App\Models\Client;
-use App\Models\Cms;
 use App\Models\Contact;
 use App\Models\MemberBatch;
 use App\Models\MemberModule;
@@ -26,7 +21,6 @@ use App\Models\MemberStartupModule;
 use App\Models\Modules;
 use App\Models\NotificationSetting;
 use App\Models\OurCourses;
-use App\Models\Plan;
 use App\Models\PlanPurchase;
 use App\Models\Service;
 use App\Models\Services;
@@ -34,6 +28,17 @@ use App\Models\UserDevices;
 use App\Models\Video;
 use App\Models\Setting;
 use App\Models\StartupService;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\AddOnPurchase;
+use App\Services\CurlApiService;
+use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use App\Services\FcmNotificationService;
+use Illuminate\Support\Facades\Validator;
+
 
 class ApiController extends Controller
 {
@@ -168,77 +173,226 @@ class ApiController extends Controller
     /**
      * Login User
      */
+    // public function login(Request $request)
+    // {
+    //     try {
+    //         $validator = Validator::make($request->all(), [
+    //             'country_code' => 'required|digits:2',
+    //             'mobile' => 'required|min:10|digits:10',
+    //             'otp' => 'required|min:4|digits:4',
+    //             'device_type' => 'required',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             $result['status'] = false;
+    //             $result['message'] = $validator->errors()->first();
+    //             $result['data'] = (object) [];
+    //             return response()->json($result, 200);
+    //         }
+
+    //         $mobile = $request->mobile;
+    //         $otp = $request->otp;
+    //         $device_token = isset($request->device_token) ?? '';
+    //         $device_type = isset($request->device_type) ?? '';
+    //         $api_version = isset($request->api_version) ?? '';
+    //         $app_version = isset($request->app_version) ?? '';
+    //         $os_version = isset($request->os_version) ?? '';
+    //         $device_model_name = isset($request->device_model_name) ?? '';
+    //         $app_language = isset($request->app_language) ?? '';
+    //         $base_url = $this->base_url;
+    //         $user = User::where('phone_number', $mobile)->where('status', operator: 1)->first();
+    //         if (!$user || $user->otp !== $otp || Carbon::now()->greaterThan($user->otp_expires_at)) {
+    //             $result['status'] = false;
+    //             $result['message'] = 'Invalid OTP or OTP expired';
+    //             $result['data'] = (object) [];
+    //             return response()->json($result, 200);
+    //         }
+
+    //         // Create token or session
+    //         $token = $user->createToken('authToken')->plainTextToken;
+
+    //         $user->otp = null; // Clear the OTP
+    //         $user->otp_expires_at = null; // Clear OTP expiration
+    //         // $user->is_first_time = 0;
+    //         $user->remember_token = $token;
+    //         $user->save();
+
+    //         $arr = [
+    //             'status' => 1,
+    //             'device_token' => $device_token,
+    //             'device_type' => $device_type,
+    //             'api_version' => $api_version,
+    //             'app_version' => $app_version,
+    //             'os_version' => $os_version,
+    //             'device_model_name' => $device_model_name,
+    //             'login_token' => $token,
+    //             'user_id' => $user->id,
+    //         ];
+    //         DB::table('user_devices')->insertGetId($arr);
+    //         $userData = User::where('phone_number', $mobile)->where('status', operator: 1)->get();
+    //         $data = $userData->map(function ($user) use ($base_url, $token) {
+    //             return collect($user)->except(['password', 'email_verified_at', 'otp', 'otp_expires_at', 'remember_token'])
+    //                 ->put('user_id', $user['id'])
+    //                 ->put('token', $token)
+    //                 ->put('is_first_time', $user['is_first_time'])
+    //                 ->put('avatar', ($user['avatar']) ? $base_url . $this->profile_path . $user['avatar'] : '')
+    //                 ->toArray();
+    //         })->first();
+
+    //         return response()->json(['status' => true, 'message' => 'Login successfully!', 'data' => $data]);
+    //     } catch (\Throwable $th) {
+    //         return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+    //     }
+    // }
+
+
+    // public function login(Request $request)
+    // {
+    //     try {
+    //         $validator = Validator::make($request->all(), [
+    //             'country_code' => 'required|digits:2',
+    //             'mobile' => 'required|min:10|digits:10',
+    //             'otp' => 'required|min:4|digits:4',
+    //             'device_type' => 'required',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             return response()->json(['status' => false, 'message' => $validator->errors()->first(), 'data' => (object) []], 200);
+    //         }
+
+    //         $user = User::where('phone_number', $request->mobile)
+    //             ->where('status', 1)
+    //             ->first();
+
+    //         if (!$user || $user->otp !== $request->otp || Carbon::now()->greaterThan((int) $user->otp_expires_at)) {
+    //             return response()->json(['status' => false, 'message' => 'Invalid OTP or OTP expired', 'data' => (object) []], 200);
+    //         }
+
+    //         // Generate JWT token
+    //         $token = JWTAuth::fromUser($user);
+
+    //         $user->otp = null;
+    //         $user->otp_expires_at = null;
+    //         $user->remember_token = $token;
+    //         $user->save();
+
+    //         DB::table('user_devices')->insertGetId([
+    //             'status' => 1,
+    //             'device_token' => $request->device_token ?? '',
+    //             'device_type' => $request->device_type,
+    //             'api_version' => $request->api_version ?? '',
+    //             'app_version' => $request->app_version ?? '',
+    //             'os_version' => $request->os_version ?? '',
+    //             'device_model_name' => $request->device_model_name ?? '',
+    //             'login_token' => $token,
+    //             'user_id' => $user->id,
+    //         ]);
+
+    //         $data = [
+    //             'user_id' => $user->id,
+    //             'token' => $token,
+    //             'is_first_time' => $user->is_first_time,
+    //             'avatar' => $user->avatar ? $this->base_url . $this->profile_path . $user->avatar : '',
+    //         ];
+
+    //         return response()->json(['status' => true, 'message' => 'Login successfully!', 'data' => $data]);
+    //     } catch (\Throwable $th) {
+    //         return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+    //     }
+    // }
+
     public function login(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'country_code' => 'required|digits:2',
-                'mobile' => 'required|min:10|digits:10',
-                'otp' => 'required|min:4|digits:4',
+                'mobile' => 'required|digits:10',
+                'otp' => 'required|digits:4',
                 'device_type' => 'required',
             ]);
 
             if ($validator->fails()) {
-                $result['status'] = false;
-                $result['message'] = $validator->errors()->first();
-                $result['data'] = (object) [];
-                return response()->json($result, 200);
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()->first(),
+                    'data' => (object) []
+                ], 200);
             }
 
             $mobile = $request->mobile;
             $otp = $request->otp;
-            $device_token = isset($request->device_token) ?? '';
-            $device_type = isset($request->device_type) ?? '';
-            $api_version = isset($request->api_version) ?? '';
-            $app_version = isset($request->app_version) ?? '';
-            $os_version = isset($request->os_version) ?? '';
-            $device_model_name = isset($request->device_model_name) ?? '';
-            $app_language = isset($request->app_language) ?? '';
-            $base_url = $this->base_url;
-            $user = User::where('phone_number', $mobile)->where('status', operator: 1)->first();
-            if (!$user || $user->otp !== $otp || Carbon::now()->greaterThan($user->otp_expires_at)) {
-                $result['status'] = false;
-                $result['message'] = 'Invalid OTP or OTP expired';
-                $result['data'] = (object) [];
-                return response()->json($result, 200);
+            $device_token = $request->device_token ?? '';
+            $device_type = $request->device_type ?? '';
+            $api_version = $request->api_version ?? '';
+            $app_version = $request->app_version ?? '';
+            $os_version = $request->os_version ?? '';
+            $device_model_name = $request->device_model_name ?? '';
+            $app_language = $request->app_language ?? '';
+            $base_url = config('app.url'); // fallback
+            $user = User::with('MemberBatch')
+                ->where('phone_number', $mobile)
+                ->where('status', 1)
+                ->where('is_deleted', 0)
+                ->first();
+
+            if (
+                !$user ||
+                $user->otp !== $otp ||
+                Carbon::now()->greaterThan(Carbon::parse($user->otp_expires_at))
+            ) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Invalid OTP or OTP expired',
+                    'data' => (object) []
+                ], 200);
             }
 
-            // Create token or session
-            $token = $user->createToken('authToken')->plainTextToken;
+            $token = JWTAuth::fromUser($user);
 
-            $user->otp = null; // Clear the OTP
-            $user->otp_expires_at = null; // Clear OTP expiration
-            // $user->is_first_time = 0;
+            $user->otp = null;
+            $user->otp_expires_at = null;
             $user->remember_token = $token;
             $user->save();
 
-            $arr = [
-                'status' => 1,
+            DB::table('user_devices')->insert([
+                'user_id' => $user->id,
                 'device_token' => $device_token,
                 'device_type' => $device_type,
                 'api_version' => $api_version,
                 'app_version' => $app_version,
                 'os_version' => $os_version,
                 'device_model_name' => $device_model_name,
+                'app_language' => $app_language,
                 'login_token' => $token,
-                'user_id' => $user->id,
-            ];
-            DB::table('user_devices')->insertGetId($arr);
-            $userData = User::where('phone_number', $mobile)->where('status', operator: 1)->get();
-            $data = $userData->map(function ($user) use ($base_url, $token) {
-                return collect($user)->except(['password', 'email_verified_at', 'otp', 'otp_expires_at', 'remember_token'])
-                    ->put('user_id', $user['id'])
-                    ->put('token', $token)
-                    ->put('is_first_time', $user['is_first_time'])
-                    ->put('avatar', ($user['avatar']) ? $base_url . $this->profile_path . $user['avatar'] : '')
-                    ->toArray();
-            })->first();
+                'status' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
-            return response()->json(['status' => true, 'message' => 'Login successfully!', 'data' => $data]);
+            // Use the same structure as in getProfile
+            $data = collect($user)
+                ->except(['password', 'email_verified_at', 'otp', 'otp_expires_at', 'remember_token', 'member_batch'])
+                ->put('user_id', $user->id)
+                ->put('headway_id', $user->MemberBatch ? (string) $user->MemberBatch->headway_id : '--')
+                ->put('batch_number', $user->MemberBatch ? $user->MemberBatch->batch : '--')
+                ->put('avatar', $user->avatar ? $base_url . '/uploads/profile/' . $user->avatar : '')
+                ->put('token', $token)
+                ->toArray();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Login successfully!',
+                'data' => $data,
+            ]);
         } catch (\Throwable $th) {
-            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
         }
     }
+
 
     /**
      * registr/Otp send to mobile.
@@ -315,7 +469,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
 
             $userData = json_decode($checkToken->getContent(), true);
@@ -440,7 +594,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -497,7 +651,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -584,7 +738,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -640,7 +794,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $addon_id = $request->addon_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -667,7 +821,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -717,7 +871,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -767,7 +921,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -818,7 +972,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -870,7 +1024,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -921,7 +1075,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -970,7 +1124,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -996,52 +1150,117 @@ class ApiController extends Controller
     /**
      * get make business list.
      */
+    // public function getBusinessList(Request $request)
+    // {
+    //     try {
+    //         $base_url = $this->base_url;
+    //         $user_id = $request->user_id;
+    //         $loginType = $request->user_type;
+    //         $token = $request->header('Authorization');
+    //         $checkToken = $this->tokenVerify($token);
+    //         $page_number = $request->page;
+
+    //         $userData = json_decode($checkToken->getContent(), true);
+    //         if ($userData['status'] == false) {
+    //             return $checkToken->getContent();
+    //         }
+    //         $startupPaginator = Services::select('id', 'name', 'service_desc')->where('status', 1)->where('parent_id', config('custome.BUSSINESS_ID'))->where('is_deleted', 0)->get();
+
+    //         $result = [];
+    //         $finalData = [];
+    //         $id = 1;
+
+    //         foreach ($startupPaginator as $li) {
+    //             $result = [
+    //                 'name' => $li['name'],
+    //                 'id' => $li['id'],
+    //                 'points' => [],
+    //             ];
+
+    //             $lis = explode(',', $li['service_desc']); // Split service_desc into an array
+    //             foreach ($lis as $value) {
+    //                 $result['points'][] = [
+    //                     'id' => $id,
+    //                     'name' => trim($value), // Trim whitespace
+    //                 ];
+    //                 $id++;
+    //             }
+
+    //             $finalData[] = $result; // Add the processed result to finalData
+    //         }
+
+    //         // dd($finalData);
+
+    //         return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully.', 'data' => $finalData], 200);
+    //     } catch (\Throwable $th) {
+    //         return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+    //     }
+    // }
+
     public function getBusinessList(Request $request)
     {
         try {
-            $base_url = $this->base_url;
-            $user_id = $request->user_id;
-            $loginType = $request->user_type;
-            $token = $request->header('token');
+            $base_url = $this->base_url . '/';
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
-            $page_number = $request->page;
 
             $userData = json_decode($checkToken->getContent(), true);
             if ($userData['status'] == false) {
                 return $checkToken->getContent();
             }
-            $startupPaginator = Services::select('id', 'name', 'service_desc')->where('status', 1)->where('parent_id', config('custome.BUSSINESS_ID'))->where('is_deleted', 0)->get();
 
-            $result = [];
-            $finalData = [];
-            $id = 1;
+            $services = Services::select('id', 'name', 'service_desc', 'image')
+                ->where('status', 1)
+                ->where('parent_id', config('custome.BUSSINESS_ID'))
+                ->where('is_deleted', 0)
+                ->get();
 
-            foreach ($startupPaginator as $li) {
-                $result = [
-                    'name' => $li['name'],
-                    'id' => $li['id'],
-                    'points' => [],
+            $formatted = $services->map(function ($service, $index) use ($base_url) {
+                // Decode HTML entities and normalize various quote types
+                $csvInput = html_entity_decode($service->service_desc, ENT_QUOTES | ENT_HTML5);
+                $csvInput = str_replace(['&quot;', '&#34;', '“', '”'], '"', $csvInput);
+
+                // Parse with str_getcsv to respect quoted values
+                $rawFeatures = str_getcsv($csvInput);
+
+                $features = collect($rawFeatures)
+                    ->map(function ($desc) {
+                        return trim(strip_tags($desc));
+                    })
+                    ->filter(function ($desc) {
+                        return !empty($desc) && $desc !== '""' && $desc !== '"';
+                    })
+                    ->values()
+                    ->map(function ($desc, $i) {
+                        return [
+                            'id' => $i + 1,
+                            'name' => $desc,
+                        ];
+                    });
+
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'image' => $service->image ? $base_url . 'services/' . $service->image : '',
+                    'points' => $features,
                 ];
+            });
 
-                $lis = explode(',', $li['service_desc']); // Split service_desc into an array
-                foreach ($lis as $value) {
-                    $result['points'][] = [
-                        'id' => $id,
-                        'name' => trim($value), // Trim whitespace
-                    ];
-                    $id++;
-                }
-
-                $finalData[] = $result; // Add the processed result to finalData
-            }
-
-            // dd($finalData);
-
-            return response()->json(['status' => true, 'message' => 'Get cmd visit data successfully.', 'data' => $finalData], 200);
+            return response()->json([
+                'status' => true,
+                'message' => 'Business list fetched successfully.',
+                'data' => $formatted
+            ], 200);
         } catch (\Throwable $th) {
-            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
         }
     }
+
+
 
     /**
      * get development business list.
@@ -1052,7 +1271,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1082,7 +1301,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1111,7 +1330,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1159,7 +1378,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1201,7 +1420,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1230,7 +1449,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1277,7 +1496,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $loginType = $request->user_type;
             $plan_id = $request->plan_id;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1327,7 +1546,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $loginType = $request->user_type;
             $plan_id = $request->plan_id;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1376,7 +1595,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1425,7 +1644,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1467,7 +1686,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1508,7 +1727,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1605,7 +1824,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1646,7 +1865,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1668,7 +1887,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1693,7 +1912,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1718,7 +1937,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1740,7 +1959,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1762,7 +1981,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1783,7 +2002,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $page_number = $request->page;
 
             $paymentHeadway = ['account_name' => 'Headway Business Solution LLP ', 'bank_name' => 'Axis Bank', 'account_no' => '917020044782976', 'ifsc_code' => 'UTIB0001064', 'GST' => '24AAKF3737P1ZW'];
@@ -1808,7 +2027,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1829,7 +2048,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1854,7 +2073,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $loginType = $request->user_type;
             $plan_id = $request->plan_id;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1879,7 +2098,7 @@ class ApiController extends Controller
             $user_id = $request->user_id;
             $loginType = $request->user_type;
             $plan_id = $request->plan_id;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1905,7 +2124,7 @@ class ApiController extends Controller
             $addon_id = $request->addon_id;
             $plan_id = $request->plan_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
 
@@ -1950,7 +2169,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
 
             $userData = json_decode($checkToken->getContent(), true);
@@ -1990,7 +2209,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
-            $token = $request->header('token');
+            $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
 
             $userData = json_decode($checkToken->getContent(), true);
@@ -2051,7 +2270,7 @@ class ApiController extends Controller
      */
     public function logout(Request $request)
     {
-        $token = $request->header('token');
+        $token = $request->header('Authorization');
         $user = User::where('id', $request->user_id)->where('status', '1')->first();
 
         $userDevice = UserDevices::where('user_id', $request->user_id)->where('login_token', $token)->where('status', '1')->first();
@@ -2077,6 +2296,10 @@ class ApiController extends Controller
 
     public function tokenVerify($token)
     {
+
+        if ($token && Str::startsWith($token, 'Bearer ')) {
+            $token = Str::replaceFirst('Bearer ', '', $token);
+        }
         $user = DB::table('user_devices')
             ->where('user_devices.login_token', '=', $token)
             ->where('user_devices.status', '=', 1)
@@ -2276,16 +2499,26 @@ class ApiController extends Controller
         try {
 
             // OSS Galleries: from banners table where title is 'oss_gallery'
-            $ossGalleries = DB::table('testimonials')
-                ->where('status', 1)
-                ->where('is_deleted', 0)
-                ->get(['id', 'title', 'image', 'description as desc'])
+            // $ossGalleries = DB::table('testimonials')
+            //     ->where('status', 1)
+            //     ->where('is_deleted', 0)
+            //     ->get(['id', 'title', 'image', 'description as desc'])
+            //     ->map(function ($item) use ($base_url) {
+            //         return [
+            //             'id' => $item->id,
+            //             'title' => $item->title,
+            //             'image' => $base_url . '/testimonials/' . $item->image,
+            //             'desc' => $item->desc,
+            //         ];
+            //     });
+
+            $ossGalleries = DB::table('oss_galleries')
+                ->get(['id', 'title', 'images'])
                 ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
                         'title' => $item->title,
-                        'image' => $base_url . '/testimonials/' . $item->image,
-                        'desc' => $item->desc,
+                        'image' => $base_url . '/oss_gallery/' . $item->images
                     ];
                 });
 
@@ -2334,16 +2567,19 @@ class ApiController extends Controller
             //     });
             $clientTestimonials = DB::table('testimonials')
                 ->where('status', 1)
+                ->where('type', 'startup')
                 ->where('is_deleted', 0)
-                ->get(['id', 'title as  name', 'image', 'description as comment', 'city as location', 'rating'])
+                ->get(['id', 'title as  name', 'image', 'description as comment', 'city as location', 'rating', 'shop_name', 'type'])
                 ->map(function ($item) use ($base_url) {
                     return [
                         'id' => $item->id,
                         'name' => $item->name,
-                        'image' => $base_url . '/clients/' . $item->image,
+                        'shop_name' => $item->shop_name,
+                        'image' => $base_url . '/testimonials/' . $item->image,
                         'location' => $item->location,
                         'comment' => $item->comment,
-                        'rating' => $item->rating ? (int) $item->rating : 0, // Ensure rating is an integer
+                        'type' => $item->type,
+                        'rating' => $item->rating ? (float) $item->rating : 0, // Ensure rating is an integer
                     ];
                 });
 
@@ -2389,12 +2625,54 @@ class ApiController extends Controller
                 ->whereRaw('LOWER(name) LIKE ?', ['%all iN one brochure%'])
                 ->first();
 
+            $services = Services::select('id', 'name', 'service_desc', 'image')
+                ->where('status', 1)
+                ->where('parent_id', config('custome.BUSSINESS_ID'))
+                ->where('is_deleted', 0)
+                ->get();
+            $formatted = $services->map(function ($service, $index) {
+                // Step 1: Decode HTML entities and normalize quotes
+                $csvInput = html_entity_decode($service->service_desc, ENT_QUOTES | ENT_HTML5);
+
+                // Step 2: Normalize various quote types to standard double quotes
+                $csvInput = str_replace(['&quot;', '&#34;', '“', '”'], '"', $csvInput);
+
+                // Step 3: Parse using str_getcsv which respects quoted strings
+                $rawFeatures = str_getcsv($csvInput);
+
+                $features = collect($rawFeatures)
+                    ->map(function ($desc) {
+                        // Remove any HTML tags, but preserve quoted content
+                        return trim(strip_tags($desc));
+                    })
+                    ->filter(function ($desc) {
+                        return !empty($desc) && $desc !== '""' && $desc !== '"';
+                    })
+                    ->values()
+                    ->map(function ($desc, $i) {
+                        return [
+                            'id' => $i + 1,
+                            'feature' => $desc,
+                        ];
+                    });
+
+                return [
+                    'id' => $service->id,
+                    'title' => $service->name,
+                    'imgUrl' => $service->image ? $this->base_url . '/services/' . $service->image : '',
+                    'features' => $features,
+                ];
+            });
+
+
+
             $brochureUrl = $brochure ? $base_url . $brochure->value : '';
 
             return response()->json([
                 'status' => true,
                 'message' => 'MMB Galleries fetched successfully',
                 'data' => [
+                    'mmb_services' => $formatted,
                     'galleries' => $galleries,
                     'brochure' => $brochureUrl
                 ]
@@ -2467,6 +2745,49 @@ class ApiController extends Controller
             ], 200);
         }
     }
+    public function getGenGallaries(Request $request)
+    {
+        $base_url = $this->base_url . '/';
+        $perPage = $request->get('per_page', 10); // Default 10 items per page
+
+        try {
+            $paginator = DB::table('gen_galleries')
+                ->select('id', 'title', 'images')
+                ->orderByDesc('id')
+                ->paginate($perPage);
+
+            // Transform the data
+            $galleries = $paginator->getCollection()->map(function ($item) use ($base_url) {
+                return [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'image' => $base_url . 'gen_gallery/' . $item->images
+                ];
+            });
+
+            // Replace the collection with transformed data
+            $paginator->setCollection($galleries);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Gen Galleries fetched successfully',
+                'data' => [
+                    'items' => $paginator->items(),
+                    'current_page' => $paginator->currentPage(),
+                    'per_page' => $paginator->perPage(),
+                    'total' => $paginator->total(),
+                    'last_page' => $paginator->lastPage()
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
 
     public function getBlogsListV2()
     {
@@ -2582,9 +2903,46 @@ class ApiController extends Controller
         try {
             $base_url = $this->base_url . '/';
 
-            $teams = Team::where('status', 1)
+
+            $founders = Team::where('dept', 'founder')->where('status', 1)
                 ->where('is_deleted', 0)
-                ->orderBy('created_at', 'asc')
+                ->orderBy('displayOrder', 'asc')
+                ->get(['name', 'image', 'position'])
+                ->map(function ($team) use ($base_url) {
+                    return [
+                        'name' => $team->name,
+                        'image' => $base_url . 'teams/' . $team->image,
+                        'position' => $team->position,
+                    ];
+                });
+
+            $admins = Team::where('dept', 'admin')->where('status', 1)
+                ->where('is_deleted', 0)
+                ->orderBy('displayOrder', 'asc')
+                ->get(['name', 'image', 'position'])
+                ->map(function ($team) use ($base_url) {
+                    return [
+                        'name' => $team->name,
+                        'image' => $base_url . 'teams/' . $team->image,
+                        'position' => $team->position,
+                    ];
+                });
+
+            $trainers = Team::where('dept', 'trainer')->where('status', 1)
+                ->where('is_deleted', 0)
+                ->orderBy('displayOrder', 'asc')
+                ->get(['name', 'image', 'position'])
+                ->map(function ($team) use ($base_url) {
+                    return [
+                        'name' => $team->name,
+                        'image' => $base_url . 'teams/' . $team->image,
+                        'position' => $team->position,
+                    ];
+                });
+
+            $itteam = Team::where('dept', 'it')->where('status', 1)
+                ->where('is_deleted', 0)
+                ->orderBy('displayOrder', 'asc')
                 ->get(['name', 'image', 'position'])
                 ->map(function ($team) use ($base_url) {
                     return [
@@ -2597,7 +2955,12 @@ class ApiController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Record list successfully',
-                'data' => $teams
+                'data' => [
+                    ['title' => 'Founders', 'employee' => $founders],
+                    ['title' => 'Administration', 'employee' => $admins],
+                    ['title' => 'Training Executive', 'employee' => $trainers],
+                    ['title' => 'IT Experts', 'employee' => $itteam]
+                ]
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -3046,6 +3409,173 @@ class ApiController extends Controller
                 'status' => true,
                 'message' => 'Profile updated Successfully',
                 'data' => $responseData
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function getHeadwayIT()
+    {
+        try {
+            $base_url = $this->base_url . '/';
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+
+            $ourProducts = OurProduct::where('status', '1')->get(['id', 'photo', 'product_banner', 'title', 'desc', 'play_store', 'app_store', 'web_url', 'tagline'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'photo' => $item->photo ? $base_url . 'products/' . $item->photo : '',
+                        'product_banner' => $item->product_banner ? $base_url . 'products/' . $item->product_banner : '',
+                        'title' => $item->title,
+                        'desc' => $item->desc,
+                        'tagline' => $item->tagline ?? '',
+                        'play_store' => $item->play_store,
+                        'app_store' => $item->app_store,
+                        'web_url' => $item->web_url
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Headway IT data fetched successfully',
+                'data' => [
+                    'our_products' => $ourProducts
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getJewelleryVidyapith()
+    {
+        // this function to get the ssu gallery data and youtube_link from gen_settings table
+        try {
+            $base_url = $this->base_url . '/';
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+            $galleries = DB::table('ssu_galleries')
+                ->get(['id', 'title', 'images'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'title' => $item->title,
+                        'image' => $base_url . 'ssu_gallery/' . $item->images
+                    ];
+                });
+
+            $youtubeLink = DB::table('settings')
+                ->where('name', 'youtube_intro')
+                ->value('value');
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Jewellery Vidyapith data fetched successfully',
+                'data' => [
+                    'galleries' => $galleries,
+                    'youtube_link' => $youtubeLink
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getIntelligentHR()
+    {
+        try {
+            $base_url = $this->base_url . '/';
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+
+            $services = Services::where('status', 1)
+                ->where('is_deleted', 0)
+                ->where('parent_id', config('custome.HR_ID'))
+                ->get(['id', 'name', 'service_desc', 'image'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'title' => $item->name,
+                        'description' => $item->service_desc,
+                        'image' => $item->image ? $base_url . 'services/' . $item->image : '',
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Intelligent HR data fetched successfully',
+                'data' => [
+                    'services' => $services
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getIdbPage()
+    {
+        try {
+            $base_url = $this->base_url . '/';
+            if (substr($base_url, -1) !== '/') {
+                $base_url .= '/';
+            }
+
+            $idplist = Services::where('status', 1)->where('is_deleted', 0)->where('parent_id', config('custome.DEVELOPMENT_BUSSINESS_ID'))->get();
+            $idplist = $idplist->map(function ($item) use ($base_url) {
+                return [
+                    'id' => $item->id,
+                    'title' => $item->name,
+                    'image' => $item->image ? $base_url . '/services/' . $item->image : '',
+                    'description' => $item->service_desc,
+                ];
+            });
+
+            $reviews = Testimonial::where('status', 1)
+                ->where('type', 'idp')
+                ->where('is_deleted', 0)
+                ->get(['id', 'title as name', 'image', 'description as comment', 'city as location', 'rating', 'shop_name'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'name' => $item->name,
+                        'shop_name' => $item->shop_name, // Assuming shop_name is
+                        'image' => $item->image ? $base_url . '/testimonials/' . $item->image : '',
+                        'location' => $item->location,
+                        'comment' => $item->comment,
+                        'rating' => $item->rating ? (float) $item->rating : 0, // Ensure rating is an integer
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'IDP Page data fetched successfully',
+                'data' => [
+                    'idplist' => $idplist,
+                    'reviews' => $reviews
+                ]
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([

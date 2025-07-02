@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\V1\ApiController;
 use App\Http\Controllers\API\V1\ProfileController;
+use App\Http\Controllers\ExibitionVisitorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,15 +21,18 @@ use App\Http\Controllers\API\V1\ProfileController;
 //     return $request->user();
 // });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware('jwt.verify')->get('/user', function (Request $request) {
     return $request->user();
 });
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::post('v1/sendOtp', [ApiController::class, 'sendOtp']);
 Route::post('v1/login', [ApiController::class, 'login']);
 Route::post('v1/resend_otp', [ApiController::class, 'resendOtp']);
 Route::post('v1/profile/update', [ProfileController::class, 'updateProfile']);
-Route::post('v1/profile/getProfile', [ProfileController::class, 'getProfile']);
+Route::post('v1/profile/getProfile', [ProfileController::class, 'getProfile'])->middleware('jwt.verify');
 Route::post('v1/getBlogsList', [ApiController::class, 'getBlogsList']);
 Route::post('v1/getPlanList', [ApiController::class, 'getPlanList']);
 Route::post('v1/getPlanDetail', [ApiController::class, 'getPlanDetail']);
@@ -56,7 +60,7 @@ Route::post('v1/getMembershipPolicy', [ApiController::class, 'getMembershipPolic
 Route::post('v1/getDataProcessingSupport', [ApiController::class, 'getDataProcessingSupport']);
 Route::post('v1/getMarketingStrategy', [ApiController::class, 'getMarketingStrategy']);
 Route::post('v1/getDashboardData', [ApiController::class, 'getDashboardData']);
-Route::post('v1/getNotificationUser', [ApiController::class, 'getNotificationUser']);
+Route::post('v1/getNotificationUser', [ApiController::class, 'getNotificationUser'])->middleware('jwt.verify');
 Route::post('v1/getHeadwayITList', [ApiController::class, 'getHeadwayITList']);
 Route::post('v1/getJewelleryVidyapithList', [ApiController::class, 'getJewelleryVidyapithList']);
 Route::post('v1/getBusinessList', [ApiController::class, 'getBusinessList']);
@@ -78,6 +82,7 @@ Route::post('v1/about_startup', [ApiController::class, 'getAboutStartupV2']);
 Route::post('v1/mmb_gallaries', [ApiController::class, 'getMmbGallaries']);
 Route::post('v1/service_plan_list', [ApiController::class, 'getServicePlanList']);
 Route::post('v1/ssu_gallaries', [ApiController::class, 'getSsuGallaries']);
+Route::post('v1/gen_gallaries', [ApiController::class, 'getGenGallaries']);
 Route::post('v1/blogs_list', [ApiController::class, 'getBlogsListV2']);
 Route::post('v1/blog_details', [ApiController::class, 'getBlogDetails']);
 Route::post('v1/meet_our_team', [ApiController::class, 'getMeetOurTeam']);
@@ -88,3 +93,10 @@ Route::post('v1/newsletter_subscription', [ApiController::class, 'newsletterSubs
 Route::post('v1/update_notification_data', [ApiController::class, 'updateNotificationData']);
 Route::post('v1/user_profile_update', [ApiController::class, 'updateUserProfile']);
 Route::post('v1/gen_settings', [ApiController::class, 'getGeneralSettings']);
+Route::post('v1/idb_page', [ApiController::class, 'getIdbPage']);
+Route::post('v1/intelligent_hr', [ApiController::class, 'getIntelligentHR']);
+Route::post('v1/jewellery_vidyapith', [ApiController::class, 'getJewelleryVidyapith']);
+Route::post('v1/headway_it', [ApiController::class, 'getHeadwayIT']);
+
+// Route::get('v1/visitor_form', [ExibitionVisitorController::class, 'form'])->name('exibition_visitors.form');
+// Route::post('v1/visitor-submit', [ExibitionVisitorController::class, 'store'])->name('exibition_visitors.store');

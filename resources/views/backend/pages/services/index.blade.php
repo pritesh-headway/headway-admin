@@ -79,7 +79,7 @@
                                         @endif
 
                                         @if (auth()->user()->can('service.delete'))
-                                        {{-- <a class="btn btn-danger text-white" href="javascript:void(0);"
+                                        <a class="btn btn-danger text-white" href="javascript:void(0);"
                                             onclick="service.preventDefault(); if(confirm('Are you sure you want to delete?')) { document.getElementById('delete-form-{{ $admin->id }}').submit(); }">
                                             {{ __('Delete') }}
                                         </a>
@@ -89,7 +89,7 @@
                                             style="display: none;">
                                             @method('DELETE')
                                             @csrf
-                                        </form> --}}
+                                        </form>
                                         @endif
                                     </td>
                                 </tr>

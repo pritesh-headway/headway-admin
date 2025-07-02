@@ -21,10 +21,10 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">{{ __('Testimonials') }}</h4>
+                <h4 class="page-title pull-left">{{ __('Client Reviews') }}</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }}</a></li>
-                    <li><span>{{ __('All Testimonials') }}</span></li>
+                    <li><span>{{ __('All Client Reviews') }}</span></li>
                 </ul>
             </div>
         </div>
@@ -41,11 +41,11 @@
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title float-left">{{ __('Testimonials') }}</h4>
+                    <h4 class="header-title float-left">{{ __('Client Reviews') }}</h4>
                     <p class="float-right mb-2">
                         @if (auth()->user()->can('banner.edit'))
                         <a class="btn btn-primary text-white" href="{{ route('admin.testimonial.create') }}">
-                            {{ __('Create New Testimonial') }}
+                            {{ __('Create New Client Review') }}
                         </a>
                         @endif
                     </p>

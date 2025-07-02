@@ -152,17 +152,20 @@ $usr = Auth::guard('admin')->user();
                     </li>
                     @endif
 
-                    @if ($usr->can('scedule.create') || $usr->can('scedule.view') || $usr->can('scedule.edit') ||
+                    @if (
+                    $usr->can('scedule.create') ||
+                    $usr->can('scedule.view') ||
+                    $usr->can('scedule.edit') ||
                     $usr->can('scedule.delete'))
                     <li>
                         <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-tasks"></i><span>
-                                Schedule Module
+                                Scedule Module
                             </span></a>
                         <ul
-                            class="collapse {{ Route::is('admin.schedules.create') || Route::is('admin.schedules.index') || Route::is('admin.schedules.edit') || Route::is('admin.schedules.show') ? 'in' : '' }}">
+                            class="collapse {{ Route::is('admin.scedules.create') || Route::is('admin.scedules.index') || Route::is('admin.scedules.edit') || Route::is('admin.scedules.show') ? 'in' : '' }}">
                             @if ($usr->can('scedule.create'))
-                            <li class="{{ Route::is('admin.schedules.create')  ? 'active' : '' }}"><a
-                                    href="{{ route('admin.schedules.create') }}">Schedule</a></li>
+                            <li class="{{ Route::is('admin.scedules.create') ? 'active' : '' }}"><a
+                                    href="{{ route('admin.scedules.create') }}">Scedule</a></li>
                             @endif
                         </ul>
                     </li>
@@ -510,6 +513,10 @@ $usr = Auth::guard('admin')->user();
                     </li>
                     @endif
                     <li
+                        class="{{ Route::is('admin.gallery.index') || Route::is('admin.gallery.edit') ? 'active' : '' }}">
+                        <a href="{{ route('admin.gallery.index') }}"> <i class="fa fa-book"></i><span></span>Gallery</a>
+                    </li>
+                    <li
                         class="{{ Route::is('admin.contact.index') || Route::is('admin.contact.edit') ? 'active' : '' }}">
                         <a href="{{ route('admin.contact.index') }}"> <i class="fa fa-book"></i><span></span>Contact
                             Requests</a>
@@ -518,6 +525,18 @@ $usr = Auth::guard('admin')->user();
                     <li
                         class="{{ Route::is('admin.settings.index') || Route::is('admin.settings.edit') ? 'active' : '' }}">
                         <a href="{{ route('admin.settings.index') }}"> <i class="fa fa-cog"></i><span></span>Settings
+                        </a>
+                    </li>
+                    <li
+                        class="{{ Route::is('admin.exibition_visitors.index') || Route::is('admin.exibition_visitors.edit') ? 'active' : '' }}">
+                        <a href="{{ route('admin.exibition_visitors.index') }}"> <i
+                                class="fa fa-users"></i><span></span>Exibition Visitors
+                        </a>
+                    </li>
+                    <li
+                        class="{{ Route::is('admin.candidate.index') || Route::is('admin.candidate.edit') ? 'active' : '' }}">
+                        <a href="{{ route('admin.candidate.index') }}"> <i class="fa fa-book"></i><span></span>Candidate
+                            Registrations
                         </a>
                     </li>
 

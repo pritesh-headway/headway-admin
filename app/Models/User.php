@@ -9,9 +9,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
     public $table = 'users';
@@ -20,5 +21,16 @@ class User extends Authenticatable
     public function MemberBatch()
     {
         return $this->belongsTo(MemberBatch::class, 'id', 'member_id');
+    }
+
+      public function getJWTIdentifier()
+    {
+        return $this->getKey();
+        // return (string) $this->id;
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }
