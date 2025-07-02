@@ -20,6 +20,9 @@
             <li class="nav-item">
                 <a class="nav-link" id="oss-tab" data-toggle="tab" href="#oss" role="tab">OSS</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="gen-tab" data-toggle="tab" href="#gen" role="tab">GEN</a>
+            </li>
         </ul>
 
         <div class="tab-content" id="galleryTabContent">
@@ -101,6 +104,7 @@
                 </div>
             </div>
 
+            <!-- OSS Tab -->
             <div class="tab-pane fade" id="oss" role="tabpanel">
                 <div class="card">
                     <div class="card-body">
@@ -128,6 +132,46 @@
                                             <a href="{{ route('admin.gallery.edit', ['id' => $item->id, 'type' => 'oss']) }}"
                                                 class="btn btn-success btn-sm">Edit</a>
                                             <a href="{{ route('admin.gallery.delete', ['id' => $item->id, 'type' => 'oss']) }}"
+                                                onclick="return confirm('Are you sure?')"
+                                                class="btn btn-danger btn-sm">Delete</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- GEN Tab -->
+            <div class="tab-pane fade" id="gen" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Gen Gallery</h4>
+                        <a href="{{ route('admin.gallery.create', ['type' => 'gen']) }}" class="btn btn-primary mb-3">Add
+                            Gen Gallery</a>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>SL</th>
+                                    <th>Title</th>
+                                    <th>Image</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($genGalleries as $index => $item)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $item->title }}</td>
+                                        <td>
+                                            <img src="{{ asset('gen_gallery/' . $item->images) }}" width="100">
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('admin.gallery.edit', ['id' => $item->id, 'type' => 'gen']) }}"
+                                                class="btn btn-success btn-sm">Edit</a>
+                                            <a href="{{ route('admin.gallery.delete', ['id' => $item->id, 'type' => 'gen']) }}"
                                                 onclick="return confirm('Are you sure?')"
                                                 class="btn btn-danger btn-sm">Delete</a>
                                         </td>

@@ -512,6 +512,11 @@
                         </li>
                     @endif
                     <li
+                        class="{{ Route::is('admin.gallery.index') || Route::is('admin.gallery.edit') ? 'active' : '' }}">
+                        <a href="{{ route('admin.gallery.index') }}"> <i
+                                class="fa fa-book"></i><span></span>Gallery</a>
+                    </li>
+                    <li
                         class="{{ Route::is('admin.contact.index') || Route::is('admin.contact.edit') ? 'active' : '' }}">
                         <a href="{{ route('admin.contact.index') }}"> <i class="fa fa-book"></i><span></span>Contact
                             Requests</a>
