@@ -82,6 +82,7 @@ Route::post('v1/about_startup', [ApiController::class, 'getAboutStartupV2']);
 Route::post('v1/mmb_gallaries', [ApiController::class, 'getMmbGallaries']);
 Route::post('v1/service_plan_list', [ApiController::class, 'getServicePlanList']);
 Route::post('v1/ssu_gallaries', [ApiController::class, 'getSsuGallaries']);
+Route::post('v1/gen_gallaries', [ApiController::class, 'getGenGallaries']);
 Route::post('v1/blogs_list', [ApiController::class, 'getBlogsListV2']);
 Route::post('v1/blog_details', [ApiController::class, 'getBlogDetails']);
 Route::post('v1/meet_our_team', [ApiController::class, 'getMeetOurTeam']);

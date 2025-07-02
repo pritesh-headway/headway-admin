@@ -50,75 +50,74 @@ class GalleryController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
         $type = $request->get('type');
         $table = $this->resolveTable($type);
         $folder = $this->resolveFolder($type);
 
         // Conditional validation
-        $rules = [
-            'title' => 'required|string|max:255',
-        ];
+        $rules = [];
 
         if ($type === 'gen') {
-            $rules['imagesInput'] = 'required|image|mimes:jpeg,png,jpg,webp|max:2048';
+            $rules['imagesInput'] = 'required|array';
+            $rules['imagesInput.*'] = 'image|mimes:jpeg,png,jpg,webp|max:25600'; // 25MB per image
         } else {
-            $rules['cropped_image'] = 'required|string'; // base64 string
+            $rules['title'] = 'required|string|max:255';
+            $rules['cropped_image'] = 'required|string'; // base64 image string
         }
 
         $validated = $request->validate($rules);
 
-        $fileName = null;
-
-        if ($type === 'gen') {
-            // Handle regular uploaded file
-            if ($request->hasFile('imagesInput')) {
-                $image = $request->file('imagesInput');
-                $fileName = time() . '.' . $image->getClientOriginalExtension();
-                $path = public_path($folder);
-
-                if (!file_exists($path)) {
-                    mkdir($path, 0755, true);
-                }
-
-                $image->move($path, $fileName);
-            }
-        } else {
-            // Handle cropped base64 image
-            $base64Image = $request->cropped_image;
-
-            if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $typeMatch)) {
-                $imageType = strtolower($typeMatch[1]);
-                $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
-                $base64Image = base64_decode($base64Image);
-
-                if ($base64Image === false) {
-                    return back()->with('error', 'Invalid image data.');
-                }
-
-                $fileName = time() . '.' . $imageType;
-                $path = public_path($folder);
-
-                if (!file_exists($path)) {
-                    mkdir($path, 0755, true);
-                }
-
-                file_put_contents($path . '/' . $fileName, $base64Image);
-            } else {
-                return back()->with('error', 'Invalid image format.');
-            }
+        $path = public_path($folder);
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
         }
 
-        // Insert into the respective table
-        DB::table($table)->insert([
-            'title' => $validated['title'],
-            'images' => $fileName,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // 🔹 Handle GEN: multiple file upload
+        if ($type === 'gen') {
+            foreach ($request->file('imagesInput') as $file) {
+                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move($path, $fileName);
 
-        return redirect()->route('admin.gallery.index')->with('success', 'Gallery created successfully.');
+                DB::table($table)->insert([
+                    'title' => 'Image - ' . now()->format('Y-m-d H:i:s'),
+                    'images' => $fileName,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            return redirect()->route('admin.gallery.index')->with('success', 'Gallery images uploaded successfully.');
+        }
+
+        // 🔹 Handle other types (base64 image)
+        $base64Image = $request->cropped_image;
+
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $typeMatch)) {
+            $imageType = strtolower($typeMatch[1]);
+            $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
+            $base64Image = base64_decode($base64Image);
+
+            if ($base64Image === false) {
+                return back()->with('error', 'Invalid image data.');
+            }
+
+            $fileName = time() . '.' . $imageType;
+            file_put_contents($path . '/' . $fileName, $base64Image);
+
+            DB::table($table)->insert([
+                'title' => $validated['title'],
+                'images' => $fileName,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return redirect()->route('admin.gallery.index')->with('success', 'Gallery item created successfully.');
+        }
+
+        return back()->with('error', 'Invalid image format.');
     }
+
+
 
 
 
@@ -148,10 +147,10 @@ class GalleryController extends Controller
         ];
 
         if ($type === 'gen') {
-            $rules['imagesInput'] = 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072';
+            $rules['imagesInput'] = 'nullable';
         } else {
             $rules['cropped_image'] = 'nullable|string';
-            $rules['imagesInput'] = 'nullable|file|mimes:jpeg,png,jpg,webp|max:3072';
+            $rules['imagesInput'] = 'nullable';
         }
 
         $validated = $request->validate($rules);

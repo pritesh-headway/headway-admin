@@ -2719,6 +2719,33 @@ class ApiController extends Controller
             ], 200);
         }
     }
+    public function getGenGallaries()
+    {
+        $base_url = $this->base_url . '/';
+        try {
+            $galleries = DB::table('gen_galleries')
+                ->get(['id', 'title', 'images'])
+                ->map(function ($item) use ($base_url) {
+                    return [
+                        'id' => $item->id,
+                        'title' => $item->title,
+                        'image' => $base_url . 'gen_gallery/' . $item->images
+                    ];
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Gen Galleries fetched successfully',
+                'data' => $galleries
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $th->getMessage()
+            ], 200);
+        }
+    }
 
     public function getBlogsListV2()
     {

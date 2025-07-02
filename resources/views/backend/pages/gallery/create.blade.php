@@ -51,20 +51,28 @@
                             method="POST" enctype="multipart/form-data">
                             @csrf
 
-                            <div class="form-row">
-                                <div class="form-group col-md-6 col-sm-12">
-                                    <label for="title">Title</label>
-                                    <input type="text" class="form-control" id="title" name="title"
-                                        placeholder="Enter Title" required value="{{ old('title') }}">
+                            @if ($type !== 'gen')
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 col-sm-12">
+                                        <label for="title">Title</label>
+                                        <input type="text" class="form-control" id="title" name="title"
+                                            placeholder="Enter Title" required value="{{ old('title') }}">
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
 
                             <div class="form-row">
                                 <div class="form-group col-md-6 col-sm-12">
-                                    <label for="imagesInput">Gallery Image</label>
-                                    <input type="file" id="imagesInput" name="imagesInput" class="form-control"
-                                        accept="image/*" {{ $type === 'gen' ? 'required' : '' }} />
-                                    <input type="hidden" name="cropped_image" id="croppedImageInput">
+                                    <label for="imagesInput">
+                                        Gallery Image{{ $type === 'gen' ? 's (Multiple Allowed)' : '' }}
+                                    </label>
+                                    <input type="file" id="imagesInput"
+                                        name="{{ $type === 'gen' ? 'imagesInput[]' : 'imagesInput' }}" class="form-control"
+                                        accept="image/*" {{ $type === 'gen' ? 'multiple required' : 'required' }} />
+
+                                    @if ($type !== 'gen')
+                                        <input type="hidden" name="cropped_image" id="croppedImageInput">
+                                    @endif
                                 </div>
                             </div>
 
@@ -76,7 +84,8 @@
                             @endif
 
                             <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
-                            <a href="{{ route('admin.gallery.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
+                            <a href="{{ route('admin.gallery.index') }}"
+                                class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
                         </form>
                     </div>
                 </div>
@@ -91,10 +100,6 @@
     @if ($type !== 'gen')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
         <script>
-            $(document).ready(function() {
-                $('.select2').select2();
-            });
-
             let cropper;
             const imageInput = document.getElementById('imagesInput');
             const imagePreview = document.getElementById('imagePreview');
