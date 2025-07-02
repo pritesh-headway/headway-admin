@@ -7,13 +7,14 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 
-class MemberModule extends Model
+class MemberModuleSubject extends Model
 {
     use Notifiable, HasRoles;
-    public $table = 'members_module';
+    public $table = 'members_module_subject';
     protected $primaryKey = 'id';
     protected $fillable = [
         'module_id',
+        'subject_id',
         'member_id',
         'membership_id',
         'trainer_id',

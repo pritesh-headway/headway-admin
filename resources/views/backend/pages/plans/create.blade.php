@@ -62,15 +62,15 @@ Plan Create - Admin Panel
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Price (Out Of Ahmedabad)</label>
+                                <label for="name">Price (Within Gujrat)</label>
                                 <input type="number" class="form-control" id="price_out_of_ah" name="price_out_of_ah"
-                                    placeholder="Enter Price Out Of Ahmedabad" value="{{ old('price_out_of_ah') }}"
+                                    placeholder="Enter Price Within Gujrat" value="{{ old('price_out_of_ah') }}"
                                     required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Price (Out Of State)</label>
+                                <label for="name">Price (Within India)</label>
                                 <input type="number" class="form-control" id="price_out_of_st" name="price_out_of_st"
-                                    placeholder="Enter Price Out Of State" value="{{ old('price_out_of_st') }}" required
+                                    placeholder="Enter Price Within India" value="{{ old('price_out_of_st') }}" required
                                     autofocus>
                             </div>
                         </div>
@@ -145,13 +145,18 @@ Plan Create - Admin Panel
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Plan Type</label>
                                 <select class="form-control " id="plan_type" name="plan_type" required>
-                                    <option value="Member Plan" {{ old('plan_type')=='Member Plan' ? 'selected' : '' }}>
-                                        Member Plan
+                                    <option value="Personal" {{ old('plan_type')=='Personal' ? 'selected' : '' }}>
+                                        Personal
                                     </option>
-                                    <option value="Service Plan" {{ old('plan_type')=='Service Plan' ? 'selected' : ''
-                                        }}>Service Plan
+                                    <option value="Business" {{ old('plan_type')=='Business' ? 'selected' : '' }}>
+                                        Business
                                     </option>
-
+                                    <option value="Developer" {{ old('plan_type')=='Developer' ? 'selected' : '' }}>
+                                        Developer
+                                    </option>
+                                    <option value="Smart" {{ old('plan_type')=='Smart' ? 'selected' : '' }}>
+                                        Smart
+                                    </option>
                                 </select>
                             </div>
                             <div class="form-group col-md-6 col-sm-6">
@@ -169,6 +174,14 @@ Plan Create - Admin Panel
                                 <label for="name">Store Visit</label>
                                 <input type="number" class="form-control" id="store_visit" name="store_visit"
                                     placeholder="Enter store visit" value="{{ old('store_visit') }}" required autofocus>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">On Call Support</label>
+                                <input type="number" class="form-control" id="on_call_support" name="on_call_support"
+                                    placeholder="Enter On Call Support" value="{{ old('on_call_support') }}" required
+                                    autofocus>
                             </div>
                         </div>
                         {{-- <div class="form-row">

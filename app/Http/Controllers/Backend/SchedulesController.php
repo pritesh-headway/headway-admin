@@ -12,7 +12,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Role;
 
-class ScedulesController extends Controller
+class SchedulesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -56,7 +56,7 @@ class ScedulesController extends Controller
         $admin->save();
 
         session()->flash('success', __('Scedule has been created.'));
-        return redirect()->route('admin.scedules.index');
+        return redirect()->route('admin.schedules.index');
     }
 
     /**
@@ -97,7 +97,7 @@ class ScedulesController extends Controller
         $admin->save();
 
         session()->flash('success', 'Scedule has been updated.');
-        return redirect()->route('admin.scedules.index'); //back();
+        return redirect()->route('admin.schedules.index'); //back();
     }
 
     /**

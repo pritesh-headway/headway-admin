@@ -7,10 +7,13 @@ use App\Models\Banner;
 use App\Models\Client;
 use App\Models\Member;
 use App\Models\MemberModule;
+use App\Models\MemberModuleSubject;
 use App\Models\Membership;
+use App\Models\MemberStartupModule;
 use App\Models\Modules;
 use App\Models\Plan;
 use App\Models\Service;
+use App\Models\StartupServiceModules;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
@@ -84,6 +87,7 @@ class MembersController extends Controller
 
         $admin = Membership::findOrFail($id);
         $plans = Plan::findOrFail($admin['product_id']);
+
         $ids = explode(',', $plans->module_ids);
         $modulesName = Service::whereIn('id', $ids)->where('status', 1)->get();
         $trainers = DB::table('trainers')
@@ -95,18 +99,61 @@ class MembersController extends Controller
             ->where('status', '1')
             ->where('is_deleted', '0')
             ->get();
-        // dd($admin);
+
         $dataGetNodules = MemberModule::where('member_id', $admin->user_id)->get();
-        // dd($dataGetNodules);
-        return view('backend.pages.members.edit', [
+        $dataGetNodulesSubject = MemberModuleSubject::where('member_id', $admin->user_id)->get();
+        // dd($plans->page_type);
+        if ($plans->page_type == 'mmb') {
+            $dataGetNodules = MemberModule::where('member_id', $admin->user_id)->get();
+            $pageName = 'backend.pages.members.edit';
+        } elseif ($plans->page_type == 'start-up') {
+            $dataGetNodules = MemberStartupModule::where('member_id', $admin->user_id)->get();
+            $pageName = 'backend.pages.members.editstartup';
+        } elseif ($plans->page_type == 'idp') {
+            $dataGetNodules = [];
+            $pageName = 'backend.pages.members.editidp';
+        } elseif ($plans->page_type == 'revision-batch') {
+            $dataGetNodules = [];
+            $pageName = 'backend.pages.members.editrevision';
+        } elseif ($plans->page_type == 'stay-aware-live-renewal') {
+            $dataGetNodules = [];
+            $pageName = 'backend.pages.members.editstay';
+        } elseif ($plans->page_type == 'meeting-with-sir') {
+            $dataGetNodules = [];
+            $pageName = 'backend.pages.members.editmeeting';
+        }
+
+        return view($pageName, [
             'admin' => $admin,
             'plans' => $plans,
             'member_id' => $admin->user_id,
+            'membership_id' => $admin->product_id,
             'modulesName' => $modulesName,
             'dataGetNodules' => $dataGetNodules,
+            'dataGetNodulesSubject' => $dataGetNodulesSubject,
             'subjects' => $subjects,
             'trainers' => $trainers,
             'roles' => Role::all(),
+        ]);
+    }
+
+    public function getSubjectData(Request $request)
+    {
+        $subject_id = $request->input('subject_id');
+        $member_id = $request->input('member_id');
+        $module_id = $request->input('module_id');
+        $membership_id = $request->input('membership_id');
+
+        $visitData = MemberModuleSubject::where(['subject_id' => $subject_id, 'membership_id' => $membership_id, 'member_id' => $member_id, 'module_id' => $module_id])->get();
+        // dd($visitData);
+        $trainers = DB::table('trainers')
+            ->where('status', '1')
+            ->where('is_deleted', '0')
+            ->get();
+
+        return response()->json([
+            'data'     => $visitData,
+            'trainers' => $trainers,
         ]);
     }
 
@@ -152,15 +199,6 @@ class MembersController extends Controller
     {
         // dd($request);
         try {
-            // MemberModule::create([
-            //     'module_id' => $request->serviceID,
-            //     'member_id' => $request->memberID,
-            //     'membership_id' => $request->membershipID,
-            //     'date' => $request->date,
-            //     'time' => $request->time,
-            //     'module_status' => $request->status,
-            //     'remarks' => $request->remarks
-            // ]);
             $members = MemberModule::updateOrInsert(
                 [
                     'member_id' => $request->memberID,
@@ -175,7 +213,68 @@ class MembersController extends Controller
                     'member_id' => $request->memberID,
                     'membership_id' => $request->membershipID,
                     'trainer_id' => $request->trainer_id,
+                    // 'subject_id' => $request->subject_id,
+                    'date' => $request->date,
+                    'time' => $request->time,
+                    'module_status' => $request->status,
+                    'remarks' => $request->remarks
+                ]
+            );
+            return response()->json(['status' => true]);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false]);
+        }
+    }
+
+    //Startup Module Data
+    public function addUpdateStartupModuleData(Request $request)
+    {
+        // dd($request);
+        try {
+            $members = MemberStartupModule::updateOrInsert(
+                [
+                    'member_id' => $request->memberID,
+                    'startup_id' => $request->startupID,
+                    'membership_id' => $request->membershipID,
+                    'date' => $request->date,
+                ],
+                [
+                    'startup_id' => $request->startupID,
+                    'member_id' => $request->memberID,
+                    'membership_id' => $request->membershipID,
+                    'trainer_id' => $request->trainer_id,
+                    'date' => $request->date,
+                    'time' => $request->time,
+                    'module_status' => $request->status,
+                    'remarks' => $request->remarks
+                ]
+            );
+            return response()->json(['status' => true]);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false]);
+        }
+    }
+
+    public function addUpdateModuleSubjectData(Request $request)
+    {
+        // dd($request);
+        try {
+            $members = MemberModuleSubject::updateOrInsert(
+                [
+                    'member_id' => $request->memberID,
+                    'module_id' => $request->serviceID,
                     'subject_id' => $request->subject_id,
+                    'subject_sub_name' => $request->subject_sub_name,
+                    'membership_id' => $request->membershipID,
+                    'date' => $request->date,
+                ],
+                [
+                    'module_id' => $request->serviceID,
+                    'member_id' => $request->memberID,
+                    'membership_id' => $request->membershipID,
+                    'trainer_id' => $request->trainer_id,
+                    'subject_id' => $request->subject_id,
+                    'subject_sub_name' => $request->subject_sub_name,
                     'date' => $request->date,
                     'time' => $request->time,
                     'module_status' => $request->status,

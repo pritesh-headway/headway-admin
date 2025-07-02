@@ -63,67 +63,56 @@ Plan Edit - Admin Panel
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Price (Out Of Ahmedabad)</label>
+                                <label for="name">Price (Within Gujrat)</label>
                                 <input type="number" class="form-control" id="price_out_of_ah" name="price_out_of_ah"
-                                    placeholder="Enter Price" value="{{ $admin->price }}" required autofocus>
+                                    placeholder="Enter Price Within Gujrat" value="{{ $admin->price }}" required
+                                    autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Price (Out Of State)</label>
+                                <label for="name">Price (Within India)</label>
                                 <input type="number" class="form-control" id="price_out_of_st" name="price_out_of_st"
-                                    placeholder="Enter Price" value="{{ $admin->price }}" required autofocus>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Duration</label>
-                                <input type="text" class="form-control" id="validity" name="validity"
-                                    placeholder="Enter duration" value="{{ $admin->validity }}" required autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Session</label>
-                                <input type="text" class="form-control" id="session" name="session"
-                                    placeholder="Enter Session" value="{{ $admin->session }}" required autofocus>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Month Duration</label>
-                                <input type="text" class="form-control" id="month_duration" name="month_duration"
-                                    placeholder="Enter Month Duration" value="{{ $admin->month_duration }}" required
-                                    autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Personal Meeting</label>
-                                <input type="text" class="form-control" id="personal_meeting" name="personal_meeting"
-                                    placeholder="Enter Personal Meeting" value="{{ $admin->personal_meeting }}" required
+                                    placeholder="Enter Price Within India" value="{{ $admin->price }}" required
                                     autofocus>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Deliveries</label>
-                                <input type="text" class="form-control" id="deliveries" name="deliveries"
-                                    placeholder="Enter MOnth Duration" value="{{ $admin->deliveries }}" required
-                                    autofocus>
+                                <label for="name">Sqrt</label>
+                                <input type="text" class="form-control" id="sqrt" name="sqrt" placeholder="Enter Sqrt"
+                                    value="{{ $admin->sqrt }}" required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Duration Year</label>
-                                <input type="text" class="form-control" id="duration_year" name="duration_year"
-                                    placeholder="Enter Personal Meeting" value="{{ $admin->duration_year }}" required
-                                    autofocus>
+                                <label for="name">Employees</label>
+                                <input type="text" class="form-control" id="employees" name="employees"
+                                    placeholder="Enter Employee" value="{{ $admin->employees }}" required autofocus>
                             </div>
                         </div>
+                        <div class="form-row">
 
-                        <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Meeting Duration (In Hrs)</label>
-                                <input type="number" class="form-control" id="duration" name="duration"
-                                    placeholder="Enter Duration" value="{{ $admin->duration }}" required autofocus>
+                                <label for="name">Stock</label>
+                                <input type="text" class="form-control" id="stock" name="stock"
+                                    placeholder="Enter Stock" value="{{ $admin->stock }}" required autofocus>
                             </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Tax (In %)</label>
-                                <input type="number" class="form-control" id="tax" name="tax" placeholder="Enter Tax"
-                                    value="{{ $admin->tax }}" required autofocus>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="username">Plan Type</label>
+                                <select class="form-control " id="plan_type" name="plan_type" required>
+                                    <option value="Small Scale" {{ old('plan_type')=='Small Scale' ? 'selected' : '' }}
+                                        {{ $admin->plan_type ==
+                                        'Small Scale' ? 'selected' : '' }}>
+                                        Small Scale
+                                    </option>
+                                    <option value="Medium Scale" {{ old('plan_type')=='Medium Scale' ? 'selected' : ''
+                                        }} {{ $admin->plan_type ==
+                                        'Medium Scale' ? 'selected' : '' }}>Medium Scale
+                                    </option>
+                                    <option value="Large Scale" {{ old('plan_type')=='Large Scale' ? 'selected' : '' }}
+                                        {{ $admin->plan_type ==
+                                        'Large Scale' ? 'selected' : '' }}>
+                                        Large Scale
+                                    </option>
+
+                                </select>
                             </div>
                         </div>
 
@@ -142,41 +131,6 @@ Plan Edit - Admin Panel
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label for="username">Plan Type</label>
-                                <select class="form-control " id="plan_type" name="plan_type" required>
-                                    <option value="Member Plan" {{ old('plan_type')=='Member Plan' ? 'selected' : '' }}
-                                        {{ $admin->plan_type == 'Member Plan' ? 'selected' : '' }}>
-                                        Member Plan
-                                    </option>
-                                    <option value="Service Plan" {{ old('plan_type')=='Service Plan' ? 'selected' : ''
-                                        }} {{ $admin->plan_type == 'Service Plan' ? 'selected' : '' }}>
-                                        Service Plan
-                                    </option>
-
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">On Call Support</label>
-                                <input type="number" class="form-control" id="on_call_support" name="on_call_support"
-                                    placeholder="Enter On Call Support" value="{{ old('on_call_support') }}" required
-                                    autofocus>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">CMD Visit</label>
-                                <input type="number" class="form-control" id="cmd_visit" name="cmd_visit"
-                                    placeholder="Enter cmd visit" value="{{ $admin->cmd_visit }}" required autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Store Visit</label>
-                                <input type="number" class="form-control" id="store_visit" name="store_visit"
-                                    placeholder="Enter store visit" value="{{ $admin->store_visit }}" required
-                                    autofocus>
-                            </div>
-                        </div>
-                        <div class="form-row">
 
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Plan Image</label>
@@ -186,6 +140,7 @@ Plan Edit - Admin Panel
                                     height="80px" />
                             </div>
                         </div>
+
                         {{-- <div class="form-row">
                             <div class="form-group col-md-12 col-sm-12">
                                 <label for="cmd_visit">Modules</label>
@@ -202,33 +157,7 @@ Plan Edit - Admin Panel
                                 @endforeach
                             </div>
                         </div> --}}
-                        <div class="form-row">
-                            <div class="form-group col-md-12 col-sm-12">
-                                <label for="cmd_visit">Services</label>
-                                <div class="row">
-                                    @php
-                                    $chunks = $modules->chunk(ceil($modules->count() / 3)); // Split into 3 sections
-                                    $selectedModules = explode(',', $admin->module_ids); // Convert string to array
-                                    @endphp
 
-                                    @foreach ($chunks as $chunk)
-                                    <div class="col-md-4">
-                                        <!-- Adjust width as needed -->
-                                        @foreach ($chunk as $module)
-                                        <div>
-                                            <input type="checkbox" id="modules_{{ $module->id }}" name="modules[]"
-                                                value="{{ $module->id }}" {{ in_array($module->id, $selectedModules) ?
-                                            'checked' : '' }}>
-                                            <label for="modules_{{ $module->id }}">
-                                                {{ $module->title }}</label>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                    @endforeach
-                                </div>
-                                <div id="module-error" style="color: red; display: none; font-weight: bold;"></div>
-                            </div>
-                        </div>
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>

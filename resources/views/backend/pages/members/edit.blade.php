@@ -512,6 +512,16 @@ Membership Edit - Admin Panel
                                 </tbody>
                             </table>
                             @elseif ($name == 'Online_Trainings')
+                            <div class="form-group mb-3">
+                                {{-- <label for="subject_master">Subject</label> --}}
+                                <select id="subject_master" style="width: 100%;" name="subject_master"
+                                    class="form-control subject_master" data-module-id="{{ $moduleID }}">
+                                    <option value="">‒‒ Select Subject ‒‒</option>
+                                    @foreach ($subjects as $subject)
+                                    <option value="{{ $subject->id }}">{{ $subject->subject_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <table class="responsive-table" width="100%">
                                 <thead>
                                     <tr>
@@ -525,18 +535,19 @@ Membership Edit - Admin Panel
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @php
-                                    $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                                    if ($visitData) {
-                                        $visitData = array_values($visitData);
-                                        $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
-                                    }
-                                    $visitNo = 4000000;
+                                @php
+                                $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
+                                if ($visitData) {
+                                $visitData = array_values($visitData);
+                                $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
+                                }
+                                $visitNo = 4000000;
 
-                                    $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
-                                    'Completed') ? '' : 'Update Status';
-                                    @endphp
+                                $statusUpdate = (isset($visitData[$i]) && $visitData[$i]['module_status'] ==
+                                'Completed') ? '' : 'Update Status';
+                                @endphp
+                                <tbody id="DynamicRows_{{ $moduleID }}"></tbody>
+                                {{-- <tbody>
                                     @for ($i = 1; $i < $session+1; $i++) @php $visitNo=$visitNo + $i;
                                         $isReadOnly=!isset($visitData[$i]) ||
                                         $visitData[$i]['module_status']!='Completed' ? '' : 'disabled="disabled"' ;
@@ -606,7 +617,7 @@ Membership Edit - Admin Panel
                                         </td>
                                         </tr>
                                         @endfor
-                                </tbody>
+                                </tbody> --}}
                             </table>
                             @elseif ($name == 'Online_Reviews')
 
@@ -698,7 +709,7 @@ Membership Edit - Admin Panel
                             @elseif ($name == 'Bussiness_Plan')
                             @php
                             $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                            if($visitData) {
+                            if ($visitData) {
                             $visitData = array_values($visitData);
                             $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                             }
@@ -714,7 +725,16 @@ Membership Edit - Admin Panel
                                 $statusUpdate : 'Save' }}
                             </button>
                             @elseif ($name == 'Staff_Training')
-
+                            <div class="form-group mb-3">
+                                {{-- <label for="subject_master">Subject</label> --}}
+                                <select id="subject_master" style="width: 100%;" data-module-id="{{ $moduleID }}"
+                                    name="subject_master" class="form-control subject_master">
+                                    <option value="">‒‒ Select Subject ‒‒</option>
+                                    @foreach ($subjects as $subject)
+                                    <option value="{{ $subject->id }}">{{ $subject->subject_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <table class="responsive-table" width="100%">
                                 <thead>
                                     <tr>
@@ -728,10 +748,23 @@ Membership Edit - Admin Panel
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                @php
+                                $visitDataSub = $dataGetNodulesSubject->where('module_id', $moduleID)->toArray();
+                                if ($visitDataSub) {
+                                $visitDataSub = array_values($visitDataSub);
+                                $visitDataSub = array_combine(range(1, count($visitDataSub)),
+                                array_values($visitDataSub));
+                                }
+                                $visitNo = 2000000;
+
+                                $statusUpdate = (isset($visitDataSub[$i]) && $visitDataSub[$i]['module_status'] ==
+                                'Completed') ? '' : 'Update Status';
+                                @endphp
+                                <tbody id="DynamicRows_{{ $moduleID }}"></tbody>
+                                {{-- <tbody>
                                     @php
-                                    $visitData = $dataGetNodules->where('module_id', $moduleID)->toArray();
-                                    if($visitData) {
+                                    $visitData = $dataGetNodulesSubject->where('module_id', $moduleID)->toArray();
+                                    if ($visitData) {
                                     $visitData = array_values($visitData);
                                     $visitData = array_combine(range(1, count($visitData)), array_values($visitData));
                                     }
@@ -810,7 +843,7 @@ Membership Edit - Admin Panel
                                         </td>
                                         </tr>
                                         @endfor
-                                </tbody>
+                                </tbody> --}}
                             </table>
                             @elseif ($name == 'Organization_Plan')
                             @php
@@ -983,6 +1016,110 @@ Membership Edit - Admin Panel
     })
 </script>
 <script>
+    $(document).ready(function () {
+        $('.subject_master').on('change', function () {
+            const subjectId = $(this).val();
+            const membership_id = "{{ $membership_id }}";
+            const member_id = "{{ $member_id }}";
+            const module_id = $(this).data('module-id');
+
+            if (!subjectId) {
+                $('#DynamicRows_'+module_id).html('');
+                return;
+            }
+            const subModules = [
+            'Theory',
+            'Practicle',
+            'Roleplay',
+            "FAQ's Training",
+            'Review Session'
+            ];
+
+            $.ajax({
+                url: '{{ route("admin.members.getSubjectData") }}',
+                method: 'POST',
+                data: {
+                    subject_id: subjectId,
+                    membership_id: membership_id,
+                    member_id: member_id,
+                    module_id: module_id,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    const visitData = response.data;
+                    const trainers = response.trainers;
+                    let html = '';
+                    var visitNo = 2000000;
+                    for (let i = 0; i < 4; i++) {
+                        var no = visitNo + i;
+                        const data = visitData[i] || {};
+                        html += `
+                            <input type="hidden" name="subject_id" id="subject_id" value="${subjectId}"><tr>
+                            <td>${i + 1}
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" readonly name="subject_sub_name[]" id="subject_sub_name_${no}" value="${subModules[i] ?? ''}">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control date"
+                                    name="module_date[]"  id="date_${no}" value="${data.date ?? ''}">
+                            </td>
+
+                            <td>
+                                <input type="text" class="form-control time"
+                                    name="module_time[]"  id="time_${no}" value="${data.time ?? ''}">
+                            </td>
+
+                            <td>
+                                <select name="trainer_id[]" id="trainer_id_${no}" class="form-control">
+                                    <option value="">Select Trainer</option>
+                                    ${trainers.map(t => `
+                                    <option value="${t.id}" ${data.trainer_id==t.id ? 'selected' : '' }>${t.name}</option>
+                                    `).join('')}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="module_status[]" id="status_${no}" class="form-control">
+                                    <option value="Pending" ${data.module_status=='Pending' ? 'selected' : '' }>Pending</option>
+                                    <option value="Date Assign" ${data.module_status=='Date Assign' ? 'selected' : '' }>Date Assign</option>
+                                    <option value="Completed" ${data.module_status=='Completed' ? 'selected' : '' }>Completed</option>
+                                </select>
+                            </td>
+
+                            <td>
+                                <input type="text" class="form-control" name="module_remarks[]" id="remarks_${no}" value="${data.remarks ?? ''}">
+                            </td>
+
+                            <td>
+                                <button type="button" class="btn btn-primary"
+                                        onclick="addUpdateModuleSubject(${module_id},
+                                                                {{ $member_id }},
+                                                                {{ $admin->product_id }},
+                                                                ${no})">
+                                    Save
+                                </button>
+                            </td>
+                        </tr>
+                        `;
+                    }
+
+                    $('#DynamicRows_'+module_id).html(html);
+
+                    flatpickr(".date", { dateFormat: "Y-m-d" });
+                    flatpickr(".time", {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "H:i"
+                    });
+                },
+                error: function () {
+                    alert("Something went wrong!");
+                }
+            });
+        });
+    });
+</script>
+<script>
     document.addEventListener("DOMContentLoaded", function() {
         var select = document.getElementById("membership_status");
 
@@ -1018,7 +1155,6 @@ Membership Edit - Admin Panel
         var status = $('#status_' + i).val();
         var remarks = $('#remarks_' + i).val();
         var trainer_id = $('#trainer_id_' + i).val();
-        var subject_id = $('#subject_' + i).val();
         $.ajax({
             type: 'POST',
             url: "{{ route('admin.members.addUpdateModuleData') }}",
@@ -1026,6 +1162,41 @@ Membership Edit - Admin Panel
                 serviceID: moduleID,
                 memberID: memberID,
                 membershipID:membershipID,
+                date: date,
+                trainer_id: trainer_id,
+                time: time,
+                status: status,
+                remarks: remarks,
+                _token: "{{ csrf_token() }}"
+            },
+            success: function(response) {
+                if (response.status) {
+                    $("#btn_" + i).remove();
+                    alert('Data saved successfully.!');
+                    // toastr.success(response.message);
+                } else {
+                    // toastr.error(response.message);
+                }
+            }
+        });
+    }
+    function addUpdateModuleSubject(moduleID, memberID, membershipID, i) {
+        var date = $('#date_' + i).val();
+        var time = $('#time_' + i).val();
+        var status = $('#status_' + i).val();
+        var remarks = $('#remarks_' + i).val();
+        var trainer_id = $('#trainer_id_' + i).val();
+        var subject_id = $('#subject_id').val();
+        var subject_sub_name = $('#subject_sub_name_'+ i).val();
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('admin.members.addUpdateModuleSubjectData') }}",
+            data: {
+                serviceID: moduleID,
+                memberID: memberID,
+                membershipID:membershipID,
+                subject_id:subject_id,
+                subject_sub_name:subject_sub_name,
                 date: date,
                 trainer_id: trainer_id,
                 time: time,
@@ -1052,7 +1223,6 @@ Membership Edit - Admin Panel
         var status = $('#status_' + i).val();
         var remarks = $('#remarks_' + i).val();
         var trainer_id = $('#trainer_id_' + i).val();
-        var subject_id = $('#subject_' + i).val();
         $.ajax({
             type: 'POST',
             url: "{{ route('admin.members.addUpdateModuleData') }}",
@@ -1061,7 +1231,6 @@ Membership Edit - Admin Panel
                 memberID: memberID,
                 membershipID:membershipID,
                 trainer_id: trainer_id,
-                subject_id: subject_id,
                 date: date,
                 time: time,
                 status: status,
