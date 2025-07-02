@@ -33,12 +33,14 @@ class GalleryController extends Controller
 
     public function index()
     {
-        $ssuGalleries = DB::table('ssu_galleries')->get();
-        $mmbGalleries = DB::table('mmb_galleries')->get();
-        $ossGalleries = DB::table('oss_galleries')->get();
-        $genGalleries = DB::table('gen_galleries')->get();
+        $ssuGalleries = DB::table('ssu_galleries')->simplePaginate(5, ['*'], 'ssu');
+        $mmbGalleries = DB::table('mmb_galleries')->simplePaginate(5, ['*'], 'mmb');
+        $ossGalleries = DB::table('oss_galleries')->simplePaginate(5, ['*'], 'oss');
+        $genGalleries = DB::table('gen_galleries')->simplePaginate(5, ['*'], 'gen');
+
         return view('backend.pages.gallery.index', compact('ssuGalleries', 'mmbGalleries', 'ossGalleries', 'genGalleries'));
     }
+
 
     public function create(Request $request)
     {

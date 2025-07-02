@@ -2719,33 +2719,50 @@ class ApiController extends Controller
             ], 200);
         }
     }
-    public function getGenGallaries()
+    public function getGenGallaries(Request $request)
     {
         $base_url = $this->base_url . '/';
+        $perPage = $request->get('per_page', 10); // Default 10 items per page
+
         try {
-            $galleries = DB::table('gen_galleries')
-                ->get(['id', 'title', 'images'])
-                ->map(function ($item) use ($base_url) {
-                    return [
-                        'id' => $item->id,
-                        'title' => $item->title,
-                        'image' => $base_url . 'gen_gallery/' . $item->images
-                    ];
-                });
+            $paginator = DB::table('gen_galleries')
+                ->select('id', 'title', 'images')
+                ->orderByDesc('id')
+                ->paginate($perPage);
+
+            // Transform the data
+            $galleries = $paginator->getCollection()->map(function ($item) use ($base_url) {
+                return [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'image' => $base_url . 'gen_gallery/' . $item->images
+                ];
+            });
+
+            // Replace the collection with transformed data
+            $paginator->setCollection($galleries);
 
             return response()->json([
                 'status' => true,
                 'message' => 'Gen Galleries fetched successfully',
-                'data' => $galleries
+                'data' => [
+                    'items' => $paginator->items(),
+                    'current_page' => $paginator->currentPage(),
+                    'per_page' => $paginator->perPage(),
+                    'total' => $paginator->total(),
+                    'last_page' => $paginator->lastPage()
+                ]
             ], 200);
+
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
                 'message' => 'Something went wrong',
                 'error' => $th->getMessage()
-            ], 200);
+            ], 500);
         }
     }
+
 
     public function getBlogsListV2()
     {
