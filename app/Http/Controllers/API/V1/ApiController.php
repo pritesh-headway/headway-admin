@@ -2885,7 +2885,7 @@ class ApiController extends Controller
                 'blog_date' => $blog->blog_date,
                 'title' => $blog->title,
                 'image' => $base_url . 'blogs/' . $blog->image,
-                'share_url' => '/blog/' . Str::slug($blog->title),
+                'share_url' => '#/blog/' . Str::slug($blog->title),
                 'description' => $blog->description,
                 'slug_url' => Str::slug($blog->title),
             ];
