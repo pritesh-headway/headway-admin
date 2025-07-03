@@ -176,21 +176,26 @@ $usr = Auth::guard('admin')->user();
                     $usr->can('members.view') ||
                     $usr->can('members.edit') ||
                     $usr->can('members.delete'))
-                    <li>
-                        <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-user"></i><span>Customers
+                    {{-- <li> --}}
+                        {{-- <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-user"></i><span>Customers
                                 Plan</span>
                         </a>
                         <ul
                             class="collapse {{ Route::is('admin.members.create') || Route::is('admin.members.index') || Route::is('admin.members.edit') || Route::is('admin.members.show') ? 'in' : '' }}">
+                            --}}
 
                             @if ($usr->can('members.view'))
                             <li
                                 class="{{ Route::is('admin.members.index') || Route::is('admin.members.edit') ? 'active' : '' }}">
-                                <a href="{{ route('admin.members.index') }}">All Members</a>
+                                <a href="{{ route('admin.members.index') }}"><i class="fa fa-lock"></i>
+                                    <span>Customers
+                                        Plans</span></a>
                             </li>
                             @endif
-                        </ul>
-                    </li>
+                            {{--
+                        </ul> --}}
+                        {{--
+                    </li> --}}
                     @endif
 
                     @if (
