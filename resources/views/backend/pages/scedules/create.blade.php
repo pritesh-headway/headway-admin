@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-Scedules - Admin Panel
+Schedules - Admin Panel
 @endsection
 
 @section('styles')
@@ -22,11 +22,11 @@ Scedules - Admin Panel
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">Scedule</h4>
+                <h4 class="page-title pull-left">Schedule</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ route('admin.banner.index') }}">Scedule</a></li>
-                    <li><span>Scedule</span></li>
+                    <li><a href="{{ route('admin.banner.index') }}">Schedule</a></li>
+                    <li><span>Schedule</span></li>
                 </ul>
             </div>
         </div>
@@ -43,10 +43,10 @@ Scedules - Admin Panel
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title">Create Scedule</h4>
+                    <h4 class="header-title">Create Schedule</h4>
                     @include('backend.layouts.partials.messages')
 
-                    <form action="{{ route('admin.scedules.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.schedules.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
@@ -90,7 +90,7 @@ Scedules - Admin Panel
                         </div>
 
                         <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
-                        <a href="{{ route('admin.scedules.index') }}"
+                        <a href="{{ route('admin.schedules.index') }}"
                             class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
                     </form>
                 </div>

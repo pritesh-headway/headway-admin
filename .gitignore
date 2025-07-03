@@ -13,6 +13,7 @@
 /public/products
 /public/profile_images
 /public/teams
+/public/services
 
 /storage/*.key
 /vendor

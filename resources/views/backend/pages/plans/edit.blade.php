@@ -156,12 +156,11 @@ Plan Edit - Admin Panel
 
                                 </select>
                             </div>
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label for="password">Plan Image</label>
-                                <input type="file" name="image" id="image" class="form-control" />
-                                <br />
-                                <img src="{{ asset('plans/' . $admin->image) }}" alt="Plan Image" width="100px"
-                                    height="80px" />
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">On Call Support</label>
+                                <input type="number" class="form-control" id="on_call_support" name="on_call_support"
+                                    placeholder="Enter On Call Support" value="{{ old('on_call_support') }}" required
+                                    autofocus>
                             </div>
                         </div>
                         <div class="form-row">
@@ -175,6 +174,16 @@ Plan Edit - Admin Panel
                                 <input type="number" class="form-control" id="store_visit" name="store_visit"
                                     placeholder="Enter store visit" value="{{ $admin->store_visit }}" required
                                     autofocus>
+                            </div>
+                        </div>
+                        <div class="form-row">
+
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Plan Image</label>
+                                <input type="file" name="image" id="image" class="form-control" />
+                                <br />
+                                <img src="{{ asset('plans/' . $admin->image) }}" alt="Plan Image" width="100px"
+                                    height="80px" />
                             </div>
                         </div>
                         {{-- <div class="form-row">

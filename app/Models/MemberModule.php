@@ -16,6 +16,7 @@ class MemberModule extends Model
         'module_id',
         'member_id',
         'membership_id',
+        'trainer_id',
         'date',
         'time',
         'module_status',

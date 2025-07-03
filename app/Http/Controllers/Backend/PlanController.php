@@ -29,11 +29,24 @@ class PlanController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
+        // dd($request->type);
         $this->checkAuthorization(auth()->user(), ['plan.create']);
         $modules = Service::where('is_deleted', '0')->where('status', 1)->get();
-
+        if ($request->type == 'mmb') {
+            return view('backend.pages.plans.create', ['modules' => $modules]);
+        } elseif ($request->type == 'start-up') {
+            return view('backend.pages.plans.startup', ['modules' => $modules]);
+        } elseif ($request->type == 'idp') {
+            return view('backend.pages.plans.idp', ['modules' => $modules]);
+        } elseif ($request->type == 'revision-batch') {
+            return view('backend.pages.plans.revision', ['modules' => $modules]);
+        } elseif ($request->type == 'stay-aware-live-renewal') {
+            return view('backend.pages.plans.stay-aware', ['modules' => $modules]);
+        } elseif ($request->type == 'meeting-with-sir') {
+            return view('backend.pages.plans.single-meeting', ['modules' => $modules]);
+        }
         return view('backend.pages.plans.create', ['modules' => $modules]);
     }
 
@@ -87,17 +100,55 @@ class PlanController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id): Renderable
+    public function edit(int $id, string $type): Renderable
     {
         $this->checkAuthorization(auth()->user(), ['plan.edit']);
 
         $admin = Plan::findOrFail($id);
         $modules = Service::where('status', 1)->get();
-        return view('backend.pages.plans.edit', [
-            'admin' => $admin,
-            'roles' => Role::all(),
-            'modules' => $modules,
-        ]);
+        if ($type == 'mmb') {
+            return view('backend.pages.plans.edit', [
+                'admin' => $admin,
+                'roles' => Role::all(),
+                'modules' => $modules,
+                'page_type' => $type,
+            ]);
+        } elseif ($type == 'start-up') {
+            return view('backend.pages.plans.startupedit', [
+                'admin' => $admin,
+                'roles' => Role::all(),
+                'modules' => $modules,
+                'page_type' => $type,
+            ]);
+        } elseif ($type == 'idp') {
+            return view('backend.pages.plans.idp-edit', [
+                'admin' => $admin,
+                'roles' => Role::all(),
+                'modules' => $modules,
+                'page_type' => $type,
+            ]);
+        } elseif ($type == 'revision-batch') {
+            return view('backend.pages.plans.revision-edit', [
+                'admin' => $admin,
+                'roles' => Role::all(),
+                'modules' => $modules,
+                'page_type' => $type,
+            ]);
+        } elseif ($type == 'stay-aware-live-renewal') {
+            return view('backend.pages.plans.stay-aware-edit', [
+                'admin' => $admin,
+                'roles' => Role::all(),
+                'modules' => $modules,
+                'page_type' => $type,
+            ]);
+        } elseif ($type == 'meeting-with-sir') {
+            return view('backend.pages.plans.single-meeting', [
+                'admin' => $admin,
+                'roles' => Role::all(),
+                'modules' => $modules,
+                'page_type' => $type,
+            ]);
+        }
     }
 
     /**

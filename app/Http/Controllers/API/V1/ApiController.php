@@ -11,27 +11,29 @@ use App\Models\Plan;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Addon;
-use App\Models\Video;
 use App\Models\Banner;
 use App\Models\Client;
 use App\Models\Contact;
-use App\Models\Modules;
-use App\Models\Service;
-use App\Models\Setting;
-use App\Models\Services;
-use App\Models\Membership;
-use App\Models\OurCourses;
 use App\Models\MemberBatch;
-use App\Models\UserDevices;
-use Illuminate\Support\Str;
 use App\Models\MemberModule;
+use App\Models\Membership;
+use App\Models\MemberStartupModule;
+use App\Models\Modules;
+use App\Models\NotificationSetting;
+use App\Models\OurCourses;
 use App\Models\PlanPurchase;
+use App\Models\Service;
+use App\Models\Services;
+use App\Models\UserDevices;
+use App\Models\Video;
+use App\Models\Setting;
+use App\Models\StartupService;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\AddOnPurchase;
 use App\Services\CurlApiService;
 use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use App\Models\NotificationSetting;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Services\FcmNotificationService;
@@ -608,11 +610,11 @@ class ApiController extends Controller
             ])->where('status', 1)->where('is_deleted', 0)->paginate($this->per_page_show, ['*'], 'page', $page_number);
             // dd($plansPaginator);
             $plans = $plansPaginator->getCollection()->map(function ($plan) use ($base_url) {
-                $plan = collect($plan)
+                $plan = collect($plan)->except(['description', 'sqrt', 'employees', 'stock', 'validity', 'session', 'duration', 'on_call_support', 'month_duration', 'personal_meeting', 'deliveries', 'duration_year', 'cmd_visit', 'store_visit', 'module_ids', 'is_deleted', 'created_at', 'updated_at', 'plan_purchase'])
                     ->put('plan_image', $plan['image'] ? $base_url . $this->plan_path . $plan['image'] : '')
                     ->put('active_plan', $plan['PlanPurchase'] ? (string) $plan['PlanPurchase']->purchase_status : '')
                     ->toArray();
-                $plan['duration'] = (string) $plan['duration'];
+                // $plan['duration'] = (string) $plan['duration'];
                 return $plan;
             });
 
@@ -670,31 +672,54 @@ class ApiController extends Controller
             $id = 1;
 
             foreach ($plans as $li) {
-                $result = [
-                    'id' => $li['id'],
-                    'plan_name' => $li['plan_name'],
-                    'plan_type' => $li['plan_type'],
-                    'plan_image' => $li['plan_image'],
-                    'personal_meeting' => $li['personal_meeting'],
-                    'sort_desc' => $li['sort_desc'],
-                    'price' => $li['price'],
-                    'duration' => $li['validity'],
-                    'session' => $li['session'],
-                    'meeting_duration' => $li['duration'],
-                    'month_duration' => $li['month_duration'],
-                    'deliveries' => $li['deliveries'],
-                    'tax' => $li['tax'],
-                    'points' => [],
-                ];
-                $lis = explode(',', $li['description']); // Split service_desc into an array
-                foreach ($lis as $value) {
-                    $result['points'][] = [
-                        'id' => $id,
-                        'name' => trim($value), // Trim whitespace
+                $moduleIds = array_filter(explode(',', $li['module_ids'] ?? ''));
+                // dd($li['page_type']);
+                // Fetch service modules based on those IDs
+                if ($li['page_type'] == 'mmb') {
+                    $points = Service::select('id', 'title')->whereIn('id', $moduleIds)->get();
+                    $result = [
+                        'id' => $li['id'],
+                        'plan_name' => $li['plan_name'],
+                        'sub_plan_type' => $li['plan_type'],
+                        'plan_type' => $li['page_type'],
+                        'plan_image' => $li['plan_image'],
+                        'personal_meeting' => $li['personal_meeting'],
+                        'sort_desc' => $li['sort_desc'],
+                        'price' => $li['price'],
+                        'price_within_india' => $li['price_within_india'],
+                        'price_within_gujrat' => $li['price_within_gujrat'],
+                        'duration' => $li['validity'],
+                        'session' => $li['session'],
+                        'meeting_duration' => $li['duration'],
+                        'month_duration' => $li['month_duration'],
+                        'deliveries' => $li['deliveries'],
+                        'tax' => $li['tax'],
+                        'points' => $points,
                     ];
-                    $id++;
+                } else if ($li['page_type'] == 'start-up') {
+                    $points = StartupService::select('id', 'title')->get();
+                    $result = [
+                        'id' => $li['id'],
+                        'plan_name' => $li['plan_name'],
+                        'sub_plan_type' => $li['plan_type'],
+                        'plan_type' => $li['page_type'],
+                        'plan_image' => $li['plan_image'],
+                        'sort_desc' => $li['sort_desc'],
+                        'price' => $li['price'],
+                        'price_within_india' => $li['price_within_india'],
+                        'price_within_gujrat' => $li['price_within_gujrat'],
+                        'sqrt' => $li['sqrt'],
+                        'employees' => $li['employees'],
+                        'stock' => $li['stock'],
+                        'duration' => '100',
+                        'tax' => $li['tax'],
+                        'services' => $points,
+                    ];
+                } else {
+                    $points = [];
                 }
-                $finalData = $result; // Add the processed result to finalData
+
+                $finalData = $result;
             }
 
             return response()->json(['status' => true, 'message' => 'Get Plans data successfully.', 'data' => $finalData], 200);
@@ -1760,6 +1785,7 @@ class ApiController extends Controller
                 'product_id' => 'required',
                 'expectation_from_this_program' => 'max:1000',
                 'payment_receipt' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+                'total_price' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -2755,7 +2781,6 @@ class ApiController extends Controller
                     'last_page' => $paginator->lastPage()
                 ]
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -3562,6 +3587,4 @@ class ApiController extends Controller
             ], 500);
         }
     }
-
-
 }
