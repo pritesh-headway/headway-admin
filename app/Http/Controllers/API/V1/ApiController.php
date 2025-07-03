@@ -532,6 +532,9 @@ class ApiController extends Controller
             if ($activePlan) {
                 $userDataInfo['plan_name'] = ($activePlan) ? $activePlan->Plans->plan_name : '';
                 $userDataInfo['plan_id'] = ($activePlan) ? $activePlan->Plans->id : '';
+                $userDataInfo['total_price'] = ($activePlan->total_amount) ? $activePlan->total_amount : 00.00;
+                $userDataInfo['plan_type'] = ($activePlan) ? $activePlan->Plans->plan_type : '';
+                $userDataInfo['page_type'] = ($activePlan) ? $activePlan->Plans->page_type : '';
                 $userDataInfo['plan_icon'] = ($activePlan) ? $base_url . $this->plan_path . $activePlan->Plans->image : '';
             } else {
                 $userDataInfo = (object) [];
@@ -669,7 +672,6 @@ class ApiController extends Controller
 
             $result = [];
             $finalData = [];
-            $id = 1;
 
             foreach ($plans as $li) {
                 $moduleIds = array_filter(explode(',', $li['module_ids'] ?? ''));
@@ -683,16 +685,16 @@ class ApiController extends Controller
                         'sub_plan_type' => $li['plan_type'],
                         'plan_type' => $li['page_type'],
                         'plan_image' => $li['plan_image'],
-                        'personal_meeting' => $li['personal_meeting'],
-                        'sort_desc' => $li['sort_desc'],
+                        // 'personal_meeting' => $li['personal_meeting'],
+                        // 'sort_desc' => $li['sort_desc'],
                         'price' => $li['price'],
                         'price_within_india' => $li['price_within_india'],
                         'price_within_gujrat' => $li['price_within_gujrat'],
                         'duration' => $li['validity'],
-                        'session' => $li['session'],
-                        'meeting_duration' => $li['duration'],
-                        'month_duration' => $li['month_duration'],
-                        'deliveries' => $li['deliveries'],
+                        // 'session' => $li['session'],
+                        // 'meeting_duration' => $li['duration'],
+                        // 'month_duration' => $li['month_duration'],
+                        // 'deliveries' => $li['deliveries'],
                         'tax' => $li['tax'],
                         'points' => $points,
                     ];
@@ -717,6 +719,7 @@ class ApiController extends Controller
                     ];
                 } else {
                     $points = [];
+                    $result = [];
                 }
 
                 $finalData = $result;
@@ -1608,6 +1611,7 @@ class ApiController extends Controller
             $blogs = $blogsPaginator->getCollection()->map(function ($blog) use ($base_url) {
                 $blog = collect($blog)
                     ->put('blog_image', $blog['image'] ? $base_url . $this->blog_path . $blog['image'] : '')
+                    ->put('share_url', $base_url . '/blog/' . Str::slug($blog->title))
                     ->toArray();
                 return $blog;
             });
@@ -2820,6 +2824,7 @@ class ApiController extends Controller
                         'blog_date' => $blog->blog_date,
                         'title' => $blog->title,
                         'image' => $base_url . 'blogs/' . $blog->image,
+                        'slug_url' => Str::slug($blog->title),
                         'description' => $blog->description,
                     ];
                 });
@@ -2882,7 +2887,9 @@ class ApiController extends Controller
                 'blog_date' => $blog->blog_date,
                 'title' => $blog->title,
                 'image' => $base_url . 'blogs/' . $blog->image,
+                'share_url' => '/blog/' . Str::slug($blog->title),
                 'description' => $blog->description,
+                'slug_url' => Str::slug($blog->title),
             ];
 
             return response()->json([

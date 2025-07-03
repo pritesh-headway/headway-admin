@@ -159,13 +159,13 @@ $usr = Auth::guard('admin')->user();
                     $usr->can('scedule.delete'))
                     <li>
                         <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-tasks"></i><span>
-                                Scedule Module
+                                Schedule Module
                             </span></a>
                         <ul
-                            class="collapse {{ Route::is('admin.scedules.create') || Route::is('admin.scedules.index') || Route::is('admin.scedules.edit') || Route::is('admin.scedules.show') ? 'in' : '' }}">
+                            class="collapse {{ Route::is('admin.schedules.create') || Route::is('admin.schedules.index') || Route::is('admin.schedules.edit') || Route::is('admin.schedules.show') ? 'in' : '' }}">
                             @if ($usr->can('scedule.create'))
-                            <li class="{{ Route::is('admin.scedules.create') ? 'active' : '' }}"><a
-                                    href="{{ route('admin.scedules.create') }}">Scedule</a></li>
+                            <li class="{{ Route::is('admin.schedules.create') ? 'active' : '' }}"><a
+                                    href="{{ route('admin.schedules.create') }}">Schedule</a></li>
                             @endif
                         </ul>
                     </li>
