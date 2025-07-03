@@ -20,7 +20,9 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="card-title">Candidate List</h5>
-
+                    <a href="{{ route('candidate.form') }}" target="_blank" class="btn btn-primary">
+                        Candidate Form
+                    </a>
                     <form action="{{ route('admin.candidate.export') }}" method="POST" class="form-inline mb-3">
                         @csrf
                         <div class="row g-2 align-items-center">

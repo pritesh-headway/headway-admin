@@ -4,20 +4,24 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Models\User;
 use Illuminate\Support\Str;
+use App\Models\PlanPurchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+
 use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
     public $base_url;
     public $profile_path;
+    public $plan_path;
     public function __construct()
     {
         $this->base_url = url('/');
         $this->profile_path = '/profile_images/';
+        $this->plan_path = '/plans/';
     }
 
 
@@ -130,6 +134,19 @@ class ProfileController extends Controller
                 return response()->json($result, 200);
             }
 
+            $activePlan = PlanPurchase::with('Plans')->where('user_id', $user_id)->where('purchase_status', 'Approved')->first();
+            // dd($activePlan);
+            if ($activePlan) {
+                $userDataInfo['plan_name'] = ($activePlan) ? $activePlan->Plans->plan_name : '';
+                $userDataInfo['plan_id'] = ($activePlan) ? $activePlan->Plans->id : '';
+                $userDataInfo['plan_icon'] = ($activePlan) ? $base_url . $this->plan_path . $activePlan->Plans->image : '';
+            } else {
+                $userDataInfo = (object) [];
+            }
+
+
+            $activeplans = $userDataInfo;
+
             // Get the currently authenticated user
             $user = User::with('MemberBatch')->where('id', $user_id)->get();
             $data = $user->map(function ($user) use ($base_url, $token) {
@@ -140,6 +157,7 @@ class ProfileController extends Controller
                     ->put('avatar', ($user['avatar']) ? $base_url . $this->profile_path . $user['avatar'] : '')
                     ->toArray();
             })->first();
+            $data['active-plan'] = $activeplans;
 
             // Return a response
             return response()->json(['status' => true, 'message' => 'Profile updated successfully!', 'data' => $data], 200);
