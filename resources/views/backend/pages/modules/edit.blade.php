@@ -75,6 +75,20 @@ MODULES Edit - Admin Panel
                                 </select>
                             </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="username">Plan Type</label>
+                                <select class="form-control" id="plan_type" name="plan_type">
+                                    <option value="">Select Plan Type</option>
+                                    @foreach ($planType as $name)
+                                    <option value="{{ $name->id }}" {{ old('plan_type')==$name->id ? 'selected' :
+                                        '' }}>
+                                        {{ $name->plan_type }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">

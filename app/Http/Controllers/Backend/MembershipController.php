@@ -112,6 +112,7 @@ class MembershipController extends Controller
      */
     public function update(Request $request, int $id)
     {
+        // dd($request);
         $this->checkAuthorization(auth()->user(), ['membership.edit']);
         $admin = Membership::findOrFail($id);
         $admin->membership_status = $request->membership_statuss;
@@ -128,7 +129,7 @@ class MembershipController extends Controller
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->first();
-        $planorder->purchase_status = $request->membership_status;
+        $planorder->purchase_status = $request->membership_statuss;
         $planorder->save();
 
         $newData  = json_encode(array());
@@ -138,7 +139,7 @@ class MembershipController extends Controller
             $message = "Plan membership has been rejected by the admin. Please review the submitted details and try again.";
         }
         $body = array('receiver_id' => $admin->user_id, 'title' => $message, 'message' => $message, 'data' => $newData, 'content_available' => true);
-        $sendNotification = $this->fcmNotificationService->sendFcmNotification($body);
+        // $sendNotification = $this->fcmNotificationService->sendFcmNotification($body);
         // $notifData = json_decode($sendNotification->getContent(), true);
         // if (isset($notifData['status']) && $notifData['status'] == true) {
         //     return $sendNotification->getContent();

@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-{{ __('Memberships - Admin Panel') }}
+{{ __('Revision Batch Approved - Admin Panel') }}
 @endsection
 
 @section('styles')
@@ -15,15 +15,16 @@
 @endsection
 
 @section('admin-content')
+
 <!-- page title area start -->
 <div class="page-title-area">
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">{{ __('Memberships') }}</h4>
+                <h4 class="page-title pull-left">{{ __('Revision Batch Approved List') }}</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }}</a></li>
-                    <li><span>{{ __('All Memberships') }}</span></li>
+                    <li><span>{{ __('All Revision Batch Approved List') }}</span></li>
                 </ul>
             </div>
         </div>
@@ -40,7 +41,7 @@
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title float-left">{{ __('Memberships') }}</h4>
+                    <h4 class="header-title float-left">{{ __('Revision Batch Approved List') }}</h4>
                     <p class="float-right mb-2">
                         @if (auth()->user()->can('membership.edit'))
                         {{-- <a class="btn btn-primary text-white" href="{{ route('admin.membership.create') }}">
@@ -51,29 +52,26 @@
                     <div class="clearfix"></div>
                     <div class="data-tables">
                         @include('backend.layouts.partials.messages')
-                        <table id="dataTable">
-                            <!-- class="text-center" -->
+                        <table id="dataTable" class="text-center">
                             <thead class="bg-light text-capitalize">
                                 <tr>
-                                    <th width="5%">{{ __('Sl') }}</th>
-                                    <th width="10%">{{ __('Name') }}</th>
-                                    <th width="10%">{{ __('Gender') }}</th>
+                                    <th width="1%">{{ __('Sl') }}</th>
+                                    <th width="10%">{{ __('Owner Name') }}</th>
+                                    <th width="10%">{{ __('Shop Name') }}</th>
                                     <th width="40%">{{ __('Mobile No') }}</th>
-                                    <th width="40%">{{ __('Email ID') }}</th>
-                                    <th width="40%">{{ __('Membership Status') }}</th>
                                     <th width="15%">{{ __('Action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($admins as $admin)
                                 <tr>
-                                    <td>{{ $loop->index + 1 }}</td>
-                                    <td>{{ $admin->full_name }}</td>
-                                    <td>{{ $admin->gender }}</td>
-                                    <td>{{ $admin->mobile_no }}</td>
-                                    <td>{{ $admin->email }}</td>
+                                    <td>{{ $loop->index+1 }}</td>
+                                    <td>{{ $admin->owner_name }}</td>
+                                    <td>{{ $admin->shop_name }}</td>
+                                    <td>{{ $admin->phone_number }}</td>
+                                    {{-- <td>{{ $admin->email }}</td> --}}
                                     {{-- <td>
-                                        @if ($admin->membership_status == 'Declined')
+                                        @if ($admin->membership_status=='Declined')
                                         <div style="background-color: orange;padding: 5px;">{{ $admin->membership_status
                                             }} </div>
                                         @elseif ($admin->membership_status=='Approved')
@@ -84,46 +82,10 @@
                                         </div>
                                         @endif
                                     </td> --}}
-
-                                    @php
-                                    $status = $admin->membership_status;
-                                    $bg_color = match ($status) {
-                                    'Pending' => 'red',
-                                    'Approved' => 'green',
-                                    'Declined' => 'orange',
-                                    default => 'gray',
-                                    };
-                                    @endphp
-
                                     <td>
-                                        <span
-                                            style="background-color: {{ $bg_color }}; color: white; padding: 4px 8px; border-radius: 4px;">
-                                            {{ $status }}
-                                        </span>
-                                    </td>
-
-                                    <td>
-                                        @if (auth()->user()->can('membership.edit'))
+                                        @if (auth()->user()->can('revisionbatch.edit'))
                                         <a class="btn btn-success text-white"
-                                            href="{{ route('admin.membership.edit', $admin->id) }}">Detail</a>
-                                        @endif
-
-                                        @if (auth()->user()->can('membership.delete'))
-                                        {{-- <a class="btn btn-danger text-white" href="javascript:void(0);"
-                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to delete?')) { document.getElementById('delete-form-{{ $admin->id }}').submit(); }">
-                                            {{ __('Delete') }}
-                                        </a> --}}
-                                        <a class="btn btn-danger text-white" href="javascript:void(0);"
-                                            onclick="showDeleteModal({{ $admin->id }})">
-                                            {{ __('Delete') }}
-                                        </a>
-
-                                        <form id="delete-form-{{ $admin->id }}"
-                                            action="{{ route('admin.membership.destroy', $admin->id) }}" method="POST"
-                                            style="display: none;">
-                                            @method('DELETE')
-                                            @csrf
-                                        </form>
+                                            href="{{ route('admin.revisionbatchapproved.edit', $admin->id) }}">Detail</a>
                                         @endif
                                     </td>
                                 </tr>
@@ -150,7 +112,7 @@
 <script>
     if ($('#dataTable').length) {
             $('#dataTable').DataTable({
-                responsive: true
+                responsive: false
             });
         }
 </script>

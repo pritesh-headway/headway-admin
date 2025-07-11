@@ -70,7 +70,7 @@
                                 <tr>
                                     <td>{{ $loop->index + 1}}</td>
                                     <td>{{ $admin->plan_name}}</td>
-                                    <td>{{ $admin->plan_type}}</td>
+                                    <td>{{ ($admin->plan_type) ? $admin->plan_type : '--'}}</td>
                                     {{-- <td>{{ $admin->sort_desc}}</td> --}}
                                     {{-- < td> <img src="{{ asset('/plans/') }}/{{ $admin->image }}" width="100px"
                                             height="80px"></td> --}}
@@ -116,7 +116,9 @@
 
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        {{-- < h4 class="modal-title" id="redirectModalLabel">Choose an option</h4> --}}
+                        <h4 class="modal-title" style="position: absolute;margin-left: 25%;" id="redirectModalLabel">
+                            Choose Plan Type
+                        </h4>
                     </div>
 
                     <div class="modal-body">

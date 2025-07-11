@@ -62,57 +62,6 @@ Plan Create - Admin Panel
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Price (Within Gujrat)</label>
-                                <input type="number" class="form-control" id="price_within_gujrat"
-                                    name="price_within_gujrat" placeholder="Enter Price Within Gujrat"
-                                    value="{{ old('price_within_gujrat') }}" required autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Price (Within India)</label>
-                                <input type="number" class="form-control" id="price_within_india"
-                                    name="price_within_india" placeholder="Enter Price Within India"
-                                    value="{{ old('price_within_india') }}" required autofocus>
-                            </div>
-                        </div>
-                        <div class="form-row">
-
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Sqrt</label>
-                                <input type="text" class="form-control" id="sqrt" name="sqrt" placeholder="Enter Sqrt"
-                                    value="{{ old('sqrt') }}" required autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Employees</label>
-                                <input type="text" class="form-control" id="employees" name="employees"
-                                    placeholder="Enter Employee" value="{{ old('employees') }}" required autofocus>
-                            </div>
-                        </div>
-                        <div class="form-row">
-
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Stock</label>
-                                <input type="text" class="form-control" id="stock" name="stock"
-                                    placeholder="Enter Stock" value="{{ old('stock') }}" required autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label for="username">Plan Type</label>
-                                <select class="form-control " id="plan_type" name="plan_type" required>
-                                    <option value="Small Scale" {{ old('plan_type')=='Small Scale' ? 'selected' : '' }}>
-                                        Small Scale
-                                    </option>
-                                    <option value="Medium Scale" {{ old('plan_type')=='Medium Scale' ? 'selected' : ''
-                                        }}>Medium Scale
-                                    </option>
-                                    <option value="Large Scale" {{ old('plan_type')=='Large Scale' ? 'selected' : '' }}>
-                                        Large Scale
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
                                 <label for="password">Sort Description</label>
                                 <textarea required class="form-control" id="sort_desc" name="sort_desc"></textarea>
                             </div>
@@ -120,18 +69,45 @@ Plan Create - Admin Panel
                                 <label for="password">Description</label>
                                 <textarea required class="form-control" id="description" name="description"></textarea>
                             </div>
-
                         </div>
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Tax</label>
-                                <input type="number" required class="form-control" id="tax" name="tax"
-                                    value="{{ old('tax') }}" />
+                                <label for="name">Tax (In %)</label>
+                                <input type="number" class="form-control" id="tax" name="tax" placeholder="Enter Tax"
+                                    value="{{ old('tax') }}" required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="password">Plan Image</label>
                                 <input type="file" name="image" id="image" class="form-control" required />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-12 col-sm-12">
+                                <label for="cmd_visit">Services</label>
+                                <div class="row">
+                                    @php
+                                    $chunks = $modules->chunk(ceil($modules->count() / 3)); // Split into 3 sections
+                                    @endphp
+
+                                    @foreach ($chunks as $chunk)
+                                    <div class="col-md-4">
+                                        <!-- Adjust width as needed -->
+                                        @foreach ($chunk as $key => $module)
+                                        @if ($key == 0)
+                                        <div>
+                                            <input type="checkbox" id="modules_{{ $module->id }}" name="modules[]"
+                                                value="{{ $module->id }}">
+                                            <label for="modules_{{ $module->id }}">
+                                                {{ $module->title }}</label>
+                                        </div>
+                                        @endif
+                                        @endforeach
+                                    </div>
+                                    @endforeach
+                                </div>
+                                <div id="module-error" style="color: red; display: none; font-weight: bold;"></div>
                             </div>
                         </div>
 
@@ -154,7 +130,6 @@ Plan Create - Admin Panel
             </div>
         </div>
         <!-- data table end -->
-
     </div>
 </div>
 @endsection
@@ -165,5 +140,19 @@ Plan Create - Admin Panel
     $(document).ready(function() {
             $('.select2').select2();
         })
+</script>
+<script>
+    $(document).ready(function() {
+            $('form').on('submit', function(e) {
+                const checkedModules = $('input[name="modules[]"]:checked').length;
+
+                if (checkedModules < 1) {
+                    e.preventDefault(); // Prevent form submission
+                    $('#module-error').text("Please select at least 4 services.").show();
+                } else {
+                    $('#module-error').hide(); // Clear error if validation passes
+                }
+            });
+        });
 </script>
 @endsection

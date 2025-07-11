@@ -97,6 +97,13 @@ Route::post('v1/idb_page', [ApiController::class, 'getIdbPage']);
 Route::post('v1/intelligent_hr', [ApiController::class, 'getIntelligentHR']);
 Route::post('v1/jewellery_vidyapith', [ApiController::class, 'getJewelleryVidyapith']);
 Route::post('v1/headway_it', [ApiController::class, 'getHeadwayIT']);
+Route::post('v1/plan_list', [ApiController::class, 'getMMBPlanList']);
+Route::post('v1/oneTimeRequestMeeting', [ApiController::class, 'oneTimeRequestMeeting']);
+Route::post('v1/getOneTimeList', [ApiController::class, 'getOneTimeList']);
+Route::post('v1/revisionBatchRequestMeeting', [ApiController::class, 'revisionBatchRequestMeeting']);
+Route::post('v1/getRevisionBatchList', [ApiController::class, 'getRevisionBatchList']);
+Route::post('v1/getRevisionBatchModulesList', [ApiController::class, 'getRevisionBatchModulesList']);
+Route::post('v1/getMyPlanActiveList', [ApiController::class, 'getMyPlanActiveList']);
 
 // Route::get('v1/visitor_form', [ExibitionVisitorController::class, 'form'])->name('exibition_visitors.form');
 // Route::post('v1/visitor-submit', [ExibitionVisitorController::class, 'store'])->name('exibition_visitors.store');

@@ -152,8 +152,7 @@ $usr = Auth::guard('admin')->user();
                     </li>
                     @endif
 
-                    @if (
-                    $usr->can('scedule.create') ||
+                    @if ($usr->can('scedule.create') ||
                     $usr->can('scedule.view') ||
                     $usr->can('scedule.edit') ||
                     $usr->can('scedule.delete'))
@@ -171,8 +170,7 @@ $usr = Auth::guard('admin')->user();
                     </li>
                     @endif
 
-                    @if (
-                    $usr->can('members.create') ||
+                    @if ($usr->can('members.create') ||
                     $usr->can('members.view') ||
                     $usr->can('members.edit') ||
                     $usr->can('members.delete'))
@@ -198,23 +196,118 @@ $usr = Auth::guard('admin')->user();
                     </li> --}}
                     @endif
 
-                    @if (
-                    $usr->can('cms.create') ||
+                    @if ($usr->can('onetimerequest.create') ||
+                    $usr->can('onetimerequest.view') ||
+                    $usr->can('onetimerequest.edit') ||
+                    $usr->can('onetimerequest.delete'))
+
+                    @if ($usr->can('onetimerequest.view'))
+                    <li
+                        class="{{ Route::is('admin.onemeetingrequest.index') || Route::is('admin.onemeetingrequest.edit') ? 'active' : '' }}">
+                        <a href="{{ route('admin.onemeetingrequest.index') }}"><i class="fa fa-lock"></i>
+                            <span>One Time Request</span></a>
+                    </li>
+                    @endif
+                    @endif
+
+                    @if ($usr->can('revisionbatch.create') ||
+                    $usr->can('revisionbatch.view') ||
+                    $usr->can('revisionbatch.edit') ||
+                    $usr->can('revisionbatch.delete'))
+
+                    <li><a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-ticket"></i><span>Revision
+                                Batch Request</span>
+                        </a>
+                        <ul
+                            class="collapse {{ Route::is('admin.revisionbatch.create') || Route::is('admin.revisionbatch.index') || Route::is('admin.revisionbatch.edit') || Route::is('admin.revisionbatch.show') || Route::is('admin.revisionbatchapproved.create') || Route::is('admin.revisionbatchapproved.index') || Route::is('admin.revisionbatchapproved.edit') || Route::is('admin.revisionbatchapproved.show') ? 'in' : '' }}">
+
+                            @if ($usr->can('revisionbatch.view'))
+                            <li
+                                class="{{ Route::is('admin.revisionbatch.index') || Route::is('admin.revisionbatch.edit') || Route::is('admin.revisionbatch.create') ? 'active' : '' }}">
+                                <a href="{{ route('admin.revisionbatch.index') }}">Revision
+                                    Batch Request</a>
+                            </li>
+
+                            <li
+                                class="{{ Route::is('admin.revisionbatchapproved.index') || Route::is('admin.revisionbatchapproved.edit') || Route::is('admin.revisionbatchapproved.create') ? 'active' : '' }}">
+                                <a href="{{ route('admin.revisionbatchapproved.index') }}">Revision
+                                    Approved List</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if ($usr->can('membership.create') ||
+                    $usr->can('membership.view') ||
+                    $usr->can('membership.edit') ||
+                    $usr->can('membership.delete') )
+                    <li>
+                        <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-ticket"></i><span>Membership
+                                Orders</span>
+                        </a>
+                        <ul
+                            class="collapse {{ Route::is('admin.membership.create') || Route::is('admin.membership.index') || Route::is('admin.membership.edit') || Route::is('admin.membership.show') || Route::is('admin.orderaddon.create') || Route::is('admin.orderaddon.index') || Route::is('admin.orderaddon.edit') || Route::is('admin.orderaddon.show') ? 'in' : '' }}">
+
+                            @if ($usr->can('membership.view'))
+                            <li
+                                class="{{ Route::is('admin.membership.index') || Route::is('admin.membership.edit') ? 'active' : '' }}">
+                                <a href="{{ route('admin.membership.index') }}">All Membership Order</a>
+                            </li>
+                            @endif
+                            {{-- @if ($usr->can('orderaddon.view'))
+                            <li
+                                class="{{ Route::is('admin.orderaddon.index') || Route::is('admin.orderaddon.edit') ? 'active' : '' }}">
+                                <a href="{{ route('admin.orderaddon.index') }}">All Add On Order</a>
+                            </li>
+                            @endif --}}
+                            {{-- @if ($usr->can('membership.create'))
+                            <li class="{{ Route::is('admin.membership.create')  ? 'active' : '' }}"><a
+                                    href="{{ route('admin.membership.create') }}">Create
+                                    Video</a></li>
+                            @endif --}}
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if ($usr->can('plan.create') ||
+                    $usr->can('plan.view') ||
+                    $usr->can('plan.edit') ||
+                    $usr->can('plan.delete'))
+                    <li>
+                        <a href="javascript:void(0)" aria-expanded="true"><i
+                                class="fa fa-paper-plane"></i><span>Plans</span>
+                        </a>
+                        <ul
+                            class="collapse {{ Route::is('admin.plan.create') || Route::is('admin.plan.index') || Route::is('admin.plan.edit') || Route::is('admin.plan.show') || Route::is('admin.addonservice.create') || Route::is('admin.addonservice.index') || Route::is('admin.addonservice.edit') || Route::is('admin.addonservice.show') ? 'in' : '' }}">
+
+                            @if ($usr->can('plan.view'))
+                            <li
+                                class="{{ Route::is('admin.plan.index') || Route::is('admin.plan.edit') || Route::is('admin.plan.create') ? 'active' : '' }}">
+                                <a href="{{ route('admin.plan.index') }}">All Plans</a>
+                            </li>
+                            @endif
+
+
+                            @if ($usr->can('addonservice.view'))
+                            {{-- <li
+                                class="{{ Route::is('admin.addonservice.index') || Route::is('admin.addonservice.edit') || Route::is('admin.addonservice.create') ? 'active' : '' }}">
+                                <a href="{{ route('admin.addonservice.index') }}">All Add On Service</a>
+                            </li> --}}
+                            @endif
+
+                            {{-- @if ($usr->can('plan.create'))
+                            <li class="{{ Route::is('admin.plan.create')  ? 'active' : '' }}"><a
+                                    href="{{ route('admin.plan.create') }}">Create Plan</a></li>
+                            @endif --}}
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if ($usr->can('cms.create') ||
                     $usr->can('cms.view') ||
                     $usr->can('cms.edit') ||
-                    $usr->can('cms.delete') ||
-                    $usr->can('modules.create') ||
-                    $usr->can('modules.view') ||
-                    $usr->can('modules.edit') ||
-                    $usr->can('modules.delete') ||
-                    $usr->can('servicemodule.create') ||
-                    $usr->can('servicemodule.view') ||
-                    $usr->can('servicemodule.edit') ||
-                    $usr->can('servicemodule.delete') ||
-                    $usr->can('ourcourses.create') ||
-                    $usr->can('ourcourses.view') ||
-                    $usr->can('ourcourses.edit') ||
-                    $usr->can('ourcourses.delete'))
+                    $usr->can('cms.delete'))
                     <li>
                         <a href="javascript:void(0)" aria-expanded="true"><i
                                 class="fa fa-file-text"></i><span>CMS</span>
@@ -260,7 +353,8 @@ $usr = Auth::guard('admin')->user();
                     </li>
                     @endif
 
-                    @if ($usr->can('servicemodule.view') || $usr->can('modules.view') || $usr->can('ourcourses.view'))
+                    @if ($usr->can('servicemodule.view') || $usr->can('modules.view') ||
+                    $usr->can('ourcourses.view'))
                     <li
                         class="{{ Route::is('admin.services.index') || Route::is('admin.services.edit') ? 'active' : '' }}">
                         <a href="{{ route('admin.services.index') }}"><i class="fa fa-user-secret"></i><span>All
@@ -335,83 +429,7 @@ $usr = Auth::guard('admin')->user();
                     </li>
                     @endif
 
-                    @if (
-                    $usr->can('membership.create') ||
-                    $usr->can('membership.view') ||
-                    $usr->can('membership.edit') ||
-                    $usr->can('membership.delete') ||
-                    $usr->can('orderaddon.create') ||
-                    $usr->can('orderaddon.view') ||
-                    $usr->can('orderaddon.edit') ||
-                    $usr->can('orderaddon.delete'))
-                    <li>
-                        <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-ticket"></i><span>Membership
-                                Orders</span>
-                        </a>
-                        <ul
-                            class="collapse {{ Route::is('admin.membership.create') || Route::is('admin.membership.index') || Route::is('admin.membership.edit') || Route::is('admin.membership.show') || Route::is('admin.orderaddon.create') || Route::is('admin.orderaddon.index') || Route::is('admin.orderaddon.edit') || Route::is('admin.orderaddon.show') ? 'in' : '' }}">
-
-                            @if ($usr->can('membership.view'))
-                            <li
-                                class="{{ Route::is('admin.membership.index') || Route::is('admin.membership.edit') ? 'active' : '' }}">
-                                <a href="{{ route('admin.membership.index') }}">All Membership Order</a>
-                            </li>
-                            @endif
-                            @if ($usr->can('orderaddon.view'))
-                            <li
-                                class="{{ Route::is('admin.orderaddon.index') || Route::is('admin.orderaddon.edit') ? 'active' : '' }}">
-                                <a href="{{ route('admin.orderaddon.index') }}">All Add On Order</a>
-                            </li>
-                            @endif
-                            {{-- @if ($usr->can('membership.create'))
-                            <li class="{{ Route::is('admin.membership.create')  ? 'active' : '' }}"><a
-                                    href="{{ route('admin.membership.create') }}">Create
-                                    Video</a></li>
-                            @endif --}}
-                        </ul>
-                    </li>
-                    @endif
-
-                    @if (
-                    $usr->can('plan.create') ||
-                    $usr->can('plan.view') ||
-                    $usr->can('plan.edit') ||
-                    $usr->can('plan.delete') ||
-                    $usr->can('addonservice.create') ||
-                    $usr->can('addonservice.view') ||
-                    $usr->can('addonservice.edit') ||
-                    $usr->can('addonservice.delete'))
-                    <li>
-                        <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-paper-plane"></i><span>Plans &
-                                AddOn Service</span>
-                        </a>
-                        <ul
-                            class="collapse {{ Route::is('admin.plan.create') || Route::is('admin.plan.index') || Route::is('admin.plan.edit') || Route::is('admin.plan.show') || Route::is('admin.addonservice.create') || Route::is('admin.addonservice.index') || Route::is('admin.addonservice.edit') || Route::is('admin.addonservice.show') ? 'in' : '' }}">
-
-                            @if ($usr->can('plan.view'))
-                            <li
-                                class="{{ Route::is('admin.plan.index') || Route::is('admin.plan.edit') || Route::is('admin.plan.create') ? 'active' : '' }}">
-                                <a href="{{ route('admin.plan.index') }}">All Plans</a>
-                            </li>
-                            @endif
-
-                            @if ($usr->can('addonservice.view'))
-                            <li
-                                class="{{ Route::is('admin.addonservice.index') || Route::is('admin.addonservice.edit') || Route::is('admin.addonservice.create') ? 'active' : '' }}">
-                                <a href="{{ route('admin.addonservice.index') }}">All Add On Service</a>
-                            </li>
-                            @endif
-
-                            {{-- @if ($usr->can('plan.create'))
-                            <li class="{{ Route::is('admin.plan.create')  ? 'active' : '' }}"><a
-                                    href="{{ route('admin.plan.create') }}">Create Plan</a></li>
-                            @endif --}}
-                        </ul>
-                    </li>
-                    @endif
-
-                    @if (
-                    $usr->can('Ourteam.create') ||
+                    @if ($usr->can('Ourteam.create') ||
                     $usr->can('Ourteam.view') ||
                     $usr->can('Ourteam.edit') ||
                     $usr->can('Ourteam.delete'))
@@ -436,8 +454,7 @@ $usr = Auth::guard('admin')->user();
                     </li>
                     @endif
 
-                    @if (
-                    $usr->can('testimonial.create') ||
+                    @if ($usr->can('testimonial.create') ||
                     $usr->can('testimonial.view') ||
                     $usr->can('testimonial.edit') ||
                     $usr->can('testimonial.delete'))
@@ -463,8 +480,7 @@ $usr = Auth::guard('admin')->user();
                     </li>
                     @endif
 
-                    @if (
-                    $usr->can('service.create') ||
+                    @if ($usr->can('service.create') ||
                     $usr->can('service.view') ||
                     $usr->can('service.edit') ||
                     $usr->can('service.delete'))
@@ -490,8 +506,7 @@ $usr = Auth::guard('admin')->user();
                     </li>
                     @endif
 
-                    @if (
-                    $usr->can('videogallery.create') ||
+                    @if ($usr->can('videogallery.create') ||
                     $usr->can('videogallery.view') ||
                     $usr->can('videogallery.edit') ||
                     $usr->can('videogallery.delete'))

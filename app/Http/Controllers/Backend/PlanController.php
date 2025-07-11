@@ -35,17 +35,17 @@ class PlanController extends Controller
         $this->checkAuthorization(auth()->user(), ['plan.create']);
         $modules = Service::where('is_deleted', '0')->where('status', 1)->get();
         if ($request->type == 'mmb') {
-            return view('backend.pages.plans.create', ['modules' => $modules]);
+            return view('backend.pages.plans.create', ['modules' => $modules, 'page_type' => $request->type]);
         } elseif ($request->type == 'start-up') {
-            return view('backend.pages.plans.startup', ['modules' => $modules]);
+            return view('backend.pages.plans.startup', ['modules' => $modules, 'page_type' => $request->type]);
         } elseif ($request->type == 'idp') {
-            return view('backend.pages.plans.idp', ['modules' => $modules]);
+            return view('backend.pages.plans.idp', ['modules' => $modules, 'page_type' => $request->type]);
         } elseif ($request->type == 'revision-batch') {
-            return view('backend.pages.plans.revision', ['modules' => $modules]);
+            return view('backend.pages.plans.revision', ['modules' => $modules, 'page_type' => $request->type]);
         } elseif ($request->type == 'stay-aware-live-renewal') {
-            return view('backend.pages.plans.stay-aware', ['modules' => $modules]);
+            return view('backend.pages.plans.stay-aware', ['modules' => $modules, 'page_type' => $request->type]);
         } elseif ($request->type == 'meeting-with-sir') {
-            return view('backend.pages.plans.single-meeting', ['modules' => $modules]);
+            return view('backend.pages.plans.single-meeting', ['modules' => $modules, 'page_type' => $request->type]);
         }
         return view('backend.pages.plans.create', ['modules' => $modules]);
     }
@@ -55,27 +55,50 @@ class PlanController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // dd($request);
         $this->checkAuthorization(auth()->user(), ['plan.create']);
-        $modules = implode(', ', $request->modules);
         $admin = new Plan();
         $admin->plan_name = $request->plan_name;
-        $admin->sort_desc = $request->sort_desc;
         $admin->price = $request->price;
-        $admin->price = $request->price;
-        $admin->price = $request->price;
-        $admin->validity = $request->validity;
-        $admin->session = $request->session;
+        if ($request->page_type == 'mmb') {
+            $modules = implode(', ', $request->modules);
+            $admin->validity = $request->validity;
+            $admin->session = $request->session;
+            $admin->duration = $request->duration;
+            $admin->personal_meeting = $request->personal_meeting;
+            $admin->deliveries = $request->deliveries;
+            $admin->duration_year = $request->duration_year;
+            $admin->cmd_visit = $request->cmd_visit;
+            $admin->store_visit = $request->store_visit;
+            $admin->tax = $request->tax;
+            $admin->on_call_support = $request->on_call_support;
+            $admin->personalization = $request->personalization;
+            $admin->documents = $request->documents;
+            $admin->module_ids = $modules;
+            $admin->price_within_india = $request->price_within_india;
+            $admin->price_within_gujrat = $request->price_within_gujrat;
+            $admin->month_duration = $request->month_duration;
+            $admin->plan_type = $request->plan_type;
+        } elseif ($request->page_type == 'start-up') {
+            $admin->sqrt = $request->sqrt;
+            $admin->employees = $request->employees;
+            $admin->stock = $request->stock;
+            $admin->tax = $request->tax;
+            $admin->price_within_india = $request->price_within_india;
+            $admin->price_within_gujrat = $request->price_within_gujrat;
+            $admin->plan_type = $request->plan_type;
+        } elseif ($request->page_type == 'idp') {
+            dd(2344);
+        } elseif ($request->page_type == 'revision-batch') {
+            $modules = implode(', ', $request->modules);
+            $admin->module_ids = $modules;
+            $admin->tax = $request->tax;
+        } elseif ($request->page_type == 'stay-aware-live-renewal') {
+        } elseif ($request->page_type == 'meeting-with-sir') {
+        }
+        $admin->page_type = $request->page_type;
         $admin->description = $request->description;
-        $admin->plan_type = $request->plan_type;
-        $admin->duration = $request->duration;
-        $admin->month_duration = $request->month_duration;
-        $admin->personal_meeting = $request->personal_meeting;
-        $admin->deliveries = $request->deliveries;
-        $admin->duration_year = $request->duration_year;
-        $admin->cmd_visit = $request->cmd_visit;
-        $admin->store_visit = $request->store_visit;
-        $admin->module_ids = $modules;
-        $admin->tax = $request->tax;
+        $admin->sort_desc = $request->sort_desc;
         $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -128,6 +151,7 @@ class PlanController extends Controller
                 'page_type' => $type,
             ]);
         } elseif ($type == 'revision-batch') {
+            $modules = Modules::where('status', 1)->get();
             return view('backend.pages.plans.revision-edit', [
                 'admin' => $admin,
                 'roles' => Role::all(),
@@ -157,24 +181,51 @@ class PlanController extends Controller
     public function update(Request $request, int $id): RedirectResponse
     {
         $this->checkAuthorization(auth()->user(), ['plan.edit']);
-        $modules = implode(', ', $request->modules);
+
         $admin = Plan::findOrFail($id);
         $admin->plan_name = $request->plan_name;
-        $admin->sort_desc = $request->sort_desc;
         $admin->price = $request->price;
-        $admin->validity = $request->validity;
-        $admin->session = $request->session;
+
+        if ($request->page_type == 'mmb') {
+            $modules = implode(', ', $request->modules);
+            $admin->validity = $request->validity;
+            $admin->session = $request->session;
+            $admin->duration = $request->duration;
+            $admin->personal_meeting = $request->personal_meeting;
+            $admin->deliveries = $request->deliveries;
+            $admin->duration_year = $request->duration_year;
+            $admin->cmd_visit = $request->cmd_visit;
+            $admin->store_visit = $request->store_visit;
+            $admin->tax = $request->tax;
+            $admin->on_call_support = $request->on_call_support;
+            $admin->personalization = $request->personalization;
+            $admin->documents = $request->documents;
+            $admin->module_ids = $modules;
+            $admin->price_within_india = $request->price_within_india;
+            $admin->price_within_gujrat = $request->price_within_gujrat;
+            $admin->month_duration = $request->month_duration;
+            $admin->plan_type = $request->plan_type;
+        } elseif ($request->page_type == 'start-up') {
+            $admin->sqrt = $request->sqrt;
+            $admin->employees = $request->employees;
+            $admin->tax = $request->tax;
+            $admin->stock = $request->stock;
+            $admin->plan_type = $request->plan_type;
+            $admin->price_within_india = $request->price_within_india;
+            $admin->price_within_gujrat = $request->price_within_gujrat;
+        } elseif ($request->page_type == 'idp') {
+            dd(2344);
+        } elseif ($request->page_type == 'revision-batch') {
+            $modules = implode(', ', $request->modules);
+            $admin->module_ids = $modules;
+            $admin->tax = $request->tax;
+        } elseif ($request->page_type == 'stay-aware-live-renewal') {
+        } elseif ($request->page_type == 'meeting-with-sir') {
+        }
+
+        $admin->page_type = $request->page_type;
+        $admin->sort_desc = $request->sort_desc;
         $admin->description = $request->description;
-        $admin->plan_type = $request->plan_type;
-        $admin->duration = $request->duration;
-        $admin->month_duration = $request->month_duration;
-        $admin->personal_meeting = $request->personal_meeting;
-        $admin->deliveries = $request->deliveries;
-        $admin->duration_year = $request->duration_year;
-        $admin->cmd_visit = $request->cmd_visit;
-        $admin->store_visit = $request->store_visit;
-        $admin->tax = $request->tax;
-        $admin->module_ids = $modules;
         $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -182,6 +233,7 @@ class PlanController extends Controller
             $image->move(public_path('plans'), $imageName); // Save to 'public/uploads'
             $admin->image = $imageName;
         }
+        // dd($admin);
         $admin->save();
 
         session()->flash('success', 'Plan has been updated.');

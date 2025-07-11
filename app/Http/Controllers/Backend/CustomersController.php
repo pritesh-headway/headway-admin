@@ -110,7 +110,7 @@ class CustomersController extends Controller
             $message = "" . $admin->name . " rejected by the admin. All credentials and details have been reviewed and **not approved**.";
         }
         $body = array('receiver_id' => $admin->id, 'title' => $message, 'message' => $message, 'data' => $newData, 'content_available' => true);
-        $sendNotification = $this->fcmNotificationService->sendFcmNotification($body);
+        // $sendNotification = $this->fcmNotificationService->sendFcmNotification($body);
         // $notifData = json_decode($sendNotification->getContent(), true);
         // if (isset($notifData['status']) && $notifData['status'] == true) {
         //     return $sendNotification->getContent();

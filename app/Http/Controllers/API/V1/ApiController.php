@@ -35,6 +35,9 @@ use App\Services\CurlApiService;
 use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
+use App\Models\OneTimeMeeting;
+use App\Models\RevisionBatch;
+use App\Models\StartupServiceModules;
 use Illuminate\Support\Facades\Hash;
 use App\Services\FcmNotificationService;
 use Illuminate\Support\Facades\Validator;
@@ -53,6 +56,7 @@ class ApiController extends Controller
     public $visit_path;
     public $icon_path;
     public $hr_path;
+    public $revision_batch_path;
     protected $fcmNotificationService;
     protected $curlApiService;
 
@@ -61,9 +65,10 @@ class ApiController extends Controller
         $this->per_page_show = 50;
         $this->base_url = url('/');
         // $this->base_url = env('APP_URL');
-        $this->profile_path = '/profile_images/';
+        $this->profile_path = 'public/profile_images/';
         $this->banner_path = '/banners/';
         $this->client_path = '/clients/';
+        $this->revision_batch_path = '/revision_batch_receipts/';
         $this->blog_path = '/blogs/';
         $this->plan_path = '/plans/';
         $this->visit_path = '/visit/';
@@ -375,7 +380,7 @@ class ApiController extends Controller
                 ->put('user_id', $user->id)
                 ->put('headway_id', $user->MemberBatch ? (string) $user->MemberBatch->headway_id : '--')
                 ->put('batch_number', $user->MemberBatch ? $user->MemberBatch->batch : '--')
-                ->put('avatar', $user->avatar ? $base_url . '/uploads/profile/' . $user->avatar : '')
+                ->put('avatar', $user->avatar ? $base_url . $this->profile_path . $user->avatar : '')
                 ->put('token', $token)
                 ->toArray();
 
@@ -597,6 +602,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
+            $page_type = $request->page_type;
             $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
             $page_number = $request->page;
@@ -610,7 +616,64 @@ class ApiController extends Controller
                 'PlanPurchase' => function ($query) use ($user_id) {
                     $query->where('user_id', $user_id);
                 }
-            ])->where('status', 1)->where('is_deleted', 0)->paginate($this->per_page_show, ['*'], 'page', $page_number);
+            ])->where('status', 1)->where('page_type', $page_type)->where('is_deleted', 0)->paginate($this->per_page_show, ['*'], 'page', $page_number);
+            // dd($plansPaginator);
+            $plans = $plansPaginator->getCollection()->map(function ($plan) use ($base_url) {
+                $plan = collect($plan)->except(['description', 'sqrt', 'employees', 'stock', 'validity', 'session', 'duration', 'on_call_support', 'month_duration', 'personal_meeting', 'deliveries', 'duration_year', 'cmd_visit', 'store_visit', 'module_ids', 'is_deleted', 'created_at', 'updated_at', 'plan_purchase'])
+                    ->put('plan_image', $plan['image'] ? $base_url . $this->plan_path . $plan['image'] : '')
+                    ->put('active_plan', $plan['PlanPurchase'] ? (string) $plan['PlanPurchase']->purchase_status : '')
+                    ->toArray();
+                // $plan['duration'] = (string) $plan['duration'];
+                return $plan;
+            });
+
+            // Replace the original collection with the transformed one
+            $plansPaginator->setCollection(collect($plans));
+
+            // Get pagination metadata
+            $pagination = [
+                'total' => $plansPaginator->total(),
+                'count' => $plansPaginator->count(),
+                'per_page' => $plansPaginator->perPage(),
+                'current_page' => $plansPaginator->currentPage(),
+                'total_pages' => $plansPaginator->lastPage(),
+            ];
+
+            $plansData = [
+                'pagination' => $pagination,
+                'data' => $plans,
+            ];
+
+            return response()->json(['status' => true, 'message' => 'Get Plans data successfully.', 'data' => $plansData], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
+
+    /**
+     * get MMB Plan list Web.
+     */
+    public function getMMBPlanList(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $plan_type = $request->plan_type;
+            $loginType = $request->user_type;
+            $token = $request->header('Authorization');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
+
+            $userData = json_decode($checkToken->getContent(), true);
+            // if ($userData['status'] == false) {
+            //     return $checkToken->getContent();
+            // }
+
+            $plansPaginator = Plan::with([
+                'PlanPurchase' => function ($query) use ($user_id) {
+                    $query->where('user_id', $user_id);
+                }
+            ])->where('status', 1)->where('page_type', $plan_type)->where('is_deleted', 0)->paginate($this->per_page_show, ['*'], 'page', $page_number);
             // dd($plansPaginator);
             $plans = $plansPaginator->getCollection()->map(function ($plan) use ($base_url) {
                 $plan = collect($plan)->except(['description', 'sqrt', 'employees', 'stock', 'validity', 'session', 'duration', 'on_call_support', 'month_duration', 'personal_meeting', 'deliveries', 'duration_year', 'cmd_visit', 'store_visit', 'module_ids', 'is_deleted', 'created_at', 'updated_at', 'plan_purchase'])
@@ -659,14 +722,19 @@ class ApiController extends Controller
             $page_number = $request->page;
 
             $userData = json_decode($checkToken->getContent(), true);
-            if ($userData['status'] == false) {
-                return $checkToken->getContent();
-            }
-            $plansPaginator = Plan::where('status', 1)->where('is_deleted', 0)->where('id', $plan_id)->get();
+            // if ($userData['status'] == false) {
+            //     return $checkToken->getContent();
+            // }
+            $plansPaginator = Plan::with([
+                'PlanPurchase' => function ($query) use ($user_id) {
+                    $query->where('user_id', $user_id);
+                }
+            ])->where('status', 1)->where('is_deleted', 0)->where('id', $plan_id)->get();
             $plans = $plansPaginator->map(function ($plan) use ($base_url) {
                 $plan['duration'] = (string) $plan['duration'];
                 return collect($plan)->except(['password', 'role_id', 'email_verified_at'])
                     ->put('plan_image', ($plan['image']) ? $base_url . $this->plan_path . $plan['image'] : '')
+                    ->put('active_plan', $plan['PlanPurchase'] ? (string) $plan['PlanPurchase']->purchase_status : '')
                     ->toArray();
             })->toArray();
 
@@ -683,14 +751,17 @@ class ApiController extends Controller
                         'id' => $li['id'],
                         'plan_name' => $li['plan_name'],
                         'sub_plan_type' => $li['plan_type'],
-                        'plan_type' => $li['page_type'],
+                        'page_type' => $li['page_type'],
                         'plan_image' => $li['plan_image'],
+                        'active_plan' => $li['active_plan'],
                         // 'personal_meeting' => $li['personal_meeting'],
                         // 'sort_desc' => $li['sort_desc'],
                         'price' => $li['price'],
                         'price_within_india' => $li['price_within_india'],
                         'price_within_gujrat' => $li['price_within_gujrat'],
                         'duration' => $li['validity'],
+                        'personalization' => $li['personalization'],
+                        'documents' => $li['documents'],
                         // 'session' => $li['session'],
                         // 'meeting_duration' => $li['duration'],
                         // 'month_duration' => $li['month_duration'],
@@ -703,8 +774,9 @@ class ApiController extends Controller
                     $result = [
                         'id' => $li['id'],
                         'plan_name' => $li['plan_name'],
+                        'active_plan' => $li['active_plan'],
                         'sub_plan_type' => $li['plan_type'],
-                        'plan_type' => $li['page_type'],
+                        'page_type' => $li['page_type'],
                         'plan_image' => $li['plan_image'],
                         'sort_desc' => $li['sort_desc'],
                         'price' => $li['price'],
@@ -716,6 +788,16 @@ class ApiController extends Controller
                         'duration' => '100',
                         'tax' => $li['tax'],
                         'services' => $points,
+                    ];
+                } else if ($li['page_type'] == 'revision-batch') {
+                    $result = [
+                        'id' => $li['id'],
+                        'plan_name' => $li['plan_name'],
+                        'active_plan' => $li['active_plan'],
+                        'sub_plan_type' => $li['plan_type'],
+                        'page_type' => $li['page_type'],
+                        'plan_image' => $li['plan_image'],
+                        'price' => $li['price'],
                     ];
                 } else {
                     $points = [];
@@ -984,6 +1066,62 @@ class ApiController extends Controller
                 return $checkToken->getContent();
             }
             $serviceData = Modules::where(['status' => 1, 'service_id' => 1])->where('is_deleted', 0)->get();
+            $serviceCount = $serviceData->count();
+
+            $finalVisits = [];
+            // $servicedata = Modules::where(['status' => 1, 'service_id' => 1])->first();
+            for ($i = 0; $i < $serviceCount; $i++) {
+                $cmdvisitData = MemberModule::where([
+                    'membership_id' => $plan_id,
+                    'member_id' => $user_id,
+                    'module_id' => $serviceData[$i]->id
+                ])->orderBy('date', 'asc')->get();
+                $visit = $cmdvisitData[$i] ?? null;
+
+                $finalVisits[] = [
+                    'module_name' => ($serviceData[$i]) ? $serviceData[$i]->name : '',
+                    'module_status' => $visit ? ($visit->module_status ?? '') : 'Pending',
+                    'date' => $visit ? (date(
+                        'd M, Y',
+                        strtotime($visit->date)
+                    ) ?? '') : '-',
+                    'time' => $visit ? (date(
+                        'h:i A',
+                        strtotime($visit->time)
+                    ) ?? '') : '-',
+                    'remarks' => $visit ? ($visit->remarks ?? '') : '-',
+                ];
+            }
+
+            return response()->json(['status' => true, 'message' => 'Get store visit data successfully.', 'data' => $finalVisits], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
+
+    /**
+     * get getRevisionBatchModules list.
+     */
+    public function getRevisionBatchModulesList(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $plan_id = $request->plan_id;
+            $loginType = $request->user_type;
+            $token = $request->header('Authorization');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
+
+            $userData = json_decode($checkToken->getContent(), true);
+            if ($userData['status'] == false) {
+                return $checkToken->getContent();
+            }
+            $plans = Plan::findOrFail(11);
+
+            $ids = explode(',', $plans->module_ids);
+            $serviceData = Modules::whereIn('id', $ids)->where('status', 1)->get();
+            // $serviceData = Modules::where(['status' => 1, 'service_id' => 1])->where('is_deleted', 0)->get();
             $serviceCount = $serviceData->count();
 
             $finalVisits = [];
@@ -2213,6 +2351,7 @@ class ApiController extends Controller
             $base_url = $this->base_url;
             $user_id = $request->user_id;
             $loginType = $request->user_type;
+            $plan_id = $request->plan_id;
             $token = $request->header('Authorization');
             $checkToken = $this->tokenVerify($token);
 
@@ -2233,36 +2372,78 @@ class ApiController extends Controller
             }
 
             $userData = User::where('id', $user_id)->first();
-            $activePlan = PlanPurchase::with('Plans')->where('user_id', $user_id)->first();
+            if ($plan_id == 11) {
+                $activePlan = Plan::where('id', $plan_id)->first();
+            } else {
+                $activePlan = PlanPurchase::with('Plans')->where('user_id', $user_id)->where('plan_id', $plan_id)->first();
+            }
+            $userDataInfo = [];
             if ($activePlan) {
-                $moduleIds = ($activePlan->Plans->module_ids) ? explode(',', $activePlan->Plans->module_ids) : '';
+                $moduleIds = ($activePlan->Plans) ? explode(',', $activePlan->Plans->module_ids) : $activePlan->module_ids;
+                // dd($activePlan);
                 $add_on_services = AddOnPurchase::with('AddOnService')->where('status', 1)
                     ->whereHas('AddOnService', function ($query) {
                         $query->where('purchase_status', 'Approved');
                     })->where('user_id', $user_id)->get();
-                $activePlans = '';
-                if ($moduleIds) {
-                    $activePlans = Service::select('id', 'title')->whereIn('id', $moduleIds)->get();
-                }
-                $userDataInfo['plan_name'] = ($activePlan->Plans->plan_name) ? $activePlan->Plans->plan_name : '';
-                $userDataInfo['plan_id'] = ($activePlan->Plans->id) ? $activePlan->Plans->id : '';
-                $userDataInfo['plan_icon'] = ($activePlan->Plans->image) ? $base_url . $this->plan_path . $activePlan->Plans->image : '';
-                $userDataInfo['plan_cover_points_arr'] = $activePlans;
-
-                $userDataInfo['your_addon_service_arr'] = [];
-                foreach ($add_on_services as $service) {
-                    if ($service->AddOnService) {
-                        $userDataInfo['your_addon_service_arr'][] = [
-                            'name' => $service->AddOnService->title,
-                            'id' => $service->AddOnService->id,
-                            'info' => $service->AddOnService->sort_desc,
-                        ];
+                $mod = [];
+                $allStartupServices = [];
+                $allRevisionServices = [];
+                if ($plan_id != 11) {
+                    if ($moduleIds) {
+                        $serviceName = StartupServiceModules::where(['status' => 1])->get();
+                        $dataGetNodules = MemberStartupModule::where('member_id', $user_id)->get();
+                        foreach ($serviceName as $key => $value) {
+                            $mod = $dataGetNodules->where('startup_id', $value['id'])->first();
+                            $services['service_name'] = $value['title'];
+                            $services['service_id'] = $value['id'];
+                            $services['date'] = $mod ? $mod->date : '';
+                            $services['time'] = $mod ? $mod->time : '';
+                            $services['status'] = $mod ? $mod->module_status : '';
+                            $services['remarks'] = $mod ? $mod->remarks : '';
+                            $allStartupServices[] = $services;
+                        }
                     }
+                    $userDataInfo['plan_name'] = ($activePlan->Plans) ? $activePlan->Plans->plan_name : '';
+                    $userDataInfo['purchased_price'] = ($activePlan->total_amount) ? $activePlan->total_amount : '';
+                    $userDataInfo['tax'] = ($activePlan->Plans) ? $activePlan->Plans->tax : '';
+                    $userDataInfo['documents'] = ($activePlan->preventsSilentlyDiscardingAttributes) ? $activePlan->Plans->documents : '';
+                    $userDataInfo['personalization'] = ($activePlan->Plans) ? $activePlan->Plans->personalization : '';
+                    $userDataInfo['duration'] = ($activePlan->Plans) ? $activePlan->Plans->duration : '';
+                    $userDataInfo['no_of_modules'] = ($activePlan->Plans) ? $activePlan->Plans->no_of_modules : '12';
+                    $userDataInfo['sub_plan_type'] = ($activePlan->Plans) ? $activePlan->Plans->plan_type : '';
+                    $userDataInfo['plan_id'] = ($activePlan->Plans) ? $activePlan->Plans->id : '';
+                    $userDataInfo['sqrt'] = ($activePlan->Plans) ? $activePlan->Plans->sqrt : '';
+                    $userDataInfo['employees'] = ($activePlan->Plans) ? $activePlan->Plans->employees : '';
+                    $userDataInfo['stock'] = ($activePlan->Plans) ? $activePlan->Plans->stock : '';
+                    $userDataInfo['duration'] = '100';
+                    $userDataInfo['plan_icon'] = ($activePlan->Plans) ? $base_url . $this->plan_path . $activePlan->Plans->image : '';
+                    $userDataInfo['start_up_points_arr'] = $allStartupServices;
+                } else { // For revision batch
+
+                    if ($moduleIds) {
+                        //revision batch
+                        $ids = explode(',', $moduleIds);
+                        $modulesName = Modules::whereIn('id', $ids)->where('status', 1)->get();
+                        $dataGetNodules = MemberModule::where('member_id', $user_id)->where('membership_id', 11)->get();
+                        foreach ($modulesName as $key => $value) {
+                            $mod = $dataGetNodules->where('module_id', $value['id'])->first();
+                            $services['module_name'] = $value['name'];
+                            $services['service_id'] = $value['id'];
+                            $services['date'] = $mod ? $mod->date : '';
+                            $services['time'] = $mod ? $mod->time : '';
+                            $services['module_status'] = $mod ? $mod->module_status : '';
+                            $services['remarks'] = $mod ? $mod->remarks : '';
+                            $allStartupServices[] = $services;
+                        }
+                    }
+                    $userDataInfo['plan_name'] = ($activePlan) ? $activePlan->plan_name : '';
+                    $userDataInfo['plan_id'] = ($activePlan) ? $activePlan->id : '';
+                    $userDataInfo['purchased_price'] = ($activePlan->price) ? $activePlan->price : '';
+                    $userDataInfo['tax'] = ($activePlan) ? $activePlan->tax : '';
+                    $userDataInfo['plan_icon'] = ($activePlan) ? $base_url . $this->plan_path . $activePlan->image : '';
+                    $userDataInfo['revision_points_arr'] = $allStartupServices;
                 }
             }
-
-            $userDataInfo['services'] = [];
-
             return response()->json(['status' => true, 'message' => 'My Plan Information data successfully.', 'data' => $userDataInfo], 200);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
@@ -3590,6 +3771,240 @@ class ApiController extends Controller
                 'message' => 'Something went wrong',
                 'error' => $th->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * One Time Request form
+     */
+    public function oneTimeRequestMeeting(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $loginType = $request->user_type;
+            $token = $request->header('Authorization');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string',
+                'shop_name' => 'required|string|max:255',
+                'subject' => 'required',
+                'message' => 'nullable',
+                'phone_number' => 'required|max:10',
+                'user_id' => 'required|string|max:255',
+
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()->first(),
+                    'data' => (object) [],
+                ], 200);
+            }
+            $data = $request->all();
+            $result = OneTimeMeeting::create($data);
+
+            return response()->json(['status' => true, 'message' => 'One Time Request sent successfully.', 'data' => $result], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
+
+    /**
+     * get get One Time Meeting history list.
+     */
+    public function getOneTimeList(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $plan_id = $request->plan_id;
+            $loginType = $request->user_type;
+            $token = $request->header('Authorization');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
+
+            $userData = json_decode($checkToken->getContent(), true);
+            if ($userData['status'] == false) {
+                return $checkToken->getContent();
+            }
+            $serviceData = OneTimeMeeting::where(['status' => 1, 'user_id' => $user_id])->get();
+            $serviceCount = $serviceData->count();
+
+            $finalVisits = [];
+            // $servicedata = Modules::where(['status' => 1, 'service_id' => 1])->first();
+            for ($i = 0; $i < $serviceCount; $i++) {
+                $cmdvisitData = OneTimeMeeting::where([
+                    'user_id' => $user_id
+                ])->orderBy('schedule_date', 'asc')->get();
+                $visit = $cmdvisitData[$i] ?? null;
+
+                $finalVisits[] = [
+                    'name' => ($serviceData[$i]) ? $serviceData[$i]->name : '',
+                    'call_status' => $visit ? ($visit->call_status ?? '') : 'Pending',
+                    'schedule_date' => $visit->schedule_date ? (date('d M, Y', strtotime($visit->schedule_date)) ?? '') : '-',
+                    'schedule_time' => $visit->schedule_time ? (date(
+                        'h:i A',
+                        strtotime($visit->schedule_time)
+                    ) ?? '') : '-',
+                    'remarks' => $visit ? ($visit->remarks ?? '') : '-',
+                    'message' => $visit ? ($visit->message ?? '') : '-',
+                    'subject' => $visit ? ($visit->subject ?? '') : '-',
+                ];
+            }
+
+            return response()->json(['status' => true, 'message' => 'Get store visit data successfully.', 'data' => $finalVisits], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
+
+    /**
+     * One Time Request form
+     */
+    public function revisionBatchRequestMeeting(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $loginType = $request->user_type;
+            $token = $request->header('Authorization');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
+
+            $validator = Validator::make($request->all(), [
+                'owner_name' => 'required|string',
+                'shop_name' => 'required|string|max:255',
+                'subject' => 'required',
+                'message' => 'nullable',
+                'phone_number' => 'required|max:10',
+                'user_id' => 'required|string',
+                // 'plan_id' => 'required',
+                // Conditional rules
+                'image' => 'required_if:cash_payment_request,0|nullable',
+                'cash_payment_request' => 'required_if:image,null|in:0,1',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()->first(),
+                    'data' => (object) [],
+                ], 200);
+            }
+            $data = $request->all();
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('revision_batch_receipts'), $filename);
+                $data['image'] = $filename;
+            }
+            $result = RevisionBatch::create($data);
+
+            return response()->json(['status' => true, 'message' => 'Revision Batch Request sent successfully.', 'data' => $result], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
+
+    /**
+     * get get One Time Meeting history list.
+     */
+    public function getRevisionBatchList(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $plan_id = $request->plan_id;
+            $loginType = $request->user_type;
+            $token = $request->header('Authorization');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
+
+            $userData = json_decode($checkToken->getContent(), true);
+            if ($userData['status'] == false) {
+                return $checkToken->getContent();
+            }
+            $serviceData = RevisionBatch::where(['status' => 1, 'user_id' => $user_id])->get();
+            $serviceData = $serviceData->map(function ($serviceData) use ($base_url) {
+                return collect($serviceData)->except(['created_at', 'updated_at', 'status'])
+                    ->put('image', ($serviceData['image']) ? $base_url . $this->revision_batch_path . $serviceData['image'] : '')
+                    ->toArray();
+            })->toArray();
+
+            return response()->json(['status' => true, 'message' => 'Get store visit data successfully.', 'data' => $serviceData], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
+
+    /**
+     * get getMyPlanActive list.
+     */
+    public function getMyPlanActiveList(Request $request)
+    {
+        try {
+            $base_url = $this->base_url;
+            $user_id = $request->user_id;
+            $plan_id = $request->plan_id;
+            $loginType = $request->user_type;
+            $token = $request->header('Authorization');
+            $checkToken = $this->tokenVerify($token);
+            $page_number = $request->page;
+
+            $userData = json_decode($checkToken->getContent(), true);
+            if ($userData['status'] == false) {
+                return $checkToken->getContent();
+            }
+            $activePlan = PlanPurchase::with('Plans:id,plan_name,plan_type,page_type,image')->where('user_id', $user_id)->where('purchase_status', 'Approved')->get();
+
+            $activeRevisionPlan = RevisionBatch::select('id as revision_id', 'plan_id')->with('Plans:id,plan_name,plan_type,page_type,image')->where('user_id', $user_id)->where('revison_batch_status', 'Approved')->get();
+
+            $activeOneTimeMeet = OneTimeMeeting::where('user_id', $user_id)->where('call_status', 'Pending')->first();
+
+            $plans = $activePlan->pluck('Plans')->flatten()->map(function ($plan) use ($base_url) {
+                return [
+                    'plan_id' => $plan->id,
+                    'plan_name' => $plan->plan_name,
+                    'plan_type' => $plan->plan_type,
+                    'page_type' => $plan->page_type,
+                    'image' => $plan->image ? $base_url . $this->plan_path . $plan->image : '',
+                ];
+            });
+
+            $plans_revisions = $activeRevisionPlan->map(function ($revision) use ($base_url) {
+                $plan = $revision['Plans'];
+                // dd($revision);
+                return [
+                    'revision_id' => $revision['revision_id'],
+                    'plan_id' => $revision['plan_id'] ?? null,
+                    'plan_name' => $plan->plan_name ?? '',
+                    'plan_type' => 'revision',
+                    'page_type' => $plan->page_type ?? '',
+                    'image' => $plan && $plan->image ? $base_url . $this->plan_path . $plan->image : '',
+                ];
+            });
+
+            if ($activeOneTimeMeet) {
+                $formattedMeet = collect([[
+                    'type' => 'one_time_meeting',
+                    'plan_id' => 0,
+                    'plan_name' => 'One Time Meeting',
+                    'plan_type' => '',
+                    'page_type' => 'OneTimeMeeting',
+                    'image' => '',
+                ]]);
+            } else {
+                $formattedMeet = collect(); // empty collection if no record found
+            }
+
+            $merged = $plans->merge($plans_revisions)->merge($formattedMeet);
+            return response()->json(['status' => true, 'message' => 'Get store visit data successfully.', 'data' => $merged], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
         }
     }
 }

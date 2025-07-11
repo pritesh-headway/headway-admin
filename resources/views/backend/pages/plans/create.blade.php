@@ -63,15 +63,15 @@ Plan Create - Admin Panel
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Price (Within Gujrat)</label>
-                                <input type="number" class="form-control" id="price_out_of_ah" name="price_out_of_ah"
-                                    placeholder="Enter Price Within Gujrat" value="{{ old('price_out_of_ah') }}"
-                                    required autofocus>
+                                <input type="number" class="form-control" id="price_within_gujrat"
+                                    name="price_within_gujrat" placeholder="Enter Price Within Gujrat"
+                                    value="{{ old('price_within_gujrat') }}" required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Price (Within India)</label>
-                                <input type="number" class="form-control" id="price_out_of_st" name="price_out_of_st"
-                                    placeholder="Enter Price Within India" value="{{ old('price_out_of_st') }}" required
-                                    autofocus>
+                                <input type="number" class="form-control" id="price_within_india"
+                                    name="price_within_india" placeholder="Enter Price Within India"
+                                    value="{{ old('price_within_india') }}" required autofocus>
                             </div>
                         </div>
                         <div class="form-row">
@@ -177,11 +177,48 @@ Plan Create - Admin Panel
                             </div>
                         </div>
                         <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="username">Select Document</label>
+                                <select class="form-control " id="documents" name="documents" required>
+                                    <option value="Printed Document" {{ old('documents')=='Printed Document'
+                                        ? 'selected' : '' }}>
+                                        Printed Document
+                                    </option>
+                                    <option value="Printed Document + Excel Sheet" {{
+                                        old('documents')=='Printed Document + Excel Sheet' ? 'selected' : '' }}>
+                                        Printed Document + Excel Sheet
+                                    </option>
+                                    <option value="Printed Document + Excel Sheet + Training" {{
+                                        old('documents')=='Printed Document + Excel Sheet + Training' ? 'selected' : ''
+                                        }}>
+                                        Printed Document + Excel Sheet + Training
+                                    </option>
+                                    <option value="Printed Document + Excel Sheet + Training + Solutions" {{
+                                        old('documents')=='Printed Document + Excel Sheet + Training + Solutions'
+                                        ? 'selected' : '' }}>
+                                        Printed Document + Excel Sheet + Training + Solutions
+                                    </option>
+                                </select>
+                            </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="password">On Call Support</label>
                                 <input type="number" class="form-control" id="on_call_support" name="on_call_support"
                                     placeholder="Enter On Call Support" value="{{ old('on_call_support') }}" required
                                     autofocus>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="username">Persionalization</label>
+                                <select class="form-control " id="personalization" name="personalization" required>
+                                    <option value="Face 2 Face" {{ old('personalization')=='Face 2 Face' ? 'selected'
+                                        : '' }}>
+                                        Face 2 Face
+                                    </option>
+                                    <option value="Online" {{ old('personalization')=='Online' ? 'selected' : '' }}>
+                                        Online
+                                    </option>
+                                </select>
                             </div>
                         </div>
                         {{-- <div class="form-row">
@@ -232,7 +269,7 @@ Plan Create - Admin Panel
                                 </select>
                             </div>
                         </div>
-
+                        <input type="hidden" name="page_type" id="page_type" value="{{ $page_type }}" />
                         <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
                         <a href="{{ route('admin.plan.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
                     </form>

@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-{{ __('Customers Plan Approved - Admin Panel') }}
+{{ __('Revision Batch - Admin Panel') }}
 @endsection
 
 @section('styles')
@@ -21,10 +21,10 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">{{ __('Customers Plan Approved') }}</h4>
+                <h4 class="page-title pull-left">{{ __('Revesion Batch') }}</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }}</a></li>
-                    <li><span>{{ __('All Customers Plan Approved') }}</span></li>
+                    <li><span>{{ __('All Revesion Batch') }}</span></li>
                 </ul>
             </div>
         </div>
@@ -41,10 +41,10 @@
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title float-left">{{ __('Customers Plan Approved') }}</h4>
+                    <h4 class="header-title float-left">{{ __('Revesion Batch Request') }}</h4>
                     <p class="float-right mb-2">
-                        @if (auth()->user()->can('membership.edit'))
-                        {{-- <a class="btn btn-primary text-white" href="{{ route('admin.membership.create') }}">
+                        @if (auth()->user()->can('onetimerequest.edit'))
+                        {{-- <a class="btn btn-primary text-white" href="{{ route('admin.onetimerequest.create') }}">
                             {{ __('Create New Membership') }}
                         </a> --}}
                         @endif
@@ -56,10 +56,10 @@
                             <thead class="bg-light text-capitalize">
                                 <tr>
                                     <th width="1%">{{ __('Sl') }}</th>
-                                    <th width="10%">{{ __('Name') }}</th>
-                                    <th width="30%">{{ __('Mobile No') }}</th>
-                                    <th width="30%">{{ __('Page Type') }}</th>
-                                    <th width="30%">{{ __('Plan Type') }}</th>
+                                    <th width="10%">{{ __('Owner Name') }}</th>
+                                    <th width="40%">{{ __('Subject') }}</th>
+                                    <th width="40%">{{ __('Phone Number') }}</th>
+                                    <th width="40%">{{ __('Status') }}</th>
                                     <th width="15%">{{ __('Action') }}</th>
                                 </tr>
                             </thead>
@@ -67,26 +67,28 @@
                                 @foreach ($admins as $admin)
                                 <tr>
                                     <td>{{ $loop->index+1 }}</td>
-                                    <td>{{ $admin->full_name }}</td>
-                                    <td>{{ $admin->mobile_no }}</td>
-                                    <td>{{ $admin['plans']->page_type }}</td>
-                                    <td>{{ $admin['plans']->plan_type }}</td>
-                                    {{-- <td>
-                                        @if ($admin->membership_status=='Declined')
-                                        <div style="background-color: orange;padding: 5px;">{{ $admin->membership_status
+                                    <td>{{ $admin->owner_name }}</td>
+                                    <td>{{ $admin->subject }}</td>
+                                    <td>{{ $admin->phone_number }}</td>
+                                    <td>
+                                        @if ($admin->revison_batch_status=='Declined')
+                                        <div style="background-color: orange;padding: 5px;">{{
+                                            $admin->revison_batch_status
                                             }} </div>
-                                        @elseif ($admin->membership_status=='Approved')
-                                        <div style="background-color: green;padding: 5px;">{{ $admin->membership_status
+                                        @elseif ($admin->revison_batch_status=='Approved')
+                                        <div style="background-color: green;padding: 5px;">{{
+                                            $admin->revison_batch_status
                                             }} </div>
-                                        @elseif ($admin->membership_status=='Pending')
-                                        <div style="background-color: red;padding: 5px;">{{ $admin->membership_status }}
+                                        @elseif ($admin->revison_batch_status=='Pending')
+                                        <div style="background-color: red;padding: 5px;">{{ $admin->revison_batch_status
+                                            }}
                                         </div>
                                         @endif
-                                    </td> --}}
+                                    </td>
                                     <td>
-                                        @if (auth()->user()->can('members.edit'))
+                                        @if (auth()->user()->can('revisionbatch.edit'))
                                         <a class="btn btn-success text-white"
-                                            href="{{ route('admin.members.edit', $admin->id) }}">Detail</a>
+                                            href="{{ route('admin.revisionbatch.edit', $admin->id) }}">Detail</a>
                                         @endif
                                     </td>
                                 </tr>

@@ -32,7 +32,7 @@ class MembersController extends Controller
         $this->checkAuthorization(auth()->user(), ['members.create']);
 
         return view('backend.pages.members.index', [
-            'admins' => Membership::where('is_deleted', '0')->where(['status' => '1', 'membership_status' => 'Approved'])->get(),
+            'admins' => Membership::with('Plans')->where('is_deleted', '0')->where(['status' => '1', 'membership_status' => 'Approved'])->get(),
         ]);
     }
 

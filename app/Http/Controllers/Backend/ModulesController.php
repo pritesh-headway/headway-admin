@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Cms;
 use App\Models\Modules;
+use App\Models\Plan;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Renderable;
@@ -32,7 +33,8 @@ class ModulesController extends Controller
     {
         $this->checkAuthorization(auth()->user(), ['admin.create']);
         $services = Service::where('is_deleted', '0')->where('status', 1)->get();
-        return view('backend.pages.modules.create', ['services' => $services]);
+        $planType = Plan::where('is_deleted', '0')->where('status', 1)->get();
+        return view('backend.pages.modules.create', ['services' => $services, 'planType' => $planType]);
     }
 
     /**
@@ -46,6 +48,7 @@ class ModulesController extends Controller
         $admin->name = $request->name;
         $admin->sort_desc = $request->desc;
         $admin->service_id = $request->service_id;
+        $admin->plan_type = $request->plan_type;
         $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -76,9 +79,11 @@ class ModulesController extends Controller
 
         $admin = Modules::findOrFail($id);
         $services = Service::where('is_deleted', '0')->where('status', 1)->get();
+        $planType = Plan::where('is_deleted', '0')->where('status', 1)->get();
         return view('backend.pages.modules.edit', [
             'admin' => $admin,
             'services' => $services,
+            'planType' => $planType,
             'roles' => Role::all(),
         ]);
     }
@@ -94,6 +99,7 @@ class ModulesController extends Controller
         $admin->name = $request->name;
         $admin->sort_desc = $request->desc;
         $admin->service_id = $request->service_id;
+        $admin->plan_type = $request->plan_type;
         $admin->status = $request->status;
 
         if ($request->hasFile('image')) {

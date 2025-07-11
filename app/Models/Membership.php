@@ -64,12 +64,18 @@ class Membership extends Model
         'business_fax_no',
         'personal_ContactPerson_email',
         'expectation_from_this_program',
-        'user_id'
+        'user_id',
+        'purchase_status'
     ];
     protected $primaryKey = 'id';
 
     public function AddOnModule()
     {
         return $this->belongsTo(AddOnPurchase::class, 'plan_id', 'id');
+    }
+
+    public function Plans()
+    {
+        return $this->belongsTo(Plan::class, 'product_id', 'id');
     }
 }

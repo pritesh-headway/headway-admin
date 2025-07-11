@@ -7,21 +7,26 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 
-class PlanPurchase extends Model
+class RevisionBatch extends Model
 {
     use Notifiable, HasRoles;
-    public $table = 'plan_orders';
+    public $table = 'revision_batch';
+    protected $fillable = [
+        'plan_id',
+        'owner_name',
+        'shop_name',
+        'phone_number',
+        'message',
+        'subject',
+        'user_id',
+        'status',
+        'image',
+        'revison_batch_status'
+    ];
     protected $primaryKey = 'id';
-
-    protected $fillable = ['plan_id', 'addon_id', 'user_id', 'payment_receipt', 'purchase_status'];
 
     public function Plans()
     {
         return $this->belongsTo(Plan::class, 'plan_id', 'id');
-    }
-
-    public function Revision()
-    {
-        return $this->belongsTo(RevisionBatch::class, 'plan_id', 'id');
     }
 }

@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-Plan Edit - Admin Panel
+Plan Create - Admin Panel
 @endsection
 
 @section('styles')
@@ -14,17 +14,18 @@ Plan Edit - Admin Panel
 </style>
 @endsection
 
+
 @section('admin-content')
 <!-- page title area start -->
 <div class="page-title-area">
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">Plan Edit</h4>
+                <h4 class="page-title pull-left">Plan Create</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                     <li><a href="{{ route('admin.plan.index') }}">All Plans</a></li>
-                    <li><span>Edit Plan - {{ $admin->plan_name }}</span></li>
+                    <li><span>Create Plan</span></li>
                 </ul>
             </div>
         </div>
@@ -41,7 +42,7 @@ Plan Edit - Admin Panel
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title">Edit Plan - {{ $admin->plan_name }}</h4>
+                    <h4 class="header-title">Create New Plan</h4>
                     @include('backend.layouts.partials.messages')
 
                     <form action="{{ route('admin.plan.update', $admin->id) }}" method="POST"
@@ -49,73 +50,17 @@ Plan Edit - Admin Panel
                         @method('PUT')
                         @csrf
                         <div class="form-row">
-
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Plan Name</label>
                                 <input type="text" class="form-control" id="plan_name" name="plan_name"
                                     placeholder="Enter Plan Name" value="{{ $admin->plan_name }}" required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Price (In Ahmedabad)</label>
+                                <label for="name">Price</label>
                                 <input type="number" class="form-control" id="price" name="price"
                                     placeholder="Enter Price" value="{{ $admin->price }}" required autofocus>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Price (Within Gujrat)</label>
-                                <input type="number" class="form-control" id="price_within_gujrat"
-                                    name="price_within_gujrat" placeholder="Enter Price Within Gujrat"
-                                    value="{{ $admin->price_within_gujrat }}" required autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Price (Within India)</label>
-                                <input type="number" class="form-control" id="price_within_india"
-                                    name="price_within_india" placeholder="Enter Price Within India"
-                                    value="{{ $admin->price_within_india }}" required autofocus>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Sqrt</label>
-                                <input type="text" class="form-control" id="sqrt" name="sqrt" placeholder="Enter Sqrt"
-                                    value="{{ $admin->sqrt }}" required autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Employees</label>
-                                <input type="text" class="form-control" id="employees" name="employees"
-                                    placeholder="Enter Employee" value="{{ $admin->employees }}" required autofocus>
-                            </div>
-                        </div>
-                        <div class="form-row">
-
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Stock</label>
-                                <input type="text" class="form-control" id="stock" name="stock"
-                                    placeholder="Enter Stock" value="{{ $admin->stock }}" required autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label for="username">Plan Type</label>
-                                <select class="form-control " id="plan_type" name="plan_type" required>
-                                    <option value="Small Scale" {{ old('plan_type')=='Small Scale' ? 'selected' : '' }}
-                                        {{ $admin->plan_type ==
-                                        'Small Scale' ? 'selected' : '' }}>
-                                        Small Scale
-                                    </option>
-                                    <option value="Medium Scale" {{ old('plan_type')=='Medium Scale' ? 'selected' : ''
-                                        }} {{ $admin->plan_type ==
-                                        'Medium Scale' ? 'selected' : '' }}>Medium Scale
-                                    </option>
-                                    <option value="Large Scale" {{ old('plan_type')=='Large Scale' ? 'selected' : '' }}
-                                        {{ $admin->plan_type ==
-                                        'Large Scale' ? 'selected' : '' }}>
-                                        Large Scale
-                                    </option>
-
-                                </select>
-                            </div>
-                        </div>
-
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="password">Sort Description</label>
@@ -127,6 +72,7 @@ Plan Edit - Admin Panel
                                 <textarea class="form-control" id="description"
                                     name="description">{{ $admin->description }}</textarea>
                             </div>
+
                         </div>
 
                         <div class="form-row">
@@ -144,22 +90,35 @@ Plan Edit - Admin Panel
                             </div>
                         </div>
 
-                        {{-- <div class="form-row">
+                        <div class="form-row">
                             <div class="form-group col-md-12 col-sm-12">
                                 <label for="cmd_visit">Modules</label>
-                                @php
-                                $selectedModules = explode(',', $admin->module_ids); // Convert string to array
-                                @endphp
-                                @foreach ($modules as $module)
-                                <div>
-                                    <input type="checkbox" id="modules_{{ $module->id }}" name="modules[]"
-                                        value="{{ $module->id }}" {{ in_array($module->id, $selectedModules) ? 'checked'
-                                    : '' }}>
-                                    <label for="modules_{{ $module->id }}"> {{ $module->name }}</label>
+                                <div class="row">
+                                    @php
+                                    $chunks = $modules->chunk(ceil($modules->count() / 3)); // Split into 3 sections
+                                    $selectedModules = explode(',', $admin->module_ids); // Convert string to array
+                                    @endphp
+
+                                    @foreach ($chunks as $chunk)
+                                    <div class="col-md-4">
+                                        <!-- Adjust width as needed -->
+                                        @foreach ($chunk as $key => $module)
+                                        {{-- @if ($key ==0) --}}
+                                        <div>
+                                            <input type="checkbox" id="modules_{{ $module->id }}" name="modules[]"
+                                                value="{{ $module->id }}" {{ in_array($module->id, $selectedModules) ?
+                                            'checked' : '' }}>
+                                            <label for="modules_{{ $module->id }}">
+                                                {{ $module->name }}</label>
+                                        </div>
+                                        {{-- @endif --}}
+                                        @endforeach
+                                    </div>
+                                    @endforeach
                                 </div>
-                                @endforeach
+                                <div id="module-error" style="color: red; display: none; font-weight: bold;"></div>
                             </div>
-                        </div> --}}
+                        </div>
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
@@ -184,7 +143,6 @@ Plan Edit - Admin Panel
             </div>
         </div>
         <!-- data table end -->
-
     </div>
 </div>
 @endsection
@@ -195,5 +153,19 @@ Plan Edit - Admin Panel
     $(document).ready(function() {
             $('.select2').select2();
         })
+</script>
+<script>
+    $(document).ready(function() {
+            $('form').on('submit', function(e) {
+                const checkedModules = $('input[name="modules[]"]:checked').length;
+
+                if (checkedModules < 10) {
+                    e.preventDefault(); // Prevent form submission
+                    $('#module-error').text("Please select at least 11 services.").show();
+                } else {
+                    $('#module-error').hide(); // Clear error if validation passes
+                }
+            });
+        });
 </script>
 @endsection

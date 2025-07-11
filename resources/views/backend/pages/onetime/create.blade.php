@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-Modules Create - Admin Panel
+Blog Create - Admin Panel
 @endsection
 
 @section('styles')
@@ -22,11 +22,11 @@ Modules Create - Admin Panel
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">Modules Create</h4>
+                <h4 class="page-title pull-left">Blog Create</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ route('admin.modules.index') }}">All Modules</a></li>
-                    <li><span>Create Modules</span></li>
+                    <li><a href="{{ route('admin.blogs.index') }}">All Blogs</a></li>
+                    <li><span>Create Blog</span></li>
                 </ul>
             </div>
         </div>
@@ -43,54 +43,55 @@ Modules Create - Admin Panel
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title">Create New Modules</h4>
+                    <h4 class="header-title">Create New Blog</h4>
                     @include('backend.layouts.partials.messages')
 
-                    <form action="{{ route('admin.modules.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.blogs.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Name</label>
-                                <input type="text" class="form-control" id="name" name="name"
-                                    placeholder="Enter Module Name" required autofocus value="{{ old('name') }}">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Description</label>
-                                <textarea class="form-control" id="desc" name="desc"
-                                    placeholder="Enter Module Description" autofocus>{{ old('desc') }}</textarea>
-                            </div>
-                        </div>
-                        <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
-                                <label for="username">Service Module</label>
-                                <select class="form-control" id="service_id" name="service_id" required>
-                                    @foreach ($services as $servic)
-                                    <option value="{{ $servic->id }}" {{ old('service_id')==$servic->id ? 'selected' :
-                                        '' }}>
-                                        {{ $servic->title }}
+                                <label for="username">Category Name</label>
+                                <select class="form-control " id="category_id" name="category_id" required>
+                                    <option value="">Select Category
+                                    </option>
+                                    @foreach ($blog_categories as $cat)
+                                    <option value="{{ $cat->id }}" {{ old('category_id')==$cat->id ? 'selected' : ''
+                                        }}>{{ $cat->name
+                                        }}
                                     </option>
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="name">Title</label>
+                                <input type="text" class="form-control" id="title" name="title"
+                                    placeholder="Enter Title" required autofocus value="{{ old('name') }}" required>
+                            </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
-                                <label for="username">Plan Type</label>
-                                <select class="form-control" id="plan_type" name="plan_type">
-                                    <option value="">Select Plan Type</option>
-                                    @foreach ($planType as $name)
-                                    <option value="{{ $name->id }}" {{ old('plan_type')==$name->id ? 'selected' :
-                                        '' }}>
-                                        {{ $name->plan_type }}
-                                    </option>
-                                    @endforeach
-                                </select>
+                                <label for="password">Author</label>
+                                <input type="text" name="author" id="author" class="form-control" required />
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Blog Date</label>
+                                <input type="date" name="blog_date" id="blog_date" class="form-control" required />
+
                             </div>
                         </div>
 
                         <div class="form-row">
+                            <div class="form-group col-md-12 col-sm-12">
+                                <label for="password">Description</label>
+                                <textarea required class="form-control" id="description" name="description"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Image</label>
+                                <input type="file" name="image" id="image" class="form-control" required />
+                            </div>
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>
                                 <select class="form-control " id="status" name="status" required>
@@ -103,7 +104,7 @@ Modules Create - Admin Panel
                         </div>
 
                         <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
-                        <a href="{{ route('admin.modules.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
+                        <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
                     </form>
                 </div>
             </div>
@@ -120,12 +121,5 @@ Modules Create - Admin Panel
     $(document).ready(function() {
         $('.select2').select2();
     })
-</script>
-<script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
-<script>
-    CKEDITOR.replace('description');
-    setTimeout(() => {
-        $('.cke_notification_warning').hide();
-    }, 1000);
 </script>
 @endsection
