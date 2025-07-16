@@ -2528,6 +2528,8 @@ class ApiController extends Controller
                     ];
                 });
 
+
+
             // 2. Client Logos (no description = logo)
             // $clientLogo = Client::where('status', 1)
             //     ->where('is_featured', 1)

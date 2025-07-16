@@ -111,6 +111,24 @@
 @endsection
 
 @section('scripts')
+    <script>
+        document.getElementById('galleryForm').addEventListener('submit', function(e) {
+            const input = document.getElementById('imagesInput');
+            const files = input.files;
+            const maxSizeMB = 10;
+            const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].size > maxSizeBytes) {
+                    e.preventDefault();
+                    alert(`File "${files[i].name}" exceeds the 10MB size limit.`);
+                    return false;
+                }
+            }
+        });
+    </script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
     @if ($type !== 'gen')

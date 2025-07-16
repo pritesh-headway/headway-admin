@@ -19,8 +19,13 @@
     <div class="main-content-inner">
         <div class="card">
             <div class="card-body">
+
+
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="card-title">Visitor List</h5>
+                    <a href="{{ route('exibition_visitors.form') }}" target="_blank" class="btn btn-primary">
+                        Exhibition Form
+                    </a>
                     <form action="{{ route('admin.exibition_visitors.export') }}" method="POST" class="form-inline mb-3">
                         @csrf
                         <div class="row g-2 align-items-center">
@@ -43,6 +48,7 @@
                             </div>
                         </div>
                     </form>
+
 
 
                 </div>
