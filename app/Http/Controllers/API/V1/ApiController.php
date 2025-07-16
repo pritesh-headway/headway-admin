@@ -790,6 +790,9 @@ class ApiController extends Controller
                         'services' => $points,
                     ];
                 } else if ($li['page_type'] == 'revision-batch') {
+                    $activePlan = Plan::where('id', $plan_id)->first();
+                    $ids = explode(',', $activePlan->module_ids);
+                    $modulesName = Modules::select('id', 'name as title')->whereIn('id', $ids)->where('status', 1)->get();
                     $result = [
                         'id' => $li['id'],
                         'plan_name' => $li['plan_name'],
@@ -798,6 +801,7 @@ class ApiController extends Controller
                         'page_type' => $li['page_type'],
                         'plan_image' => $li['plan_image'],
                         'price' => $li['price'],
+                        'points' => $modulesName,
                     ];
                 } else {
                     $points = [];
@@ -1117,7 +1121,7 @@ class ApiController extends Controller
             if ($userData['status'] == false) {
                 return $checkToken->getContent();
             }
-            $plans = Plan::findOrFail(11);
+            $plans = Plan::findOrFail(env('REVISION_BATCH_PLAN_ID'));
 
             $ids = explode(',', $plans->module_ids);
             $serviceData = Modules::whereIn('id', $ids)->where('status', 1)->get();
@@ -2372,7 +2376,7 @@ class ApiController extends Controller
             }
 
             $userData = User::where('id', $user_id)->first();
-            if ($plan_id == 11) {
+            if ($plan_id == env('REVISION_BATCH_PLAN_ID')) {
                 $activePlan = Plan::where('id', $plan_id)->first();
             } else {
                 $activePlan = PlanPurchase::with('Plans')->where('user_id', $user_id)->where('plan_id', $plan_id)->first();
@@ -2388,7 +2392,7 @@ class ApiController extends Controller
                 $mod = [];
                 $allStartupServices = [];
                 $allRevisionServices = [];
-                if ($plan_id != 11) {
+                if ($plan_id != env('REVISION_BATCH_PLAN_ID')) { // For startup batch
                     if ($moduleIds) {
                         $serviceName = StartupServiceModules::where(['status' => 1])->get();
                         $dataGetNodules = MemberStartupModule::where('member_id', $user_id)->get();
@@ -2424,7 +2428,7 @@ class ApiController extends Controller
                         //revision batch
                         $ids = explode(',', $moduleIds);
                         $modulesName = Modules::whereIn('id', $ids)->where('status', 1)->get();
-                        $dataGetNodules = MemberModule::where('member_id', $user_id)->where('membership_id', 11)->get();
+                        $dataGetNodules = MemberModule::where('member_id', $user_id)->where('membership_id', env('REVISION_BATCH_PLAN_ID'))->get();
                         foreach ($modulesName as $key => $value) {
                             $mod = $dataGetNodules->where('module_id', $value['id'])->first();
                             $services['module_name'] = $value['name'];

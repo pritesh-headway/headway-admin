@@ -88,7 +88,24 @@ class PlanController extends Controller
             $admin->price_within_gujrat = $request->price_within_gujrat;
             $admin->plan_type = $request->plan_type;
         } elseif ($request->page_type == 'idp') {
-            dd(2344);
+            $modules = implode(', ', $request->modules);
+            $admin->validity = $request->validity;
+            $admin->session = $request->session;
+            $admin->duration = $request->duration;
+            $admin->personal_meeting = $request->personal_meeting;
+            $admin->deliveries = $request->deliveries;
+            $admin->duration_year = $request->duration_year;
+            $admin->cmd_visit = $request->cmd_visit;
+            $admin->store_visit = $request->store_visit;
+            $admin->tax = $request->tax;
+            $admin->on_call_support = $request->on_call_support;
+            $admin->personalization = $request->personalization;
+            $admin->documents = $request->documents;
+            $admin->module_ids = $modules;
+            $admin->price_within_india = $request->price_within_india;
+            $admin->price_within_gujrat = $request->price_within_gujrat;
+            $admin->month_duration = $request->month_duration;
+            $admin->plan_type = $request->plan_type;
         } elseif ($request->page_type == 'revision-batch') {
             $modules = implode(', ', $request->modules);
             $admin->module_ids = $modules;
@@ -214,12 +231,29 @@ class PlanController extends Controller
             $admin->price_within_india = $request->price_within_india;
             $admin->price_within_gujrat = $request->price_within_gujrat;
         } elseif ($request->page_type == 'idp') {
-            dd(2344);
+            $modules = implode(', ', $request->modules);
+            $admin->validity = $request->validity;
+            $admin->session = $request->session;
+            $admin->duration = $request->duration;
+            $admin->personal_meeting = $request->personal_meeting;
+            $admin->deliveries = $request->deliveries;
+            $admin->duration_year = $request->duration_year;
+            $admin->cmd_visit = $request->cmd_visit;
+            $admin->store_visit = $request->store_visit;
+            $admin->tax = $request->tax;
+            $admin->on_call_support = $request->on_call_support;
+            $admin->personalization = $request->personalization;
+            $admin->documents = $request->documents;
+            $admin->module_ids = $modules;
+            $admin->price_within_india = $request->price_within_india;
+            $admin->price_within_gujrat = $request->price_within_gujrat;
+            $admin->month_duration = $request->month_duration;
+            $admin->plan_type = $request->plan_type;
         } elseif ($request->page_type == 'revision-batch') {
             $modules = implode(', ', $request->modules);
             $admin->module_ids = $modules;
             $admin->tax = $request->tax;
-        } elseif ($request->page_type == 'stay-aware-live-renewal') {
+        } elseif ($request->page_type == 'stay-aware-live-renewal') {19:05
         } elseif ($request->page_type == 'meeting-with-sir') {
         }
 
