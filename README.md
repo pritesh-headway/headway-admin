@@ -139,3 +139,7 @@ Today's Work on HBS Admin panel:
 1. Made the Exhibitors Visitor Form and Candidate Registration Form dynamic, accessible from the Admin Panel, and added functionality to export the data to an Excel sheet. (ongoing)
 Today's Work on HBS HR Attendance management system:
 2. Develop the payroll and salary pages (ongoing)
+
+
+Today's Work on HBS HR Attendance management system:
+1. Discussion with Designer about Employee user flow and start developing employee dashboard.
