@@ -21,7 +21,9 @@ class RevisionBatch extends Model
         'user_id',
         'status',
         'image',
-        'revison_batch_status'
+        'revison_batch_status',
+        'form_type',
+        'cash_payment_request'
     ];
     protected $primaryKey = 'id';
 

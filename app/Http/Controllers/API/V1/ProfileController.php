@@ -117,7 +117,9 @@ class ProfileController extends Controller
     public function getProfile(Request $request)
     {
         try {
-            $token = $request->header('token') ?? $request->header('Authorization');
+            $token = $request->header('Authorization');
+            $checkToken = $this->tokenVerify($token);
+            // dd($checkToken);
             if ($token && Str::startsWith($token, 'Bearer ')) {
                 $token = Str::replaceFirst('Bearer ', '', $token);
             }
@@ -134,18 +136,15 @@ class ProfileController extends Controller
                 return response()->json($result, 200);
             }
 
-            $activePlan = PlanPurchase::with('Plans')->where('user_id', $user_id)->where('purchase_status', 'Approved')->first();
-            // dd($activePlan);
-            if ($activePlan) {
-                $userDataInfo['plan_name'] = ($activePlan) ? $activePlan->Plans->plan_name : '';
-                $userDataInfo['plan_id'] = ($activePlan) ? $activePlan->Plans->id : '';
-                $userDataInfo['plan_icon'] = ($activePlan) ? $base_url . $this->plan_path . $activePlan->Plans->image : '';
-            } else {
-                $userDataInfo = (object) [];
-            }
-
-
-            $activeplans = $userDataInfo;
+            // $activePlan = PlanPurchase::with('Plans')->where('user_id', $user_id)->where('purchase_status', 'Approved')->first();
+            // if ($activePlan) {
+            //     $userDataInfo['plan_name'] = ($activePlan) ? $activePlan->Plans->plan_name : '';
+            //     $userDataInfo['plan_id'] = ($activePlan) ? $activePlan->Plans->id : '';
+            //     $userDataInfo['plan_icon'] = ($activePlan) ? $base_url . $this->plan_path . $activePlan->Plans->image : '';
+            // } else {
+            //     $userDataInfo = (object) [];
+            // }
+            // $activeplans = $userDataInfo;
 
             // Get the currently authenticated user
             $user = User::with('MemberBatch')->where('id', $user_id)->get();
@@ -157,12 +156,33 @@ class ProfileController extends Controller
                     ->put('avatar', ($user['avatar']) ? $base_url . $this->profile_path . $user['avatar'] : '')
                     ->toArray();
             })->first();
-            $data['active-plan'] = $activeplans;
+            // $data['active-plan'] = $activeplans;
 
             // Return a response
             return response()->json(['status' => true, 'message' => 'Profile updated successfully!', 'data' => $data], 200);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => 'Something went wrong', 'error' => $th->getMessage()], 200);
+        }
+    }
+
+    public function tokenVerify($token)
+    {
+
+        if ($token && Str::startsWith($token, 'Bearer ')) {
+            $token = Str::replaceFirst('Bearer ', '', $token);
+        }
+        $user = DB::table('user_devices')
+            ->where('user_devices.login_token', '=', $token)
+            ->where('user_devices.status', '=', 1)
+            ->count();
+        if ($user == '' || $user == null || $user == 0) {
+            $result['status'] = false;
+            $result['message'] = "Token given is invalid, Please login again.";
+            $result['data'] = [];
+            return response()->json($result, 200);
+        } else {
+            $result['status'] = true;
+            return response()->json($result, 200);
         }
     }
 }

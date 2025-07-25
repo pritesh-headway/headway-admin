@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-Event Create - Admin Panel
+Event Details - Admin Panel
 @endsection
 
 @section('styles')
@@ -14,7 +14,6 @@ Event Create - Admin Panel
 </style>
 @endsection
 
-
 @section('admin-content')
 
 <!-- page title area start -->
@@ -22,11 +21,11 @@ Event Create - Admin Panel
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">Event Create</h4>
+                <h4 class="page-title pull-left">Request Event Details</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ route('admin.event.index') }}">All Events</a></li>
-                    <li><span>Create Blog</span></li>
+                    <li><a href="{{ route('admin.eventrequest.index') }}">All Request Event</a></li>
+                    <li><span>Detail Request Event - {{ $admin['Users']->name }}</span></li>
                 </ul>
             </div>
         </div>
@@ -43,24 +42,28 @@ Event Create - Admin Panel
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title">Create New Event</h4>
+                    <h4 class="header-title">Request Event - {{ $admin['Users']->name }}</h4>
                     @include('backend.layouts.partials.messages')
 
-                    <form action="{{ route('admin.event.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.eventrequest.update', $admin->id) }}" method="POST"
+                        enctype="multipart/form-data">
+                        @method('PUT')
                         @csrf
                         <div class="form-row">
 
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Event Name</label>
                                 <input type="text" class="form-control" id="event_name" name="event_name"
-                                    placeholder="Enter Name" required autofocus value="{{ old('event_name') }}"
-                                    required>
+                                    placeholder="Enter Event Name" value="{{ $admin['Events']->event_name }}" readonly
+                                    required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Event Building Name</label>
                                 <input type="text" class="form-control" id="event_address" name="event_address"
-                                    placeholder="Enter Building Name" value="" required autofocus>
+                                    placeholder="Enter Hour" value="{{ $admin['Events']->event_address }}" readonly
+                                    required autofocus>
                             </div>
+
 
                         </div>
 
@@ -68,47 +71,53 @@ Event Create - Admin Panel
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Event Address</label>
                                 <input type="text" class="form-control" id="location" name="location"
-                                    placeholder="Enter Address" required autofocus value="{{ old('location') }}"
-                                    required>
+                                    placeholder="Enter Location" value="{{ $admin['Events']->location }}" readonly
+                                    required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="password">Description</label>
-                                <textarea required class="form-control" id="description" name="description"></textarea>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Event Price</label>
-                                <input type="text" class="form-control" id="event_price" name="event_price"
-                                    placeholder="Enter Price" required autofocus value="{{ old('event_price') }}"
-                                    required>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Event Date & Time</label>
-                                <input type="text" class="form-control datetime" id="event_date_time"
-                                    name="event_date_time" placeholder="" required autofocus
-                                    value="{{ old('event_date_time') }}" required>
+                                <textarea readonly class="form-control" id="description"
+                                    name="description">{{ $admin['Events']->description }}</textarea>
                             </div>
                         </div>
 
                         <div class="form-row">
-                            {{-- <div class="form-group col-md-6 col-sm-6">
-                                <label for="password">Image</label>
-                                <input type="file" name="image" id="image" class="form-control" required />
-                            </div> --}}
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">Event Price</label>
+                                <input type="text" class="form-control" readonly id="event_price" name="event_price"
+                                    placeholder="Enter Price" required autofocus
+                                    value="{{ $admin['Events']->event_price }}" required>
+                            </div>
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">Event Date & Time</label>
+                                <input type="text" readonly class="form-control " id="event_date_time"
+                                    name="event_date_time" placeholder="Enter Price" required autofocus
+                                    value="{{ $admin['Events']->event_date_time }}" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>
-                                <select class="form-control " id="status" name="status" required>
-                                    <option value="1" {{ old('status')=='1' ? 'selected' : '' }}>Active
+                                <select class="form-control " id="request_status" name="request_status" required>
+                                    <option value="Pending" {{ old('request_status')=='Pending' ? 'selected' : '' }} {{
+                                        $admin->request_status == 'Pending'
+                                        ? 'selected' : '' }}>Pending
                                     </option>
-                                    <option value="0" {{ old('status')=='0' ? 'selected' : '' }}>Completed
+                                    <option value="Requested" {{ old('request_status')=='Requested' ? 'selected' : '' }}
+                                        {{ $admin->request_status == 'Requested'
+                                        ? 'selected' : '' }}>Requested
+                                    </option>
+                                    <option value="Approved" {{ old('request_status')=='Approved' ? 'selected' : '' }}
+                                        {{ $admin->request_status == 'Approved'
+                                        ? 'selected' : '' }}>Approved
                                     </option>
                                 </select>
                             </div>
                         </div>
 
                         <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
-                        <a href="{{ route('admin.event.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
+                        <a href="{{ route('admin.eventrequest.index') }}"
+                            class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
                     </form>
                 </div>
             </div>

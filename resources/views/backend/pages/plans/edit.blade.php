@@ -140,7 +140,6 @@ Plan Edit - Admin Panel
                                 <textarea class="form-control" id="description"
                                     name="description">{{ $admin->description }}</textarea>
                             </div>
-
                         </div>
 
                         <div class="form-row">
@@ -162,6 +161,10 @@ Plan Edit - Admin Panel
                                     <option value="Smart" {{ old('plan_type')=='Smart' ? 'selected' : '' }} {{ $admin->
                                         plan_type == 'Smart' ? 'selected' : '' }}>
                                         Smart
+                                    </option>
+                                    <option value="Beginner" {{ old('plan_type')=='Beginner' ? 'selected' : '' }} {{
+                                        $admin->plan_type == 'Beginner' ? 'selected' : '' }}>
+                                        Beginner
                                     </option>
 
                                 </select>
@@ -190,6 +193,7 @@ Plan Edit - Admin Panel
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Select Document</label>
                                 <select class="form-control " id="documents" name="documents" required>
+                                    <option>Select Document</option>
                                     <option value="Printed Document" {{ old('documents')=='Printed Document'
                                         ? 'selected' : '' }} {{ $admin->
                                         documents == 'Printed Document' ? 'selected' : '' }}>
@@ -219,6 +223,7 @@ Plan Edit - Admin Panel
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Persionalization</label>
                                 <select class="form-control " id="personalization" name="personalization" required>
+                                    <option>Select Persionalization</option>
                                     <option value="Face 2 Face" {{ old('personalization')=='Face 2 Face' ? 'selected'
                                         : '' }} {{ $admin->
                                         personalization == 'Face 2 Face'
@@ -327,9 +332,9 @@ Plan Edit - Admin Panel
             $('form').on('submit', function(e) {
                 const checkedModules = $('input[name="modules[]"]:checked').length;
 
-                if (checkedModules < 4) {
+                if (checkedModules < 2) {
                     e.preventDefault(); // Prevent form submission
-                    $('#module-error').text("Please select at least 4 services.").show();
+                    $('#module-error').text("Please select at least 2 services.").show();
                 } else {
                     $('#module-error').hide(); // Clear error if validation passes
                 }

@@ -14,7 +14,6 @@ Plan Create - Admin Panel
 </style>
 @endsection
 
-
 @section('admin-content')
 <!-- page title area start -->
 <div class="page-title-area">
@@ -65,61 +64,21 @@ Plan Create - Admin Panel
                                 <label for="name">Price (Within Gujrat)</label>
                                 <input type="number" class="form-control" id="price_within_gujrat"
                                     name="price_within_gujrat" placeholder="Enter Price Within Gujrat"
-                                    value="{{ old('price_within_gujrat') }}" required autofocus>
+                                    value="{{ old('price_within_gujrat') }}" autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name">Price (Within India)</label>
                                 <input type="number" class="form-control" id="price_within_india"
                                     name="price_within_india" placeholder="Enter Price Within India"
-                                    value="{{ old('price_within_india') }}" required autofocus>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Duration</label>
-                                <input type="text" class="form-control" id="validity" name="validity"
-                                    placeholder="Enter duration" value="{{ old('validity') }}" required autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Session</label>
-                                <input type="text" class="form-control" id="session" name="session"
-                                    placeholder="Enter Session" value="{{ old('session') }}" required autofocus>
+                                    value="{{ old('price_within_india') }}" autofocus>
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Month Duration</label>
-                                <input type="number" class="form-control" id="month_duration" name="month_duration"
-                                    placeholder="Enter Month Duration" value="{{ old('month_duration') }}" required
-                                    autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Personal Meeting</label>
+                                <label for="name">Meetings</label>
                                 <input type="text" class="form-control" id="personal_meeting" name="personal_meeting"
-                                    placeholder="Enter Personal Meeting" value="{{ old('personal_meeting') }}" required
-                                    autofocus>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Deliveries</label>
-                                <input type="text" class="form-control" id="deliveries" name="deliveries"
-                                    placeholder="Enter Deliveries" value="{{ old('deliveries') }}" required autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Duration Year</label>
-                                <input type="text" class="form-control" id="duration_year" name="duration_year"
-                                    placeholder="Enter Duration Year" value="{{ old('duration_year') }}" required
-                                    autofocus>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Meeting Duration (In Hrs)</label>
-                                <input type="number" class="form-control" id="duration" name="duration"
-                                    placeholder="Enter Meeting Duration" value="{{ old('duration') }}" required
+                                    placeholder="Enter Meeting" value="{{ old('personal_meeting') }}" required
                                     autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
@@ -138,45 +97,14 @@ Plan Create - Admin Panel
                                 <label for="password">Description</label>
                                 <textarea required class="form-control" id="description" name="description"></textarea>
                             </div>
-
-                        </div>
-
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">CMD Visit</label>
-                                <input type="number" class="form-control" id="cmd_visit" name="cmd_visit"
-                                    placeholder="Enter cmd visit" value="{{ old('cmd_visit') }}" required autofocus>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Store Visit</label>
-                                <input type="number" class="form-control" id="store_visit" name="store_visit"
-                                    placeholder="Enter store visit" value="{{ old('store_visit') }}" required autofocus>
-                            </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
-                                <label for="username">Select Document</label>
-                                <select class="form-control " id="documents" name="documents" required>
-                                    <option value="Printed Document" {{ old('documents')=='Printed Document'
-                                        ? 'selected' : '' }}>
-                                        Printed Document
-                                    </option>
-                                    <option value="Printed Document + Excel Sheet" {{
-                                        old('documents')=='Printed Document + Excel Sheet' ? 'selected' : '' }}>
-                                        Printed Document + Excel Sheet
-                                    </option>
-                                    <option value="Printed Document + Excel Sheet + Training" {{
-                                        old('documents')=='Printed Document + Excel Sheet + Training' ? 'selected' : ''
-                                        }}>
-                                        Printed Document + Excel Sheet + Training
-                                    </option>
-                                    <option value="Printed Document + Excel Sheet + Training + Solutions" {{
-                                        old('documents')=='Printed Document + Excel Sheet + Training + Solutions'
-                                        ? 'selected' : '' }}>
-                                        Printed Document + Excel Sheet + Training + Solutions
-                                    </option>
-                                </select>
+                                <label for="password">Marketing Campaign Plan Strategy</label>
+                                <input type="number" class="form-control" id="marketing_campaign_plan_startegy"
+                                    name="marketing_campaign_plan_startegy"
+                                    placeholder="Enter Marketing Campaign Plan Startegy"
+                                    value="{{ old('marketing_campaign_plan_startegy') }}" required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="password">On Call Support</label>
@@ -185,46 +113,7 @@ Plan Create - Admin Panel
                                     autofocus>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label for="username">Persionalization</label>
-                                <select class="form-control " id="personalization" name="personalization" required>
-                                    <option value="Face 2 Face" {{ old('personalization')=='Face 2 Face' ? 'selected'
-                                        : '' }}>
-                                        Face 2 Face
-                                    </option>
-                                    <option value="Online" {{ old('personalization')=='Online' ? 'selected' : '' }}>
-                                        Online
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label for="password">Data Analytic Dashboard</label>
-                                <input type="text" class="form-control" id="data_analytics_dash"
-                                    name="data_analytics_dash" placeholder="Enter Data Analytic Dashboard"
-                                    value="{{ old('data_analytics_dash') }}" required autofocus>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label for="password">Marketing Campaign Support</label>
-                                <input type="text" class="form-control" id="marketing_campaign_support"
-                                    name="marketing_campaign_support" placeholder="Enter Marketing Campaign Support"
-                                    value="{{ old('marketing_campaign_support') }}" required autofocus>
-                            </div>
-                        </div>
-                        {{-- <div class="form-row">
-                            <div class="form-group col-md-12 col-sm-12">
-                                <label for="cmd_visit">Modules</label>
-                                @foreach ($modules as $module)
-                                <div>
-                                    <input type="checkbox" id="modules_{{ $module->id }}" name="modules[]"
-                                        value="{{ $module->id }}">
-                                    <label for="modules_{{ $module->id }}"> {{ $module->name }}</label>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div> --}}
+
                         <div class="form-row">
                             <div class="form-group col-md-12 col-sm-12">
                                 <label for="cmd_visit">Services</label>
@@ -286,9 +175,9 @@ Plan Create - Admin Panel
             $('form').on('submit', function(e) {
                 const checkedModules = $('input[name="modules[]"]:checked').length;
 
-                if (checkedModules < 4) {
+                if (checkedModules < 2) {
                     e.preventDefault(); // Prevent form submission
-                    $('#module-error').text("Please select at least 4 services.").show();
+                    $('#module-error').text("Please select at least 2 services.").show();
                 } else {
                     $('#module-error').hide(); // Clear error if validation passes
                 }

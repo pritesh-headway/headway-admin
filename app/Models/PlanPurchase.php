@@ -13,7 +13,7 @@ class PlanPurchase extends Model
     public $table = 'plan_orders';
     protected $primaryKey = 'id';
 
-    protected $fillable = ['plan_id', 'addon_id', 'user_id', 'payment_receipt', 'purchase_status'];
+    protected $fillable = ['plan_id', 'addon_id', 'user_id', 'payment_receipt', 'purchase_status', 'total_price'];
 
     public function Plans()
     {

@@ -57,6 +57,7 @@
                                 <tr>
                                     <th>{{ __('Sl') }}</th>
                                     <th>{{ __('Module Name') }}</th>
+                                    <th>{{ __('Plan Type') }}</th>
                                     <th>{{ __('Action') }}</th>
                                 </tr>
                             </thead>
@@ -65,6 +66,7 @@
                                 <tr>
                                     <td>{{ $loop->index+1 }}</td>
                                     <td>{{ $admin->name }}</td>
+                                    <td>{{ $admin->plan_type }}</td>
                                     <td>
                                         @if (auth()->user()->can('modules.edit'))
                                         <a class="btn btn-success text-white"

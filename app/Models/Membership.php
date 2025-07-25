@@ -65,7 +65,8 @@ class Membership extends Model
         'personal_ContactPerson_email',
         'expectation_from_this_program',
         'user_id',
-        'purchase_status'
+        'purchase_status',
+        'cash_payment_request'
     ];
     protected $primaryKey = 'id';
 

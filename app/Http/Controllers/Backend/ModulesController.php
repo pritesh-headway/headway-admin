@@ -33,7 +33,8 @@ class ModulesController extends Controller
     {
         $this->checkAuthorization(auth()->user(), ['admin.create']);
         $services = Service::where('is_deleted', '0')->where('status', 1)->get();
-        $planType = Plan::where('is_deleted', '0')->where('status', 1)->get();
+        $planType = Plan::select('plan_type')->where('is_deleted', '0')->where('status', 1)->where('page_type', 'mmb')->distinct()
+            ->get();
         return view('backend.pages.modules.create', ['services' => $services, 'planType' => $planType]);
     }
 
@@ -43,12 +44,11 @@ class ModulesController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $this->checkAuthorization(auth()->user(), ['modules.create']);
-
         $admin = new Modules();
         $admin->name = $request->name;
         $admin->sort_desc = $request->desc;
         $admin->service_id = $request->service_id;
-        $admin->plan_type = $request->plan_type;
+        $admin->plan_type = implode(',', $request->plan_type);
         $admin->status = $request->status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -79,7 +79,9 @@ class ModulesController extends Controller
 
         $admin = Modules::findOrFail($id);
         $services = Service::where('is_deleted', '0')->where('status', 1)->get();
-        $planType = Plan::where('is_deleted', '0')->where('status', 1)->get();
+        $planType = Plan::select('plan_type')->where('is_deleted', '0')->where('status', 1)->where('page_type', 'mmb')->distinct()
+            ->get();
+
         return view('backend.pages.modules.edit', [
             'admin' => $admin,
             'services' => $services,
@@ -99,7 +101,7 @@ class ModulesController extends Controller
         $admin->name = $request->name;
         $admin->sort_desc = $request->desc;
         $admin->service_id = $request->service_id;
-        $admin->plan_type = $request->plan_type;
+        $admin->plan_type = implode(',', $request->plan_type);
         $admin->status = $request->status;
 
         if ($request->hasFile('image')) {

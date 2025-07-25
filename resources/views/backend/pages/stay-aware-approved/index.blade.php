@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-{{ __('Events - Admin Panel') }}
+{{ __('Stay Aware Alive Batch Approved - Admin Panel') }}
 @endsection
 
 @section('styles')
@@ -21,10 +21,10 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">{{ __('Events') }}</h4>
+                <h4 class="page-title pull-left">{{ __('Stay Aware Alive Batch Approved List') }}</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }}</a></li>
-                    <li><span>{{ __('All Events') }}</span></li>
+                    <li><span>{{ __('All Stay Aware Alive Batch Approved List') }}</span></li>
                 </ul>
             </div>
         </div>
@@ -41,12 +41,12 @@
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title float-left">{{ __('Events') }}</h4>
+                    <h4 class="header-title float-left">{{ __('Stay Aware Alive Batch Approved List') }}</h4>
                     <p class="float-right mb-2">
-                        @if (auth()->user()->can('event.edit'))
-                        <a class="btn btn-primary text-white" href="{{ route('admin.event.create') }}">
-                            {{ __('Create New Event') }}
-                        </a>
+                        @if (auth()->user()->can('membership.edit'))
+                        {{-- <a class="btn btn-primary text-white" href="{{ route('admin.membership.create') }}">
+                            {{ __('Create New Membership') }}
+                        </a> --}}
                         @endif
                     </p>
                     <div class="clearfix"></div>
@@ -55,10 +55,10 @@
                         <table id="dataTable" class="text-center">
                             <thead class="bg-light text-capitalize">
                                 <tr>
-                                    <th width="5%">{{ __('Sl') }}</th>
-                                    <th width="10%">{{ __('Event Name') }}</th>
-                                    <th width="40%">{{ __('Event Address') }}</th>
-                                    <th width="10%">{{ __('Event Status') }}</th>
+                                    <th width="1%">{{ __('Sl') }}</th>
+                                    <th width="10%">{{ __('Owner Name') }}</th>
+                                    <th width="10%">{{ __('Shop Name') }}</th>
+                                    <th width="40%">{{ __('Mobile No') }}</th>
                                     <th width="15%">{{ __('Action') }}</th>
                                 </tr>
                             </thead>
@@ -66,31 +66,26 @@
                                 @foreach ($admins as $admin)
                                 <tr>
                                     <td>{{ $loop->index+1 }}</td>
-                                    <td>{{ $admin->event_name }}</td>
-                                    <td>{{ $admin->event_address }}</td>
-                                    <td>{{ $admin->status == 1 ? 'Active' : 'Completed' }}</td>
-                                    <td>
-                                        @if (auth()->user()->can('event.edit'))
-                                        <a class="btn btn-success text-white"
-                                            href="{{ route('admin.event.edit', $admin->id) }}">Edit</a>
+                                    <td>{{ $admin->owner_name }}</td>
+                                    <td>{{ $admin->shop_name }}</td>
+                                    <td>{{ $admin->phone_number }}</td>
+                                    {{-- <td>{{ $admin->email }}</td> --}}
+                                    {{-- <td>
+                                        @if ($admin->membership_status=='Declined')
+                                        <div style="background-color: orange;padding: 5px;">{{ $admin->membership_status
+                                            }} </div>
+                                        @elseif ($admin->membership_status=='Approved')
+                                        <div style="background-color: green;padding: 5px;">{{ $admin->membership_status
+                                            }} </div>
+                                        @elseif ($admin->membership_status=='Pending')
+                                        <div style="background-color: red;padding: 5px;">{{ $admin->membership_status }}
+                                        </div>
                                         @endif
-
-                                        @if (auth()->user()->can('event.delete'))
-                                        {{-- <a class="btn btn-danger text-white" href="javascript:void(0);"
-                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to delete?')) { document.getElementById('delete-form-{{ $admin->id }}').submit(); }">
-                                            {{ __('Delete') }}
-                                        </a> --}}
-                                        <a class="btn btn-danger text-white" href="javascript:void(0);"
-                                            onclick="showDeleteModal({{ $admin->id }})">
-                                            {{ __('Delete') }}
-                                        </a>
-
-                                        <form id="delete-form-{{ $admin->id }}"
-                                            action="{{ route('admin.event.destroy', $admin->id) }}" method="POST"
-                                            style="display: none;">
-                                            @method('DELETE')
-                                            @csrf
-                                        </form>
+                                    </td> --}}
+                                    <td>
+                                        @if (auth()->user()->can('stayaware.edit'))
+                                        <a class="btn btn-success text-white"
+                                            href="{{ route('admin.staywarebatchapproved.edit', $admin->id) }}">Detail</a>
                                         @endif
                                     </td>
                                 </tr>
@@ -117,7 +112,7 @@
 <script>
     if ($('#dataTable').length) {
             $('#dataTable').DataTable({
-                responsive: true
+                responsive: false
             });
         }
 </script>

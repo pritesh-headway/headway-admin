@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\Event;
+use App\Models\EventRequest;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Role;
 
-class EventController extends Controller
+class EventRequestController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,9 +19,10 @@ class EventController extends Controller
     public function index()
     {
         $this->checkAuthorization(auth()->user(), ['event.create']);
-
-        return view('backend.pages.events.index', [
-            'admins' => Event::where('is_deleted', '0')->get(),
+        $admin = EventRequest::with('Events', 'Users')->get();
+        // dd($admin);
+        return view('backend.pages.eventsrequest.index', [
+            'admins' => $admin,
         ]);
     }
 
@@ -31,7 +33,7 @@ class EventController extends Controller
     {
         $this->checkAuthorization(auth()->user(), ['event.create']);
 
-        return view('backend.pages.events.create', []);
+        return view('backend.pages.eventsrequest.create', []);
     }
 
     /**
@@ -58,7 +60,7 @@ class EventController extends Controller
         $admin->save();
 
         session()->flash('success', __('Event has been created.'));
-        return redirect()->route('admin.event.index');
+        return redirect()->route('admin.eventrequest.index');
     }
 
     /**
@@ -76,8 +78,9 @@ class EventController extends Controller
     {
         $this->checkAuthorization(auth()->user(), ['event.edit']);
 
-        $admin = Event::findOrFail($id);
-        return view('backend.pages.events.edit', [
+        $admin = EventRequest::with('Events', 'Users')->where('event_request.event_id', $id)->first();
+        // dd($admin['Events']->event_name);
+        return view('backend.pages.eventsrequest.edit', [
             'admin' => $admin,
             'roles' => Role::all(),
         ]);
@@ -90,14 +93,8 @@ class EventController extends Controller
     {
         $this->checkAuthorization(auth()->user(), ['event.edit']);
 
-        $admin = Event::findOrFail($id);
-        $admin->event_name = $request->event_name;
-        $admin->location = $request->location;
-        $admin->description = $request->description;
-        $admin->event_address = $request->event_address;
-        $admin->event_price = $request->event_price;
-        $admin->event_date_time = $request->event_date_time;
-        $admin->status = $request->status;
+        $admin = EventRequest::findOrFail($id);
+        $admin->request_status = $request->request_status;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -106,8 +103,8 @@ class EventController extends Controller
         }
         $admin->save();
 
-        session()->flash('success', 'Event has been updated.');
-        return redirect()->route('admin.event.index'); //back();
+        session()->flash('success', 'Request has been updated.');
+        return redirect()->route('admin.eventrequest.index'); //back();
     }
 
     /**

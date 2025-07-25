@@ -57,35 +57,42 @@ Event Edit - Admin Panel
                                     placeholder="Enter Event Name" value="{{ $admin->event_name }}" required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Location</label>
-                                <input type="text" class="form-control" id="location" name="location"
-                                    placeholder="Enter Location" value="{{ $admin->location }}" required autofocus>
+                                <label for="name">Event Building Name</label>
+                                <input type="text" class="form-control" id="event_address" name="event_address"
+                                    placeholder="Enter Hour" value="{{ $admin->event_address }}" required autofocus>
                             </div>
+
 
                         </div>
 
                         <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="name">Event Address</label>
+                                <input type="text" class="form-control" id="location" name="location"
+                                    placeholder="Enter Location" value="{{ $admin->location }}" required autofocus>
+                            </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="password">Description</label>
                                 <textarea class="form-control" id="description"
                                     name="description">{{ $admin->description }}</textarea>
                             </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Hours</label>
-                                <input type="text" class="form-control" id="hours" name="hours" placeholder="Enter Hour"
-                                    value="{{ $admin->hours }}" required autofocus>
-                            </div>
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label for="password">Event Image</label>
-                                <input type="file" name="image" id="image" class="form-control" />
-                                <br />
-                                <img src="{{ asset('events/'.$admin->image) }}" alt="Event Image" width="100px"
-                                    height="80px" />
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">Event Price</label>
+                                <input type="text" class="form-control" id="event_price" name="event_price"
+                                    placeholder="Enter Price" required autofocus value="{{ $admin->event_price }}"
+                                    required>
                             </div>
-
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">Event Date & Time</label>
+                                <input type="text" class="form-control datetime" id="event_date_time"
+                                    name="event_date_time" placeholder="Enter Price" required autofocus
+                                    value="{{ $admin->event_date_time }}" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Status</label>
                                 <select class="form-control " id="status" name="status" required>
@@ -93,7 +100,7 @@ Event Edit - Admin Panel
                                         ? 'selected' : '' }}>Active
                                     </option>
                                     <option value="0" {{ old('status')=='0' ? 'selected' : '' }} {{ $admin->status=='0'
-                                        ? 'selected' : '' }}>Inactive
+                                        ? 'selected' : '' }}>Completed
                                     </option>
                                 </select>
                             </div>
@@ -113,6 +120,16 @@ Event Edit - Admin Panel
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    flatpickr(".date", { dateFormat: "Y-m-d" });
+    flatpickr(".time", { enableTime: true, noCalendar: true, dateFormat: "H:i" });
+    flatpickr(".datetime", {
+    dateFormat: "Y-m-d H:i", // H:i = 24-hour format like 14:30
+    enableTime: true
+    });
+</script>
 <script>
     $(document).ready(function() {
         $('.select2').select2();

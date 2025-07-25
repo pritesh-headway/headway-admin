@@ -24,7 +24,7 @@ use App\Services\FcmNotificationService;
 use Google\Service\CloudTrace\Module;
 use Illuminate\Support\Facades\DB;
 
-class RevisionBatchApprovedController extends Controller
+class StayawareBatchApprovedController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -33,8 +33,8 @@ class RevisionBatchApprovedController extends Controller
     {
         $this->checkAuthorization(auth()->user(), ['members.create']);
 
-        return view('backend.pages.revision-batch-approved.index', [
-            'admins' => RevisionBatch::where(['status' => '1', 'revison_batch_status' => 'Approved', 'form_type' => 'Revision_Batch'])->get(),
+        return view('backend.pages.stay-aware-approved.index', [
+            'admins' => RevisionBatch::where(['status' => '1', 'revison_batch_status' => 'Approved', 'form_type' => 'Stay_Aware'])->get(),
         ]);
     }
 
@@ -45,7 +45,7 @@ class RevisionBatchApprovedController extends Controller
     {
         $this->checkAuthorization(auth()->user(), ['members.create']);
 
-        return view('backend.pages.revision-batch-approved.create', []);
+        return view('backend.pages.stay-aware-approved.create', []);
     }
 
 
@@ -58,12 +58,12 @@ class RevisionBatchApprovedController extends Controller
 
         $admin = RevisionBatch::findOrFail($id);
         $plans = Plan::findOrFail(11);
-        // dd($plans);
+        dd($plans);
         $ids = explode(',', $plans->module_ids);
         $modulesName = Modules::whereIn('id', $ids)->where('status', 1)->get();
         // dd($modulesName);
         // $modulesName = Modules::where('status', 1)->where('plan_type', 'Revision')->get();
-        $pageName = 'backend.pages.revision-batch-approved.edit';
+        $pageName = 'backend.pages.stay-aware-approved.edit';
         $dataGetNodules = MemberModule::where('member_id', $admin->user_id)->where('membership_id', 11)->get();
         return view($pageName, [
             'admin' => $admin,
@@ -115,7 +115,7 @@ class RevisionBatchApprovedController extends Controller
         $admin->save();
 
         session()->flash('success', 'Client has been updated.');
-        return redirect()->route('admin.revision-batch-approved.index'); //back();
+        return redirect()->route('admin.stay-aware-approved.index'); //back();
     }
 
     /**

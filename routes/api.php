@@ -32,7 +32,7 @@ Route::post('v1/sendOtp', [ApiController::class, 'sendOtp']);
 Route::post('v1/login', [ApiController::class, 'login']);
 Route::post('v1/resend_otp', [ApiController::class, 'resendOtp']);
 Route::post('v1/profile/update', [ProfileController::class, 'updateProfile']);
-Route::post('v1/profile/getProfile', [ProfileController::class, 'getProfile'])->middleware('jwt.verify');
+Route::post('v1/profile/getProfile', [ProfileController::class, 'getProfile']); //->middleware('jwt.verify');
 Route::post('v1/getBlogsList', [ApiController::class, 'getBlogsList']);
 Route::post('v1/getPlanList', [ApiController::class, 'getPlanList']);
 Route::post('v1/getPlanDetail', [ApiController::class, 'getPlanDetail']);
@@ -60,7 +60,7 @@ Route::post('v1/getMembershipPolicy', [ApiController::class, 'getMembershipPolic
 Route::post('v1/getDataProcessingSupport', [ApiController::class, 'getDataProcessingSupport']);
 Route::post('v1/getMarketingStrategy', [ApiController::class, 'getMarketingStrategy']);
 Route::post('v1/getDashboardData', [ApiController::class, 'getDashboardData']);
-Route::post('v1/getNotificationUser', [ApiController::class, 'getNotificationUser'])->middleware('jwt.verify');
+Route::post('v1/getNotificationUser', [ApiController::class, 'getNotificationUser']); //->middleware('jwt.verify');
 Route::post('v1/getHeadwayITList', [ApiController::class, 'getHeadwayITList']);
 Route::post('v1/getJewelleryVidyapithList', [ApiController::class, 'getJewelleryVidyapithList']);
 Route::post('v1/getBusinessList', [ApiController::class, 'getBusinessList']);
@@ -71,6 +71,9 @@ Route::post('v1/getTermsCondition', [ApiController::class, 'getTermsCondition'])
 Route::post('v1/getDataConfig', [ApiController::class, 'getDataConfig']);
 Route::post('v1/addOnPurchase', [ApiController::class, 'addOnPurchase']);
 Route::post('v1/getAccountInfo', [ApiController::class, 'getAccountInfo']);
+Route::post('v1/getStaffTraining', [ApiController::class, 'getStaffTraining']);
+Route::post('v1/getEventList', [ApiController::class, 'getEventList']);
+Route::post('v1/eventRequest', [ApiController::class, 'eventRequest']);
 Route::post('v1/getMyPlan', [ApiController::class, 'getMyPlan']);
 Route::post('/v1/logout', [ApiController::class, 'logout']);
 
@@ -97,7 +100,7 @@ Route::post('v1/idb_page', [ApiController::class, 'getIdbPage']);
 Route::post('v1/intelligent_hr', [ApiController::class, 'getIntelligentHR']);
 Route::post('v1/jewellery_vidyapith', [ApiController::class, 'getJewelleryVidyapith']);
 Route::post('v1/headway_it', [ApiController::class, 'getHeadwayIT']);
-Route::post('v1/plan_list', [ApiController::class, 'getMMBPlanList']);
+Route::post('v1/plan_list', [ApiController::class, 'getWebPlanList']);
 Route::post('v1/oneTimeRequestMeeting', [ApiController::class, 'oneTimeRequestMeeting']);
 Route::post('v1/getOneTimeList', [ApiController::class, 'getOneTimeList']);
 Route::post('v1/revisionBatchRequestMeeting', [ApiController::class, 'revisionBatchRequestMeeting']);

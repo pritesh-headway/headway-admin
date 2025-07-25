@@ -157,6 +157,9 @@ Plan Create - Admin Panel
                                     <option value="Smart" {{ old('plan_type')=='Smart' ? 'selected' : '' }}>
                                         Smart
                                     </option>
+                                    <option value="Beginner" {{ old('plan_type')=='Beginner' ? 'selected' : '' }}>
+                                        Beginner
+                                    </option>
                                 </select>
                             </div>
                             <div class="form-group col-md-6 col-sm-6">

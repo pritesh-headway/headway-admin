@@ -78,10 +78,11 @@ Modules Create - Admin Panel
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Plan Type</label>
-                                <select class="form-control" id="plan_type" name="plan_type">
+                                <select multiple class="form-control select2" id="plan_type" name="plan_type[]">
                                     <option value="">Select Plan Type</option>
                                     @foreach ($planType as $name)
-                                    <option value="{{ $name->id }}" {{ old('plan_type')==$name->id ? 'selected' :
+                                    <option value="{{ $name->plan_type }}" {{ old('plan_type')==$name->plan_type ?
+                                        'selected' :
                                         '' }}>
                                         {{ $name->plan_type }}
                                     </option>

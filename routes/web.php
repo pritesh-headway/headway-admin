@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Backend\StayawareBatchApprovedController;
 use App\Http\Controllers\ContactController;
 use Google\Service\Dataproc\StartupConfig;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,7 @@ use App\Http\Controllers\Backend\AddOnServiceController;
 use App\Http\Controllers\Backend\BatchController;
 use App\Http\Controllers\Backend\CoursesController;
 use App\Http\Controllers\Backend\CustomersController;
+use App\Http\Controllers\Backend\EventRequestController;
 use App\Http\Controllers\Backend\MeetingRequestController;
 use App\Http\Controllers\Backend\MembersController;
 use App\Http\Controllers\Backend\MembershipController;
@@ -35,6 +37,7 @@ use App\Http\Controllers\Backend\ServicesController;
 use App\Http\Controllers\Backend\TestimonialController;
 use App\Http\Controllers\Backend\VideoGalleryController;
 use App\Http\Controllers\Backend\StartupController;
+use App\Http\Controllers\Backend\StayawareBatchController;
 use App\Http\Controllers\GalleryController;
 use \App\Http\Controllers\OurProductController;
 use App\Http\Controllers\ExibitionVisitorController;
@@ -108,7 +111,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::resource('schedules', SchedulesController::class);
     Route::resource('onemeetingrequest', OneTimeRequestController::class);
     Route::resource('revisionbatch', RevisionBatchController::class);
+    Route::resource('stayawarebatch', StayawareBatchController::class);
     Route::resource('revisionbatchapproved', RevisionBatchApprovedController::class);
+    Route::resource('staywarebatchapproved', StayawareBatchApprovedController::class);
+    Route::resource('eventrequest', EventRequestController::class);
     Route::post('members/addUpdateModuleData', [MembersController::class, 'addUpdateModuleData'])->name('members.addUpdateModuleData');
     Route::post('revisionbatchapproved/addUpdateModuleData', [RevisionBatchApprovedController::class, 'addUpdateModuleData'])->name('revisionbatchapproved.addUpdateModuleData');
     Route::post('members/addUpdateStartupModuleData', [MembersController::class, 'addUpdateStartupModuleData'])->name('members.addUpdateStartupModuleData');

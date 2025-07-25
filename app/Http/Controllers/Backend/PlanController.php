@@ -39,10 +39,12 @@ class PlanController extends Controller
         } elseif ($request->type == 'start-up') {
             return view('backend.pages.plans.startup', ['modules' => $modules, 'page_type' => $request->type]);
         } elseif ($request->type == 'idp') {
+            $modules = Service::where('is_deleted', '0')->where('plan_type', 'IDP')->where('status', 1)->get();
             return view('backend.pages.plans.idp', ['modules' => $modules, 'page_type' => $request->type]);
         } elseif ($request->type == 'revision-batch') {
             return view('backend.pages.plans.revision', ['modules' => $modules, 'page_type' => $request->type]);
         } elseif ($request->type == 'stay-aware-live-renewal') {
+            $modules = Service::where('is_deleted', '0')->where('plan_type', 'Stay Aware')->where('status', 1)->get();
             return view('backend.pages.plans.stay-aware', ['modules' => $modules, 'page_type' => $request->type]);
         } elseif ($request->type == 'meeting-with-sir') {
             return view('backend.pages.plans.single-meeting', ['modules' => $modules, 'page_type' => $request->type]);
@@ -55,7 +57,7 @@ class PlanController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // dd($request);
+        dd($request);
         $this->checkAuthorization(auth()->user(), ['plan.create']);
         $admin = new Plan();
         $admin->plan_name = $request->plan_name;
@@ -111,6 +113,12 @@ class PlanController extends Controller
             $admin->module_ids = $modules;
             $admin->tax = $request->tax;
         } elseif ($request->page_type == 'stay-aware-live-renewal') {
+            $modules = implode(', ', $request->modules);
+            $admin->personal_meeting = $request->personal_meeting;
+            $admin->tax = $request->tax;
+            $admin->on_call_support = $request->on_call_support;
+            $admin->marketing_campaign_plan_startegy = $request->marketing_campaign_plan_startegy;
+            $admin->module_ids = $modules;
         } elseif ($request->page_type == 'meeting-with-sir') {
         }
         $admin->page_type = $request->page_type;
@@ -161,6 +169,7 @@ class PlanController extends Controller
                 'page_type' => $type,
             ]);
         } elseif ($type == 'idp') {
+            $modules = Service::where('is_deleted', '0')->where('plan_type', 'IDP')->where('status', 1)->get();
             return view('backend.pages.plans.idp-edit', [
                 'admin' => $admin,
                 'roles' => Role::all(),
@@ -176,6 +185,7 @@ class PlanController extends Controller
                 'page_type' => $type,
             ]);
         } elseif ($type == 'stay-aware-live-renewal') {
+            $modules = Service::where('is_deleted', '0')->where('plan_type', 'Stay Aware')->where('status', 1)->get();
             return view('backend.pages.plans.stay-aware-edit', [
                 'admin' => $admin,
                 'roles' => Role::all(),
@@ -253,7 +263,15 @@ class PlanController extends Controller
             $modules = implode(', ', $request->modules);
             $admin->module_ids = $modules;
             $admin->tax = $request->tax;
-        } elseif ($request->page_type == 'stay-aware-live-renewal') {19:05
+        } elseif ($request->page_type == 'stay-aware-live-renewal') {
+            $modules = implode(', ', $request->modules);
+            $admin->personal_meeting = $request->personal_meeting;
+            $admin->tax = $request->tax;
+            $admin->on_call_support = $request->on_call_support;
+            $admin->marketing_campaign_plan_startegy = $request->marketing_campaign_plan_startegy;
+            $admin->module_ids = $modules;
+            $admin->price_within_india = $request->price_within_india;
+            $admin->price_within_gujrat = $request->price_within_gujrat;
         } elseif ($request->page_type == 'meeting-with-sir') {
         }
 

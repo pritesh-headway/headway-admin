@@ -191,26 +191,25 @@ Plan Edit - Admin Panel
                                 <label for="username">Select Document</label>
                                 <select class="form-control " id="documents" name="documents" required>
                                     <option value="Printed Document" {{ old('documents')=='Printed Document'
-                                        ? 'selected' : '' }} {{ $admin->
-                                        documents == 'Printed Document' ? 'selected' : '' }}>
+                                        ? 'selected' : '' }} {{ $admin->documents == 'Printed Document' ? 'selected' :
+                                        '' }}>
                                         Printed Document
                                     </option>
                                     <option value="Printed Document + Excel Sheet" {{
                                         old('documents')=='Printed Document + Excel Sheet' ? 'selected' : '' }} {{
-                                        $admin->
-                                        documents == 'Printed Document + Excel Sheet' ? 'selected' : '' }}>
+                                        $admin->documents == 'Printed Document + Excel Sheet' ? 'selected' : '' }}>
                                         Printed Document + Excel Sheet
                                     </option>
                                     <option value="Printed Document + Excel Sheet + Training" {{
                                         old('documents')=='Printed Document + Excel Sheet + Training' ? 'selected' : ''
-                                        }} {{ $admin->
-                                        documents == 'Printed Document + Excel Sheet + Training' ? 'selected' : '' }}>
+                                        }} {{ $admin->documents == 'Printed Document + Excel Sheet + Training' ?
+                                        'selected' : '' }}>
                                         Printed Document + Excel Sheet + Training
                                     </option>
                                     <option value="Printed Document + Excel Sheet + Training + Solutions" {{
                                         old('documents')=='Printed Document + Excel Sheet + Training + Solutions'
-                                        ? 'selected' : '' }} {{ $admin->
-                                        documents == 'Printed Document + Excel Sheet + Training + Solutions' ?
+                                        ? 'selected' : '' }} {{ $admin->documents == 'Printed Document + Excel Sheet +
+                                        Training + Solutions' ?
                                         'selected' : '' }}>
                                         Printed Document + Excel Sheet + Training + Solutions
                                     </option>
@@ -220,8 +219,7 @@ Plan Edit - Admin Panel
                                 <label for="username">Persionalization</label>
                                 <select class="form-control " id="personalization" name="personalization" required>
                                     <option value="Face 2 Face" {{ old('personalization')=='Face 2 Face' ? 'selected'
-                                        : '' }} {{ $admin->
-                                        personalization == 'Face 2 Face'
+                                        : '' }} {{ $admin->personalization == 'Face 2 Face'
                                         ? 'selected' : '' }}>
                                         Face 2 Face
                                     </option>
@@ -234,6 +232,20 @@ Plan Edit - Admin Panel
                                 </select>
                             </div>
 
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Data Analytic Dashboard</label>
+                                <input type="text" class="form-control" id="data_analytics_dash"
+                                    name="data_analytics_dash" placeholder="Enter Data Analytic Dashboard"
+                                    value="{{ $admin->data_analytics_dash }}" required autofocus>
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="password">Marketing Campaign Support</label>
+                                <input type="text" class="form-control" id="marketing_campaign_support"
+                                    name="marketing_campaign_support" placeholder="Enter Marketing Campaign Support"
+                                    value="{{ $admin->marketing_campaign_support }}" required autofocus>
+                            </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">

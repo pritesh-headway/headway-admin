@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-MODULES Edit - Admin Panel
+Modules Edit - Admin Panel
 @endsection
 
 @section('styles')
@@ -21,11 +21,11 @@ MODULES Edit - Admin Panel
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">MODULES Edit</h4>
+                <h4 class="page-title pull-left">Modules Edit</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ route('admin.membership.index') }}">All MODULES</a></li>
-                    <li><span>Edit MODULES - {{ $admin->name }}</span></li>
+                    <li><a href="{{ route('admin.membership.index') }}">All Modules</a></li>
+                    <li><span>Edit Modules - {{ $admin->name }}</span></li>
                 </ul>
             </div>
         </div>
@@ -78,11 +78,13 @@ MODULES Edit - Admin Panel
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Plan Type</label>
-                                <select class="form-control" id="plan_type" name="plan_type">
+                                @php
+                                $planTypes = explode(',', $admin->plan_type);
+                                @endphp
+                                <select multiple class="form-control select2" id="plan_type" name="plan_type[]">
                                     <option value="">Select Plan Type</option>
-                                    @foreach ($planType as $name)
-                                    <option value="{{ $name->id }}" {{ old('plan_type')==$name->id ? 'selected' :
-                                        '' }}>
+                                    @foreach ($planType as $key => $name)
+                                    <option value="{{ $name->plan_type }}" {{ in_array($name->plan_type, $planTypes) ? 'selected' : '' }}>
                                         {{ $name->plan_type }}
                                     </option>
                                     @endforeach

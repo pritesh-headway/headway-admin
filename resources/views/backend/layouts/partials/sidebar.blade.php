@@ -205,7 +205,7 @@ $usr = Auth::guard('admin')->user();
                     <li
                         class="{{ Route::is('admin.onemeetingrequest.index') || Route::is('admin.onemeetingrequest.edit') ? 'active' : '' }}">
                         <a href="{{ route('admin.onemeetingrequest.index') }}"><i class="fa fa-lock"></i>
-                            <span>One Time Request</span></a>
+                            <span>One Time Meeting</span></a>
                     </li>
                     @endif
                     @endif
@@ -216,7 +216,7 @@ $usr = Auth::guard('admin')->user();
                     $usr->can('revisionbatch.delete'))
 
                     <li><a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-ticket"></i><span>Revision
-                                Batch Request</span>
+                                Batch </span>
                         </a>
                         <ul
                             class="collapse {{ Route::is('admin.revisionbatch.create') || Route::is('admin.revisionbatch.index') || Route::is('admin.revisionbatch.edit') || Route::is('admin.revisionbatch.show') || Route::is('admin.revisionbatchapproved.create') || Route::is('admin.revisionbatchapproved.index') || Route::is('admin.revisionbatchapproved.edit') || Route::is('admin.revisionbatchapproved.show') ? 'in' : '' }}">
@@ -231,6 +231,34 @@ $usr = Auth::guard('admin')->user();
                             <li
                                 class="{{ Route::is('admin.revisionbatchapproved.index') || Route::is('admin.revisionbatchapproved.edit') || Route::is('admin.revisionbatchapproved.create') ? 'active' : '' }}">
                                 <a href="{{ route('admin.revisionbatchapproved.index') }}">Revision
+                                    Approved List</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if ($usr->can('stayaware.create') ||
+                    $usr->can('stayaware.view') ||
+                    $usr->can('stayaware.edit') ||
+                    $usr->can('stayaware.delete'))
+
+                    <li><a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-ticket"></i><span>Stay Aware
+                                alive </span>
+                        </a>
+                        <ul
+                            class="collapse {{ Route::is('admin.stayawarebatch.create') || Route::is('admin.stayawarebatch.index') || Route::is('admin.stayawarebatch.edit') || Route::is('admin.stayawarebatch.show') || Route::is('admin.staywarebatchapproved.create') || Route::is('admin.staywarebatchapproved.index') || Route::is('admin.staywarebatchapproved.edit') || Route::is('admin.staywarebatchapproved.show') ? 'in' : '' }}">
+
+                            @if ($usr->can('stayaware.view'))
+                            <li
+                                class="{{ Route::is('admin.stayawarebatch.index') || Route::is('admin.stayawarebatch.edit') || Route::is('admin.stayawarebatch.create') ? 'active' : '' }}">
+                                <a href="{{ route('admin.stayawarebatch.index') }}">Stay Aware
+                                    alive Request</a>
+                            </li>
+
+                            <li
+                                class="{{ Route::is('admin.staywarebatchapproved.index') || Route::is('admin.staywarebatchapproved.edit') || Route::is('admin.staywarebatchapproved.create') ? 'active' : '' }}">
+                                <a href="{{ route('admin.staywarebatchapproved.index') }}">Stay Aware
                                     Approved List</a>
                             </li>
                             @endif
@@ -412,19 +440,21 @@ $usr = Auth::guard('admin')->user();
                                 class="fa fa-calendar"></i><span>Events</span>
                         </a>
                         <ul
-                            class="collapse {{ Route::is('admin.event.create') || Route::is('admin.event.index') || Route::is('admin.event.edit') || Route::is('admin.event.show') ? 'in' : '' }}">
+                            class="collapse {{ Route::is('admin.event.create') || Route::is('admin.event.index') || Route::is('admin.event.edit') || Route::is('admin.event.show') || Route::is('admin.eventrequest.index') || Route::is('admin.eventrequest.edit') || Route::is('admin.eventrequest.show') ? 'in' : '' }}">
 
                             @if ($usr->can('event.view'))
                             <li
                                 class="{{ Route::is('admin.event.index') || Route::is('admin.event.edit') ? 'active' : '' }}">
                                 <a href="{{ route('admin.event.index') }}">All Events</a>
                             </li>
+                            <li class="{{ Route::is('admin.eventrequest.index') ? 'active' : '' }}"><a
+                                    href="{{ route('admin.eventrequest.index') }}">All Event Request</a></li>
                             @endif
 
-                            @if ($usr->can('event.create'))
+                            {{-- @if ($usr->can('event.create'))
                             <li class="{{ Route::is('admin.event.create') ? 'active' : '' }}"><a
                                     href="{{ route('admin.event.create') }}">Create Event</a></li>
-                            @endif
+                            @endif --}}
                         </ul>
                     </li>
                     @endif
