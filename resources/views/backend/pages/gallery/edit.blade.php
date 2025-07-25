@@ -167,10 +167,11 @@
                 if (cropper && imageInput.files.length > 0) {
                     e.preventDefault();
 
-                    const canvas = cropper.getCroppedCanvas({
-                        width: 800,
-                        height: Math.round(800 * (117 / 233))
-                    });
+                    // const canvas = cropper.getCroppedCanvas({
+                    //     width: 800,
+                    //     height: Math.round(800 * (117 / 233))
+                    // });
+                    const canvas = cropper.getCroppedCanvas();
 
                     canvas.toBlob(function(blob) {
                         const reader = new FileReader();
