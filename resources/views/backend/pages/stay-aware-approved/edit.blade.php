@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 
 @section('title')
-Revision Batch Approved Edit - Admin Panel
+Stay Aware Batch Approved Edit - Admin Panel
 @endsection
 
 @section('styles')
@@ -25,11 +25,12 @@ Revision Batch Approved Edit - Admin Panel
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">Revision Batch Approved View</h4>
+                <h4 class="page-title pull-left">Stay Aware Batch Approved View</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ route('admin.revisionbatchapproved.index') }}">All Revision Batch Approved</a></li>
-                    <li><span>View Revision Batch Approved - {{ $admin->owner_name }}</span></li>
+                    <li><a href="{{ route('admin.staywarebatchapproved.index') }}">All Stay Aware Batch Approved</a>
+                    </li>
+                    <li><span>View Stay Aware Batch Approved - {{ $admin->owner_name }}</span></li>
 
                 </ul>
             </div>
@@ -47,7 +48,7 @@ Revision Batch Approved Edit - Admin Panel
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title">View Revision Batch Approved - {{ $admin->owner_name }}</h4>
+                    <h4 class="header-title">View Stay Aware Batch Approved - {{ $admin->owner_name }}</h4>
                     @include('backend.layouts.partials.messages')
                     <p></p>
                     <div class="form-row">
@@ -114,7 +115,7 @@ Revision Batch Approved Edit - Admin Panel
                                     @endphp
                                     <tr>
                                         <td>{{ $i + 1 }}</td>
-                                        <td>{{ $service->name }}</td>
+                                        <td>{{ $service->title }}</td>
                                         <td>
                                             <input {{ $isReadOnly }} type="text" class="form-control date"
                                                 id="date_{{ $i }}" name="module_date[]"

@@ -57,40 +57,20 @@ class StayawareBatchApprovedController extends Controller
         $this->checkAuthorization(auth()->user(), ['revisionbatch.edit']);
 
         $admin = RevisionBatch::findOrFail($id);
-        $plans = Plan::findOrFail(11);
-        dd($plans);
+        $plans = Plan::findOrFail($admin['plan_id']);
+
         $ids = explode(',', $plans->module_ids);
-        $modulesName = Modules::whereIn('id', $ids)->where('status', 1)->get();
+        $modulesName = Service::whereIn('id', $ids)->where('status', 1)->get();
+        // $modulesName = Service::where('status', 1)->where('plan_type', 'Stay Aware')->get();
         // dd($modulesName);
-        // $modulesName = Modules::where('status', 1)->where('plan_type', 'Revision')->get();
         $pageName = 'backend.pages.stay-aware-approved.edit';
-        $dataGetNodules = MemberModule::where('member_id', $admin->user_id)->where('membership_id', 11)->get();
+        $dataGetNodules = MemberModule::where('member_id', $admin->user_id)->where('membership_id', $admin['plan_id'])->get();
         return view($pageName, [
             'admin' => $admin,
             'member_id' => $admin->user_id,
             'modulesName' => $modulesName,
             'dataGetNodules' => $dataGetNodules,
             'roles' => Role::all(),
-        ]);
-    }
-
-    public function getSubjectData(Request $request)
-    {
-        $subject_id = $request->input('subject_id');
-        $member_id = $request->input('member_id');
-        $module_id = $request->input('module_id');
-        $membership_id = $request->input('membership_id');
-
-        $visitData = MemberModuleSubject::where(['subject_id' => $subject_id, 'membership_id' => $membership_id, 'member_id' => $member_id, 'module_id' => $module_id])->get();
-        // dd($visitData);
-        $trainers = DB::table('trainers')
-            ->where('status', '1')
-            ->where('is_deleted', '0')
-            ->get();
-
-        return response()->json([
-            'data'     => $visitData,
-            'trainers' => $trainers,
         ]);
     }
 

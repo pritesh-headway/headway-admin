@@ -1043,15 +1043,13 @@ class ApiController extends Controller
             if ($userData['status'] == false) {
                 return $checkToken->getContent();
             }
-            $plans = Plan::findOrFail(env('REVISION_BATCH_PLAN_ID'));
+            $plans = Plan::findOrFail($plan_id);
 
             $ids = explode(',', $plans->module_ids);
             $serviceData = Modules::whereIn('id', $ids)->where('status', 1)->get();
-            // $serviceData = Modules::where(['status' => 1, 'service_id' => 1])->where('is_deleted', 0)->get();
             $serviceCount = $serviceData->count();
 
             $finalVisits = [];
-            // $servicedata = Modules::where(['status' => 1, 'service_id' => 1])->first();
             for ($i = 0; $i < $serviceCount; $i++) {
                 $cmdvisitData = MemberModule::where([
                     'membership_id' => $plan_id,
@@ -4041,12 +4039,11 @@ class ApiController extends Controller
             $serviceData = Event::leftJoin('event_request', function ($join) use ($user_id, $plan_id) {
                 $join->on('events.id', '=', 'event_request.event_id')
                     ->where('event_request.user_id', '=', $user_id);
-            })
-                ->select('events.id', 'events.event_name', 'events.description', 'events.location AS event_building', 'events.event_address', 'events.event_price', 'events.event_date_time',  DB::raw("CASE
+            })->select('events.id', 'events.event_name', 'events.description', 'events.location AS event_building', 'events.event_address', 'events.event_price', 'events.event_date_time', DB::raw("CASE
                 WHEN events.status = 1
                 THEN 'Active'
                 ELSE 'Completed'
-             END AS status"),  DB::raw("CASE
+             END AS status"), DB::raw("CASE
                 WHEN event_request.request_status IS NULL OR event_request.request_status = ''
                 THEN 'Pending'
                 ELSE event_request.request_status
